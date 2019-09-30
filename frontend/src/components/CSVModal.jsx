@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Button, Form, FormGroup, Label, Input, FormText, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 class CSVModal extends React.Component {
@@ -9,12 +10,21 @@ class CSVModal extends React.Component {
     };
 
     this.toggle = this.toggle.bind(this);
+    this.submit = this.submit.bind(this);
   }
 
   toggle() {
     this.setState(prevState => ({
       modal: !prevState.modal
     }));
+  }
+
+  submit(event) {
+    console.log(event.target.files[0])
+    this.setState(({
+      file: URL.createObjectURL(event.target.files[0])
+    }));
+    console.log("File created!");
   }
 
   render() {
@@ -27,15 +37,15 @@ class CSVModal extends React.Component {
             <Form>
               <FormGroup>
                 <Label for="exampleFile">File</Label>
-                <Input type="file" name="file" id="exampleFile" />
+                <Input type="file" name="file" id="exampleFile" onChange={this.submit}/>
                 <FormText color="muted">
                   Upload your CSV file with the information about your volunteers!
                 </FormText>
               </FormGroup>
-              <Button color="primary">Submit</Button>
-            </Form>
+            </Form >
           </ModalBody>
           <ModalFooter>
+            <Button color="primary" onClick={this.toggle}>Submit</Button>
             <Button color="secondary" onClick={this.toggle}>Cancel</Button>
           </ModalFooter>
         </Modal>
