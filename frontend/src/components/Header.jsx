@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 // import { GoogleLogout } from 'react-google-login';
+import CSVModal from './CSVModal';
 
 import {
   Collapse,
@@ -17,6 +18,7 @@ import {
   DropdownItem,
   Container
 } from 'reactstrap';
+
 
 import logo from '../images/drawchange_logo_white.png';
 
@@ -139,6 +141,9 @@ class Header extends Component {
                     )}
                   </Styled.PageSwitch>
                   <Styled.NavItem>
+                    <CSVModal buttonLabel='Load CSV'></CSVModal>
+                  </Styled.NavItem>
+                  <Styled.NavItem>
                     <NavLink href="http://www.drawchange.org">Back to Main Site</NavLink>
                   </Styled.NavItem>
                   <Styled.NavItem>
@@ -196,7 +201,7 @@ class Header extends Component {
                         Costa Rica
                       </DropdownItem>
                       <DropdownItem href="https://www.drawchange.org/ethiopia">
-                        Ethipoia
+                        Ethiopia
                       </DropdownItem>
                     </DropdownMenu>
                   </Styled.Dropdown>
