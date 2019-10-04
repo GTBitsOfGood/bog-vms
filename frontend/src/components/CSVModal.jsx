@@ -6,7 +6,8 @@ class CSVModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      modal: false
+      modal: false,
+      file: ''
     };
 
     this.toggle = this.toggle.bind(this);
@@ -16,15 +17,25 @@ class CSVModal extends React.Component {
   toggle() {
     this.setState(prevState => ({
       modal: !prevState.modal
+      
     }));
   }
 
+
   submit(event) {
-    console.log(event.target.files[0])
-    this.setState(({
-      file: URL.createObjectURL(event.target.files[0])
-    }));
-    console.log("File created!");
+    const file = event.target.files[0];
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+
+      this.setState({file: reader.result})
+      console.log(this.state)
+
+    }.bind(this);
+
+
+    reader.readAsText(file)
+    
   }
 
   render() {
@@ -40,6 +51,8 @@ class CSVModal extends React.Component {
                 <Input type="file" name="file" id="exampleFile" onChange={this.submit}/>
                 <FormText color="muted">
                   Upload your CSV file with the information about your volunteers!
+                  Please format your header with the following column names: 
+                  [first_name, last_name, phone_number, email, dob, address]
                 </FormText>
               </FormGroup>
             </Form >
