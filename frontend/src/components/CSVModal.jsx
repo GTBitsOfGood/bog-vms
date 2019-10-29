@@ -20,20 +20,29 @@ class CSVModal extends React.Component {
     }));
   }
   
-  submit(event) {
-    const file = event.target.files[0];
-    var reader = new FileReader();
+  // submit(event) {
+  //   const file = event.target.files[0];
+  //   var reader = new FileReader();
   
-    reader.onload = function(e) {
+  //   reader.onload = function(e) {
 
-      this.setState({file: reader.result})
-      const header_end = reader.result.indexOf('\n')
-      const header = reader.result.substring(0, header_end)
-      console.log(this.state)
+  //     this.setState({file: reader.result})
+  //     const header_end = reader.result.indexOf('\n')
+  //     const header = reader.result.substring(0, header_end)
+  //     console.log(this.state.file);
+    
+  //   }.bind(this);
 
-    }.bind(this);
+  //   reader.readAsText(file)   
+  // }
 
-    reader.readAsText(file)   
+  submit(event) {
+      const bool = document.getElementById("input") == undefined
+      if (bool) {
+        alert("Please upload a file before submitting");
+      } else {
+      document.getElementById("formCSV").submit();
+      }
   }
 
   render() {
@@ -43,22 +52,18 @@ class CSVModal extends React.Component {
         <Modal isOpen={this.state.modal} toggle={this.toggle}>
           <ModalHeader toggle={this.toggle}>Upload CSV Files Here</ModalHeader>
           <ModalBody>
-            <Form action="/csvAddition" method="POST">
-              <FormGroup>
-                <Label for="exampleFile">File</Label>
-                <Input type="file" name="file" id="inputFile" onChange={this.submit}/>
-                <FormText color="muted">
-                  Upload your CSV file with the information about your volunteers!
-                  Please format your header with the following column names: 
-                  [first_name, last_name, phone_number, email, dob, address]
-                </FormText>
-                <a href='https://docs.google.com/spreadsheets/d/1a2f5jOrtaTU9KYkuCtRQTsjCGe5_rCk7c24_F0f2BUw/export?format=xlsx' download>CSV Header Template</a>
-                <Button color="primary" >Submit</Button>
-              </FormGroup>
-            </Form>
+          <Form action="/api/csv/csvAddition" method="POST" enctype="multipart/form-data" id="formCSV">
+            <FormGroup>
+              <Label for="exampleFile">Upload CSV File with Volunteer Information</Label>
+              <Input type="file" name="input" id="input" required/>
+            </FormGroup>
+            <FormText color="muted">Please upload your CSV File formatted like the excel spreadsheet below. Thank you!</FormText>
+            <a href='https://docs.google.com/spreadsheets/d/1a2f5jOrtaTU9KYkuCtRQTsjCGe5_rCk7c24_F0f2BUw/export?format=xlsx' download>CSV Header Template</a>
+             
+            </Form>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={this.toggle}>Submit</Button>
+            <Button color="primary" onClick={this.submit}>Submit</Button>
             <Button color="secondary" onClick={this.toggle}>Cancel</Button>
           </ModalFooter>
         </Modal>

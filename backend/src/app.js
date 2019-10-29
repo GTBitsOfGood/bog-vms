@@ -7,9 +7,12 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const MongoStore = require('connect-mongo')(session);
 
+const multer  = require('multer')
 const auth = require('./auth');
 const api = require('./routes');
 const app = express();
+
+
 
 // Connect to MongoDB
 mongoose.connect(
