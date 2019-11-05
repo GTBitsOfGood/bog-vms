@@ -29,6 +29,8 @@ const pageSwitchWidth = currPath => {
       return '8.6rem';
     case '/events':
       return '4.8rem';
+    case '/onboarding-manager':
+      return '4.8rem';
     default:
       return '0';
   }
@@ -42,6 +44,8 @@ const pageSwitchLeft = currPath => {
       return '8.3rem';
     case '/events':
       return '16.9rem';
+    case '/onboard-manager': 
+      return '16.9 rem';
     default:
       return '0';
   }
@@ -206,6 +210,9 @@ class Header extends Component {
                       Events
                     </Styled.PageLink>
                     <Styled.PageLink to="/settings" selected={this.currPageMatches('/settings')}>
+                      Settings
+                    </Styled.PageLink>
+                    <Styled.PageLink to="/onboarding-manager" selected={this.currPageMatches('/onboarding-manager')}>
                       Settings
                     </Styled.PageLink>
                   </Styled.PageSwitch>
