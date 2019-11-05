@@ -184,23 +184,7 @@ class ApplicantInfo extends Component {
                 <p>{applicant.history.previous_volunteer_experience}</p>
               </Section>
             )}
-            <Section>
-              <h4>Availability</h4>
-              <SubSection minWidth="20rem">
-                <h5>Weekdays</h5>
-                <OptionsSelected
-                  options={getLabelsFromDays(applicant.availability, 'weekday')}
-                  selected={getSelectedFromDays(applicant.availability, 'weekday')}
-                />
-              </SubSection>
-              <SubSection minWidth="20rem">
-                <h5>Weekends</h5>
-                <OptionsSelected
-                  options={getLabelsFromDays(applicant.availability, 'weekend')}
-                  selected={getSelectedFromDays(applicant.availability, 'weekend')}
-                />
-              </SubSection>
-            </Section>
+
           </Container>
         )}
       </div>

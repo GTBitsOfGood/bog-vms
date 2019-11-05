@@ -4,8 +4,13 @@ const router = express.Router();
 const UserData = require('../models/userData');
 const fs = require('fs');
 const multer  = require('multer')
-//const upload = multer()
+
 const upload = multer({ dest: 'uploads/' })
+
+router.get("/CSVerror", function(req, res, next) {
+  res.send("The entry for the CSV file was incorrect. Please check your sheet and try again.");
+
+})
 router.post('/csvAddition', upload.single('input'), function(req, res, next) {
   const file = req.file;//s.inputFile;
   //console.log(file.path)
@@ -15,24 +20,10 @@ router.post('/csvAddition', upload.single('input'), function(req, res, next) {
     var headers = allTextLines[0].split(',');
     var lines = [];
 
+    //Upload csv data into MongoDB
     for (var i=1; i<allTextLines.length; i++) {
         var data = allTextLines[i].split(',');
         if (data.length == headers.length) {
-          
-          // UserData.findOne({ 'bio.email': data[3] })
-          //   .then(user => {
-          //     if (user) {
-          //       throw new EmailInUseError(
-          //         `Email ${newUserData.bio.email} already in use`,
-          //         newUserData.bio.email
-          //       );
-          //     }
-          //     return Promise.resolve();
-          //   })
-          //   .then(() => {
-          //     const newUser = new UserData(newUserData);
-          //     return newUser.save();
-          //   })
 
           const date = new Date(data[4]);
 
@@ -54,7 +45,9 @@ router.post('/csvAddition', upload.single('input'), function(req, res, next) {
             console.log("Added " + data[0] + " " + data[1]);
 
           } else {
-            console.log("Date of birth " + data[4] + " for email " + data[3] + " is invalid");
+            //console.log("Date of birth " + data[4] + " for email " + data[3] + " is invalid");
+            //Response.Write("<script>alert('Hello');</script>");
+            res.redirect('/error');
           }
 
 
@@ -72,27 +65,6 @@ router.post('/csvAddition', upload.single('input'), function(req, res, next) {
   //res.send(file.path);
 
 });
-
-
-function processData(allText) {
-  var allTextLines = data.split(/\r\n|\n/);
-  var headers = allTextLines[0].split(',');
-  var lines = [];
-
-  for (var i=1; i<allTextLines.length; i++) {
-      var data = allTextLines[i].split(',');
-      if (data.length == headers.length) {
-
-          var tarr = [];
-          for (var j=0; j<headers.length; j++) {
-              tarr.push(headers[j]+" : "+data[j]);
-          }
-          lines.push(tarr);
-      }
-  }
-  return lines
-}
-
 
 
 module.exports = router;
