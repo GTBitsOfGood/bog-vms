@@ -111,10 +111,6 @@ const userDataSchema = new mongoose.Schema(
     },
     comments: { type: String }
 
-    // events: {
-    //   type: Array, // array of event objects
-    //   default: []
-    // }
   },
   { timestamps: true }
 );
