@@ -4,8 +4,8 @@ const userDataSchema = new mongoose.Schema(
   {
     role: {
       type: String,
-      default: 'new',
-      enum: ['new', 'pending', 'admin', 'volunteer', 'manager', 'deleted']
+      default: 'volunteer',
+      enum: ['admin', 'volunteer', 'manager']
     },
     status: {
       type: String,
@@ -72,45 +72,9 @@ const userDataSchema = new mongoose.Schema(
       social_media: { type: Boolean, default: false }
     },
     employment: {
-      name: { type: String },
-      position: { type: String },
-      duration: { type: String },
-      location: { type: String },
-      previous_name: { type: String },
-      previous_reason_for_leaving: { type: String },
-      previous_location: { type: String }
-    },
-    reference: {
-      name: { type: String },
-      phone_number: { type: String },
-      email: { type: String },
-      relationship: { type: String },
-      duration: { type: String }
-    },
-    criminal: {
-      felony: { type: Boolean },
-      sexual_violent: { type: Boolean },
-      drugs: { type: Boolean },
-      driving: { type: Boolean },
-      none: { type: Boolean },
-      explanation: { type: String }
-    },
-    ice: {
-      name: { type: String },
-      relationship: { type: String },
-      phone_number: { type: String },
-      email: { type: String },
-      address: { type: String }
-    },
-    permissions: {
-      comments: { type: String },
-      reference: { type: Boolean },
-      personal_image: { type: Boolean },
-      email_list: { type: Boolean },
-      signature: { type: String }
-    },
-    comments: { type: String }
-
+      industry: { type: String },
+      occupation: { type: [String] }
+    }
   },
   { timestamps: true }
 );

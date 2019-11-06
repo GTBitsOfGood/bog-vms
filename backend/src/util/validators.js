@@ -165,9 +165,6 @@ const USER_DATA_VALIDATOR = [
     .isAscii()
     .trim()
     .escape(),
-  check('permissions.comments')
-    .trim()
-    .escape(),
   check('permissions.reference').isBoolean(),
   check('permissions.personal_image').isBoolean(),
   check('permissions.email_list').isBoolean(),
@@ -178,7 +175,8 @@ const USER_DATA_VALIDATOR = [
 ];
 
 // TODO Add validations for volunteers Array
-const EVENT_VALIDATOR = [
+const CREATE_EVENT_VALIDATOR = [
+  check('_id').optional(),
   check('name')
     .isAscii()
     .trim(),
@@ -211,7 +209,12 @@ const EVENT_VALIDATOR = [
   // })
 ];
 
+const OBJECT_ID_REGEX = new RegExp('^[0-9a-fA-F]{24}$');
+
+const isValidObjectID = id => OBJECT_ID_REGEX.test(id);
+
 module.exports = {
   USER_DATA_VALIDATOR,
-  EVENT_VALIDATOR
+  CREATE_EVENT_VALIDATOR,
+  isValidObjectID
 };
