@@ -51,6 +51,7 @@
   "devDependencies": {
     "eslint-config-prettier": "^3.3.0",
     "eslint-plugin-prettier": "^3.0.0",
+    "eslint-plugin-react": "^7.16.0",
     "eslint-plugin-react-hooks": "^2.1.2",
     "prettier": "^1.15.3",
     "redux-devtools": "^3.4.2",
