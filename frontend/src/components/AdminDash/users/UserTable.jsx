@@ -96,7 +96,9 @@ class UserTable extends React.Component {
                   name="roleSelected"
                 >
                   {Object.keys(roles).map((t, i) => (
-                    <option value={t}>{keyToValue(t)}</option>
+                    <option key={t + i} value={t}>
+                      {keyToValue(t)}
+                    </option>
                   ))}
                 </Form.Dropdown>
                 <Form.Label>Status</Form.Label>
@@ -108,7 +110,9 @@ class UserTable extends React.Component {
                   name="statusSelected"
                 >
                   {Object.keys(statuses).map((t, i) => (
-                    <option value={t}>{keyToValue(t)}</option>
+                    <option key={t + i} value={t}>
+                      {keyToValue(t)}
+                    </option>
                   ))}
                 </Form.Dropdown>
               </Form.FormGroup>

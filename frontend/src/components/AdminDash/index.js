@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Route, Redirect } from 'react-router-dom';
 import ApplicantViewer from './ApplicantViewer';
-import UserManager from './user/UserManager';
+import UserManager from './users/UserManager';
 import EventManager from './events/EventManager';
 
 const Container = styled.div`

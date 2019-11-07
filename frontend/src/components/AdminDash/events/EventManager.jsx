@@ -14,14 +14,13 @@ const Styled = {
     width: 100%;
     height: 100%;
     background: ${props => props.theme.grey9};
-    padding-top: 1rem;
+    padding: 1rem 2.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
   `,
   HeaderContainer: styled.div`
-    width: 95%;
-    max-width: 80rem;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     margin-bottom: 1rem;
