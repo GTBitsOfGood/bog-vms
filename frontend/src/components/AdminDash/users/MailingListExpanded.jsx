@@ -5,7 +5,6 @@ const Styled = {
   Container: styled.div`
     height: 100%;
     width: 100%;
-    margin-left: 2rem;
     padding: 2rem 1rem;
     background-color: ${props => props.theme.greyBg};
   `,

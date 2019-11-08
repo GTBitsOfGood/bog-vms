@@ -26,6 +26,7 @@ const Styled = {
     position: relative;
     height: 100%;
     width: ${props => (props.collapsed ? '25rem' : '100%')};
+    ${props => !props.collapsed && 'margin-left: 2rem;'}
   `,
   ToggleButton: styled(Button)`
     position: absolute;
