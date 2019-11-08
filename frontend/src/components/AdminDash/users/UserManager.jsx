@@ -5,6 +5,7 @@ import { fetchUserManagementData, fetchUserCount } from '../queries';
 import { Button } from 'reactstrap';
 import FilterSidebar from './FilterSidebar';
 import InfiniteScroll from 'components/Shared/InfiniteScroll';
+import MailingListCollapsed from './MailingListCollapsed';
 
 const Styled = {
   Container: styled.div`
@@ -71,6 +72,7 @@ class UserManager extends React.Component {
             <UserTable users={users} editUserCallback={this.onEditUser} />
           </InfiniteScroll>
         </Styled.ListContainer>
+        <MailingListCollapsed />
       </Styled.Container>
     );
   }

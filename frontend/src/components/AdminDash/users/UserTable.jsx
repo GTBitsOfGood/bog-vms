@@ -56,8 +56,6 @@ class UserTable extends React.Component {
             <tr>
               <th>Name</th>
               <th>Email</th>
-              <th>Role</th>
-              <th>Status</th>
             </tr>
             {!loading &&
               users.map((user, index) => (
@@ -68,8 +66,6 @@ class UserTable extends React.Component {
                 >
                   <td>{user.name}</td>
                   <td>{user.email}</td>
-                  <td>{roles[user.role]}</td>
-                  <td>{statuses[user.status]}</td>
                 </Table.Row>
               ))}
           </tbody>
