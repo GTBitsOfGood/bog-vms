@@ -5,6 +5,7 @@ const Styled = {
   Container: styled.div`
     height: 100%;
     width: 100%;
+    margin-left: 2rem;
     padding: 2rem 1rem;
     background-color: ${props => props.theme.greyBg};
   `,
@@ -17,7 +18,7 @@ const Styled = {
 const MailingListCollapsed = () => {
   return (
     <Styled.Container>
-      <Styled.Title>Mailing List</Styled.Title>
+      <Styled.Title>Mailing List Expanded</Styled.Title>
     </Styled.Container>
   );
 };
