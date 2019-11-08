@@ -3,8 +3,17 @@ import { roles, statuses } from '../applicantInfoHelpers';
 import { Button, ModalHeader, ModalBody, ModalFooter, Modal } from 'reactstrap';
 import Loading from '../../Shared/Loading';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 import * as Table from '../shared/tableStyles';
 import * as Form from '../shared/formStyles';
+
+const Styled = {
+  Container: styled.div`
+    background: white;
+    width: 100%;
+    padding: 1rem;
+  `
+};
 
 const keyToValue = key => {
   key = key.replace(/_/g, ' ');
@@ -41,7 +50,7 @@ class UserTable extends React.Component {
   render() {
     const { users, loading } = this.props;
     return (
-      <Table.Container>
+      <Styled.Container>
         <Table.Table>
           <tbody>
             <tr>
@@ -130,7 +139,7 @@ class UserTable extends React.Component {
               </Button> */}
           </ModalFooter>
         </Modal>
-      </Table.Container>
+      </Styled.Container>
     );
   }
 }

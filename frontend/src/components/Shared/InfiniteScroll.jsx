@@ -8,6 +8,7 @@ const Styled = {
     overflow-y: scroll;
     position: relative;
     width: inherit;
+    height: inherit;
   `,
   Bottom: styled.div`
     height: 100px;

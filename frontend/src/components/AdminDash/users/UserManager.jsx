@@ -3,6 +3,7 @@ import UserTable from './UserTable';
 import styled from 'styled-components';
 import { fetchUserManagementData, fetchUserCount } from '../queries';
 import { Button } from 'reactstrap';
+import FilterSidebar from './FilterSidebar';
 import InfiniteScroll from 'components/Shared/InfiniteScroll';
 
 const Styled = {
@@ -10,10 +11,13 @@ const Styled = {
     width: 100%;
     height: 100%;
     background: ${props => props.theme.grey9};
-    padding-top: 1rem;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
+  `,
+  ListContainer: styled.div`
+    height: 100%;
+    width: 100%;
   `,
   Button: styled(Button)`
     background: white;
@@ -61,9 +65,12 @@ class UserManager extends React.Component {
     const { isLoading, users } = this.state;
     return (
       <Styled.Container>
-        <InfiniteScroll loadCallback={this.loadMoreUsers} isLoading={isLoading}>
-          <UserTable users={users} editUserCallback={this.onEditUser} />
-        </InfiniteScroll>
+        <FilterSidebar />
+        <Styled.ListContainer>
+          <InfiniteScroll loadCallback={this.loadMoreUsers} isLoading={isLoading}>
+            <UserTable users={users} editUserCallback={this.onEditUser} />
+          </InfiniteScroll>
+        </Styled.ListContainer>
       </Styled.Container>
     );
   }
