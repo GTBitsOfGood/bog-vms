@@ -71,7 +71,7 @@ const OnboardingManager = () => {
             </Styled.Button>
           </Styled.ButtonContainer>
           <FormText>
-            Don't have an account? Let's set it up.
+              Don't have an account? Let's <a href ='/onboarding-create'>set it up</a>.
           </FormText>
         </Form>
       </Styled.ContainerTest>

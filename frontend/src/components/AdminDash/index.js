@@ -5,6 +5,8 @@ import ApplicantViewer from './ApplicantViewer';
 import UserManager from './user/UserManager';
 import EventManager from './events/EventManager';
 import OnboardingManager from './onboarding/OnboardingManager';
+import OnboardingCreate from './onboarding/OnboardingCreate';
+
 
 const Container = styled.div`
   background: white;
@@ -34,6 +36,7 @@ class AdminDash extends React.Component {
         <Route path="/user-manager" component={UserManager} />
         <Route path="/events" component={EventManager} />
         <Route path="/onboarding-manager" component={OnboardingManager} />
+        <Route path="/onboarding-create" component={OnboardingCreate} />
       </Container>
     );
   }
