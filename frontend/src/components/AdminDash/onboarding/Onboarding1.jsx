@@ -17,8 +17,9 @@ const Styled = {
   HorizontalContainer: styled.div`
     width: 100%;
     display: flex;
+    flex: 0 1;
     flex-direction: row; 
-    margin-left: 5rem;
+    margin: 3rem;
   `,
   ImgContainer: styled.div`
     display: flex;
@@ -36,7 +37,7 @@ const Styled = {
   `,
   BackButton: styled(Button)`
     border: none;
-  `,
+  `,  
   ButtonContainer: styled.div`
     display: flex;
     justify-content: center;
@@ -50,22 +51,22 @@ const Onboarding1 = () => {
 
   return (
     <Styled.Container>
-      <Styled.HorizontalContainer style={{ }}>
+      <Styled.HorizontalContainer style={{ margin: '1rem' }}>
         <Styled.BackButton>
           Back
         </Styled.BackButton>
       </Styled.HorizontalContainer>
-      <Styled.TxtContainer style={{ textAlign: 'center', marginTop: "2rem"}}>
+      <Styled.TxtContainer style={{ textAlign: 'center'}}>
         <legend> Hi, let's get your account set up.</legend>
       </Styled.TxtContainer>
       <Styled.ImgContainer>
         <img style={{ width: '900px', height: '87px'}} alt="onboard" src={onboarding1}/>
       </Styled.ImgContainer>
-      <Styled.TxtContainer style={{ marginLeft: '5rem', marginTop: "2rem"}}>
+      <Styled.TxtContainer style={{ marginLeft: '2rem' }}>
         <legend>Account Information</legend>
       </Styled.TxtContainer>
       <Form style={{ width: '100%' }}>
-        <Styled.HorizontalContainer style={{ justifyContent: "space-evenly"}}>
+        <Styled.HorizontalContainer style={{ justifyContent: "space-evenly" }}>
           <FormGroup style={{ border: 'none' }}>
             <Input type="email" name="email" id="exampleEmail" placeholder="Email" />
           </FormGroup>
@@ -85,10 +86,10 @@ const Onboarding1 = () => {
               <option>1</option>
               <option>2</option>
               <option>3</option>
-            </Input>
+            </Input>         
           </FormGroup>
         </Styled.HorizontalContainer>
-        <Styled.HorizontalContainer>
+        <Styled.HorizontalContainer> 
           <Styled.Button>
             Next
           </Styled.Button>
@@ -99,24 +100,3 @@ const Onboarding1 = () => {
 };
 
 export default Onboarding1;
-
-
-//
-// <Styled.ButtonContainer>
-//     <Styled.Button>
-//         Login
-//     </Styled.Button>
-//     <Styled.Button>
-//         Forgot Password?
-//     </Styled.Button>
-// </Styled.ButtonContainer>
-// <FormText>
-//     Don't have an account? Let's <a href ='/onboarding-create'>set it up</a>.
-// </FormText>
-// </Form>
-// </Styled.ContainerTest>
-// <Styled.ContainerTest>
-//     <Styled.ImgContainer>
-//         <img style={{ width: '720px', height: '783px' }}alt="onboardingImage" src={image} />
-//     </Styled.ImgContainer>
-// </Styled.ContainerTest>
