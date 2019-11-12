@@ -8,7 +8,7 @@ const multer  = require('multer')
 const upload = multer({ dest: 'uploads/' })
 
 router.get("/CSVerror", function(req, res, next) {
-  res.send("The entry for the CSV file was incorrect. Please check your sheet and try again.");
+  res.type('txt').send('Not found');
 
 })
 router.post('/csvAddition', upload.single('input'), function(req, res, next) {
@@ -21,6 +21,7 @@ router.post('/csvAddition', upload.single('input'), function(req, res, next) {
     var lines = [];
 
     //Upload csv data into MongoDB
+    var err = false;
     for (var i=1; i<allTextLines.length; i++) {
         var data = allTextLines[i].split(',');
         if (data.length == headers.length) {
@@ -28,6 +29,8 @@ router.post('/csvAddition', upload.single('input'), function(req, res, next) {
           const date = new Date(data[4]);
 
           if(Object.prototype.toString.call(date) === "[object Date]") {
+
+            if (!isNaN(date.getTime())) {
             const newUser = new UserData({
               bio: {
                 first_name: data[0], 
@@ -44,19 +47,24 @@ router.post('/csvAddition', upload.single('input'), function(req, res, next) {
             newUser.save().catch(console.log);
             console.log("Added " + data[0] + " " + data[1]);
 
-          } else {
-            res.redirect('/error');
+            } else {
+              err = true;
+            }
+          }  else {
+            err = true;
           }
-
         }
     }
+    if(err) {
+      res.redirect('/CSVerror');
+    } else {
+      res.redirect('/');
+    }
     
-    res.redirect('/');
 
   });
 
 
 });
-
 
 module.exports = router;

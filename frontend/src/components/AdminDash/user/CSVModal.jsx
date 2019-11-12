@@ -54,6 +54,9 @@ class CSVModal extends React.Component {
       alert('Please upload a file before submitting');
     } else {
       document.getElementById('formCSV').submit();
+      this.setState(prevState => ({
+        modal: true
+      }));
     }
   }
 
