@@ -20,11 +20,11 @@ const Styled = {
     display: flex; 
     align-items: space-between;
     flex-direction: column;
-    margin-left: 8rem;
+    margin-left: 5rem;
   `,
   ImgContainer: styled.div`
     display: flex;
-    justify-content: center;
+    justify-content: left;
     align-items: center;
   `,
   HeaderContainer: styled.div`
@@ -50,32 +50,32 @@ const AdminLogin = () => {
 
   return (
     <Styled.Container>
-      <Styled.ContainerTest style={{ marginTop: '5rem'}}>
-        <Styled.ImgContainer style={{ marginTop: '10rem', marginBottom: '2rem'}}>
+      <Styled.ContainerTest style={{ marginTop: '2rem', width: "100%"}}>
+        <Styled.ImgContainer style={{ marginBottom: '10rem'}}>
           <img style={{ width: '240px', height: '42px' }} alt="bogLogo" src={logo}/>
         </Styled.ImgContainer>
         <legend>Login</legend>
-        <Form>
+        <Form style= {{width: "100%"}}>
           <FormGroup style={{ border: 'none' }}>
             <Input type="email" name="email" id="exampleEmail" placeholder="Email" />
           </FormGroup>
           <FormGroup>
             <Input type="password" name="password" id="examplePassword" placeholder="Password" />
           </FormGroup>
-          <Styled.ButtonContainer>
-            <Styled.Button>
+          <Styled.ButtonContainer style={{ justifyContent: "space-around" }}>
+            <Styled.Button style={{ color: "white", backgroundColor: "black"}}>
                 Login
             </Styled.Button>
-            <Styled.Button>
+            <Styled.Button style={{ color: "gray" }}>
               Forgot Password?
             </Styled.Button>
           </Styled.ButtonContainer>
-          <FormText>
+          <FormText style={{ marginTop: "5rem"}}>
             Don't have an account? Let's set it up.
           </FormText>
         </Form>
       </Styled.ContainerTest>
-      <Styled.ContainerTest>
+      <Styled.ContainerTest style={{width: "100%"}}>
         <Styled.ImgContainer>
           <img style={{ width: '720px', height: '783px' }}alt="onboardingImage" src={image} />
         </Styled.ImgContainer>
