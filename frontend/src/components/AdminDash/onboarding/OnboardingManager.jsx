@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Icon } from 'components/Shared';
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 
-import onboarding3 from '../../../images/onboarding_3.svg'
+import onboarding4 from '../../../images/onboarding_4.svg'
 const Styled = {
   Container: styled.div`
     width: 100%;
@@ -32,6 +32,7 @@ const Styled = {
     align-content: center;
   `,
   Button: styled(Button)`
+    border: none;
     background: gray;
   `,
   BackButton: styled(Button)`
@@ -56,25 +57,28 @@ const OnboardingManager = () => {
         </Styled.BackButton>
       </Styled.HorizontalContainer>
       <Styled.TxtContainer style={{ textAlign: 'center'}}>
-        <legend> How do you want this app to look? </legend>
+        <legend> Let's add some volunteers.</legend>
       </Styled.TxtContainer>
       <Styled.ImgContainer>
-        <img style={{ width: '900px', height: '87px'}} alt="onboard" src={onboarding3}/>
+        <img style={{ width: '900px', height: '87px'}} alt="onboard" src={onboarding4}/>
       </Styled.ImgContainer>
       <Form style={{ width: '100%' }}>
-        <Styled.HorizontalContainer style={{ justifyContent: "space-around" }}>
-          <FormGroup>
-            <Input type="select" name="selectMulti" id="exampleSelectMulti" multiple>
-              <option>Dark</option>
-              <option>Light</option>
-            </Input>
+        <Styled.HorizontalContainer style={{ justifyContent: "space-evenly" }}>
+          <FormGroup style={{ border: 'none' }}>
+            <legend> Organization Information </legend>
+            <FormText color="muted">
+              1) Download this template 
+              2) Transfer volunteer data over 
+              3) Upload new spreadsheet 
+            </FormText>
           </FormGroup>
-          <Button>Red</Button>
-          <Button>Orange</Button>
-          <Button>Yellow</Button>
-          <Button>Green</Button>
-          <Button>Blue</Button>
-          <Button>Purple</Button>
+          <FormGroup>
+            <Label for="exampleFile">Upload your company logo</Label>
+            <Input type="file" name="file" id="exampleFile" />
+            <FormText color="muted">
+              Drag a file here or browse for an image to upload
+            </FormText>
+          </FormGroup>
         </Styled.HorizontalContainer>
         <Styled.HorizontalContainer> 
           <Styled.Button>
