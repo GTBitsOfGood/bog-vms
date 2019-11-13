@@ -6,6 +6,11 @@ import UserManager from './user/UserManager';
 import EventManager from './events/EventManager';
 import OnboardingManager from './onboarding/OnboardingManager';
 import OnboardingCreate from './onboarding/OnboardingCreate';
+import Onboarding1 from './onboarding/Onboarding1';
+import Onboarding2 from './onboarding/Onboarding2';
+import Onboarding3 from './onboarding/Onboarding3';
+import Onboarding4 from './onboarding/Onboarding4';
+import loggedin from './onboarding/Loggedin'
 
 
 const Container = styled.div`
@@ -36,7 +41,10 @@ class AdminDash extends React.Component {
         <Route path="/user-manager" component={UserManager} />
         <Route path="/events" component={EventManager} />
         <Route path="/onboarding-manager" component={OnboardingManager} />
-        <Route path="/onboarding-create" component={OnboardingCreate} />
+        <Route path="/onboarding1" component={Onboarding1} />
+          <Route path="/onboarding2" component={Onboarding2} />
+          <Route path="/onboarding3" component={Onboarding3} />
+          <Route path="/onboarding4" component={Onboarding4} />
       </Container>
     );
   }

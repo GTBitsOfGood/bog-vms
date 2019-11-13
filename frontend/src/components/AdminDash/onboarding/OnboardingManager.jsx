@@ -2,42 +2,40 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Icon } from 'components/Shared';
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
-
-import onboarding1 from '../../../images/onboarding_1.svg'
+import image from '../../../images/onboardingArt.png';
+import logo from '../../../images/bog_logo.png';
 const Styled = {
-  Container: styled.div`
+    Container: styled.div`
     width: 100%;
     height: 100%;
     background: ${props => props.theme.grey9};
     padding-top: 1rem;
     display: flex;
+    flex-direction: row;
+    align-items: space-between;
+  `,
+    ContainerTest: styled.div`
+    display: flex; 
+    align-items: space-between;
     flex-direction: column;
-    align-items: space-around;
+    margin-left: 8rem;
   `,
-  HorizontalContainer: styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: row; 
-    margin-left: 5rem;
-  `,
-  ImgContainer: styled.div`
+    ImgContainer: styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 3rem;
   `,
-  TxtContainer: styled.div`
+    HeaderContainer: styled.div`
+    width: 95%;
+    max-width: 80rem;
     display: flex;
-    align-content: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
   `,
-  Button: styled(Button)`
-    border: none;
-    background: gray;
-  `,
-  BackButton: styled(Button)`
+    Button: styled(Button)`
     border: none;
   `,
-  ButtonContainer: styled.div`
+    ButtonContainer: styled.div`
     display: flex;
     justify-content: center;
     align-items: center
@@ -45,78 +43,44 @@ const Styled = {
   `
 };
 
-const Onboarding1 = () => {
-  const [loading] = useState(true);
 
-  return (
-    <Styled.Container>
-      <Styled.HorizontalContainer style={{ }}>
-        <Styled.BackButton>
-          Back
-        </Styled.BackButton>
-      </Styled.HorizontalContainer>
-      <Styled.TxtContainer style={{ textAlign: 'center', marginTop: "2rem"}}>
-        <legend> Hi, let's get your account set up.</legend>
-      </Styled.TxtContainer>
-      <Styled.ImgContainer>
-        <img style={{ width: '900px', height: '87px'}} alt="onboard" src={onboarding1}/>
-      </Styled.ImgContainer>
-      <Styled.TxtContainer style={{ marginLeft: '5rem', marginTop: "2rem"}}>
-        <legend>Account Information</legend>
-      </Styled.TxtContainer>
-      <Form style={{ width: '100%' }}>
-        <Styled.HorizontalContainer style={{ justifyContent: "space-evenly"}}>
-          <FormGroup style={{ border: 'none' }}>
-            <Input type="email" name="email" id="exampleEmail" placeholder="Email" />
-          </FormGroup>
-          <FormGroup>
-            <Input type="password" name="password" id="examplePassword" placeholder="Password" />
-          </FormGroup>
-        </Styled.HorizontalContainer>
-        <Styled.HorizontalContainer style={{ justifyContent: "space-evenly" }}>
-          <FormGroup style={{ border: 'none' }}>
-            <Input type="text" name="fname" id="firstName" placeholder="First Name"/>
-          </FormGroup>
-          <FormGroup style={{ border: 'none' }}>
-            <Input type="text" name="lname" id="lastName" placeholder="Last Name"/>
-          </FormGroup>
-          <FormGroup style={{ border: 'none' }}>
-            <Input type="select" name="select" id="roleSelect">
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-            </Input>
-          </FormGroup>
-        </Styled.HorizontalContainer>
-        <Styled.HorizontalContainer>
-          <Styled.Button>
-            Next
-          </Styled.Button>
-        </Styled.HorizontalContainer>
-      </Form>
-    </Styled.Container>
-  );
+const OnboardingManager = () => {
+    const [loading] = useState(true);
+    return (
+        <Styled.Container>
+            <Styled.ContainerTest style={{ marginTop: '5rem'}}>
+                <Styled.ImgContainer style={{ marginTop: '10rem', marginBottom: '2rem'}}>
+                    <img style={{ width: '240px', height: '42px' }} alt="bogLogo" src={logo}/>
+                </Styled.ImgContainer>
+                <legend>Login</legend>
+                <Form>
+                    <FormGroup style={{ border: 'none' }}>
+                        <Input type="email" name="email" id="exampleEmail" placeholder="Email" />
+                    </FormGroup>
+                    <FormGroup>
+                        <Input type="password" name="password" id="examplePassword" placeholder="Password" />
+                    </FormGroup>
+                    <Styled.ButtonContainer>
+                        <Styled.Button>
+                            <a href = '/applicant-viewer'>Login </a>
+                            {/*Loggin*/}
+                        </Styled.Button>
+                        <Styled.Button>
+                            Forgot Password?
+                        </Styled.Button>
+                    </Styled.ButtonContainer>
+                    <FormText>
+                        Don't have an account? Let's set it up.
+                        Don't have an account? Let's <a href ='/onboarding1'>set it up</a>.
+                    </FormText>
+                </Form>
+            </Styled.ContainerTest>
+            <Styled.ContainerTest>
+                <Styled.ImgContainer>
+                    <img style={{ width: '720px', height: '783px' }}alt="onboardingImage" src={image} />
+                </Styled.ImgContainer>
+            </Styled.ContainerTest>
+        </Styled.Container>
+    );
 };
-
-export default Onboarding1;
-
-
-//
-// <Styled.ButtonContainer>
-//     <Styled.Button>
-//         Login
-//     </Styled.Button>
-//     <Styled.Button>
-//         Forgot Password?
-//     </Styled.Button>
-// </Styled.ButtonContainer>
-// <FormText>
-//     Don't have an account? Let's <a href ='/onboarding-create'>set it up</a>.
-// </FormText>
-// </Form>
-// </Styled.ContainerTest>
-// <Styled.ContainerTest>
-//     <Styled.ImgContainer>
-//         <img style={{ width: '720px', height: '783px' }}alt="onboardingImage" src={image} />
-//     </Styled.ImgContainer>
-// </Styled.ContainerTest>
+export default OnboardingManager;

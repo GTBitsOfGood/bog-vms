@@ -44,7 +44,7 @@ const pageSwitchLeft = currPath => {
       return '8.3rem';
     case '/events':
       return '16.9rem';
-    case '/onboard-manager': 
+    case '/onboard-manager':
       return '16.9 rem';
     default:
       return '0';
@@ -235,9 +235,9 @@ class Header extends Component {
                     </Styled.Toggle>
                     <DropdownMenu style={{ width: '100%' }}>
                       <DropdownItem>My Profile</DropdownItem>
-                      <DropdownItem onClick={onLogout} href="/">
+                      <DropdownItem>
                         {' '}
-                        Logout{' '}
+                        <a href="/onboarding-manager"> Logout{' '} </a>
                       </DropdownItem>
                     </DropdownMenu>
                   </Styled.Dropdown>
@@ -254,3 +254,5 @@ class Header extends Component {
 }
 
 export default withRouter(Header);
+
+// onClick={onLogout} href="/"

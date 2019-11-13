@@ -37,7 +37,7 @@ const Styled = {
   `,
   BackButton: styled(Button)`
     border: none;
-  `,  
+  `,
   ButtonContainer: styled.div`
     display: flex;
     justify-content: center;
@@ -53,7 +53,7 @@ const Onboarding4 = () => {
     <Styled.Container>
       <Styled.HorizontalContainer style={{ margin: '1rem' }}>
         <Styled.BackButton>
-          Back
+            <a href ='/onboarding3'> Back </a>
         </Styled.BackButton>
       </Styled.HorizontalContainer>
       <Styled.TxtContainer style={{ textAlign: 'center'}}>
@@ -67,9 +67,9 @@ const Onboarding4 = () => {
           <FormGroup style={{ border: 'none' }}>
             <legend> Organization Information </legend>
             <FormText color="muted">
-              1) Download this template 
-              2) Transfer volunteer data over 
-              3) Upload new spreadsheet 
+              1) Download this template
+              2) Transfer volunteer data over
+              3) Upload new spreadsheet
             </FormText>
           </FormGroup>
           <FormGroup>
@@ -80,9 +80,9 @@ const Onboarding4 = () => {
             </FormText>
           </FormGroup>
         </Styled.HorizontalContainer>
-        <Styled.HorizontalContainer> 
+        <Styled.HorizontalContainer>
           <Styled.Button>
-            Next
+              <a href ='/onboarding-manager'> Finish </a>
           </Styled.Button>
         </Styled.HorizontalContainer>
       </Form>

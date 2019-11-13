@@ -36,7 +36,7 @@ const Styled = {
   `,
   BackButton: styled(Button)`
     border: none;
-  `,  
+  `,
   ButtonContainer: styled.div`
     display: flex;
     justify-content: center;
@@ -52,7 +52,7 @@ const Onboarding3 = () => {
     <Styled.Container>
       <Styled.HorizontalContainer style={{ margin: '1rem' }}>
         <Styled.BackButton>
-          Back
+            <a href ='/onboarding2'> Back </a>
         </Styled.BackButton>
       </Styled.HorizontalContainer>
       <Styled.TxtContainer style={{ textAlign: 'center'}}>
@@ -76,9 +76,9 @@ const Onboarding3 = () => {
           <Button>Blue</Button>
           <Button>Purple</Button>
         </Styled.HorizontalContainer>
-        <Styled.HorizontalContainer> 
+        <Styled.HorizontalContainer>
           <Styled.Button>
-            Next
+              <a href ='/onboarding4'> Next </a>
           </Styled.Button>
         </Styled.HorizontalContainer>
       </Form>
