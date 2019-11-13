@@ -54,11 +54,8 @@ const Styled = {
   `
 };
 
-
 const Onboarding1 = () => {
     const [loading] = useState(true);
-
-
         return (
             <Styled.Container>
                 <Styled.HorizontalContainer style={{margin: '1rem'}}>
@@ -107,7 +104,6 @@ const Onboarding1 = () => {
                 </Form>
             </Styled.Container>
         );
-
-};
+    };
 
 export default Onboarding1;

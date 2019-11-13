@@ -67,16 +67,22 @@ const Onboarding2 = () => {
                 </Styled.ImgContainer>
                 <Form style={{marginTop: "3rem"}}>
                     <Styled.HorizontalContainer style={{marginLeft: "5rem", marginRight: "5rem"}}>
-                        <Styled.FormField style={{marginRight: "50px"}}>
+                        <Styled.FormField style={{marginRight: "50px", marginTop: "80px"}}>
                           <legend> Organization Information</legend>
                           <Input type="text" name="compName" id="companyName" placeholder="Company Name"/>
                         </Styled.FormField>
-                        <Styled.FormField style={{border: "dotted"}}>
-                            <Label for="exampleFile">Upload your company logo</Label>
-                            <Input type="file" name="file" id="exampleFile"/>
-                            <FormText color="muted">
-                                Drag an image here or browse for an image to upload
-                            </FormText>
+                        <Styled.FormField style={{border: "dotted", borderRadius: "25px", padding: "50px"}}>
+                            <Styled.HorizontalContainer style={{ marginBottom: "1rem"}}>
+                              <Label for="exampleFile">Upload your company logo</Label>
+                            </Styled.HorizontalContainer>
+                            <Styled.HorizontalContainer style={{ marginBottom: "1rem"}}>
+                              <Input type="file" name="file" id="exampleFile"/>
+                            </Styled.HorizontalContainer>
+                            <Styled.HorizontalContainer style={{justifyContent: "center", marginLeft: "none", marginRight: "none"}}>
+                              <FormText style={{color: "muted", textAlign: "center"}}>
+                                  Drag an image here or browse for an image to upload
+                              </FormText>
+                            </Styled.HorizontalContainer>
                         </Styled.FormField>
                     </Styled.HorizontalContainer>
                     <Styled.HorizontalContainer style={{marginTop: "5rem", marginBottom: "1rem", justifyContent: "flex-end"}}>
