@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Icon } from 'components/Shared';
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 
-import onboarding4 from '../../../images/onboarding_4.svg'
+import onboarding4 from '../../../images/onboarding_update3.svg'
 const Styled = {
   Container: styled.div`
     width: 100%;

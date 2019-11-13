@@ -6,7 +6,7 @@ import Stats from './OnboardingCreate';
 import Onboarding2 from './Onboarding2'
 import { Route, Redirect } from 'react-router-dom';
 
-import onboarding1 from '../../../images/onboarding_1.svg'
+import onboarding1 from '../../../images/onboarding_update1.svg'
 import OnboardingManager from "./OnboardingManager";
 // import {Route} from "react-router-dom";
 const Styled = {
@@ -20,27 +20,25 @@ const Styled = {
     align-items: space-around;
   `,
   HorizontalContainer: styled.div`
-    width: 100%;
     display: flex;
-    flex: 0 1;
     flex-direction: row; 
-    margin: 3rem;
+    margin-left: 8rem;
+    margin-right: 8rem;
+    justify-content: stretch;
   `,
   ImgContainer: styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 3rem;
-  `,
-  TxtContainer: styled.div`
-    display: flex;
-    align-content: center;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
   `,
   Button: styled(Button)`
     border: none;
-    background: gray;
+    background: black;
   `,
   BackButton: styled(Button)`
+    margin-left: 3rem;
     border: none;
   `,
   ButtonContainer: styled.div`
@@ -48,6 +46,11 @@ const Styled = {
     justify-content: center;
     align-items: center
     flex-direction: row
+  `,
+  FormField: styled(FormGroup)`
+    border: none;
+    justfiy-content: stretch;
+    flex: 1;
   `
 };
 
@@ -63,43 +66,43 @@ const Onboarding1 = () => {
                         <a href ='/onboarding-manager'> Back </a>
                     </Styled.BackButton>
                 </Styled.HorizontalContainer>
-                <Styled.TxtContainer style={{textAlign: 'center'}}>
+                <Styled.HorizontalContainer style={{textAlign: 'center'}}>
                     <legend> Hi, let's get your account set up.</legend>
-                </Styled.TxtContainer>
+                </Styled.HorizontalContainer>
                 <Styled.ImgContainer>
                     <img style={{width: '900px', height: '87px'}} alt="onboard" src={onboarding1}/>
                 </Styled.ImgContainer>
-                <Styled.TxtContainer style={{marginLeft: '2rem'}}>
+                <Styled.HorizontalContainer style={{marginTop: "3rem"}}>
                     <legend>Account Information</legend>
-                </Styled.TxtContainer>
-                <Form style={{width: '100%'}}>
-                    <Styled.HorizontalContainer style={{justifyContent: "space-evenly"}}>
-                        <FormGroup style={{border: 'none'}}>
+                </Styled.HorizontalContainer>
+                <Form>
+                    <Styled.HorizontalContainer style={{justifyContent: "stretch", marginTop: "2rem"}}>
+                        <Styled.FormField style={{ marginRight: "50px"}}>
                             <Input type="email" name="email" id="exampleEmail" placeholder="Email" />
-                        </FormGroup>
-                        <FormGroup>
+                        </Styled.FormField>
+                        <Styled.FormField>
                             <Input type="password" name="password" id="examplePassword" placeholder="Password" />
-                        </FormGroup>
+                        </Styled.FormField>
                     </Styled.HorizontalContainer>
-                    <Styled.HorizontalContainer style={{justifyContent: "space-evenly"}}>
-                        <FormGroup style={{border: 'none'}}>
+                    <Styled.HorizontalContainer style={{justifyContent: "stretch", marginTop: "1rem"}}>
+                        <Styled.FormField style={{ marginRight: "50px"}}>
                             <Input type="text" name="fname" id="firstName" placeholder="First Name" />
-                        </FormGroup>
-                        <FormGroup style={{border: 'none'}}>
+                        </Styled.FormField>
+                        <Styled.FormField style={{ marginRight: "50px"}}>
                             <Input type="text" name="lname" id="lastName" placeholder="Last Name" />
-                        </FormGroup>
-                        <FormGroup style={{border: 'none'}}>
-                            <Input type="select" name="select" id="roleSelect" >
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
+                        </Styled.FormField>
+                        <Styled.FormField>
+                            <Input type="select" name="select" id="roleSelect">
+                                <option>Role1</option>
+                                <option>Role2</option>
+                                <option>Role3</option>
                             </Input>
-                        </FormGroup>
+                        </Styled.FormField>
                     </Styled.HorizontalContainer>
-                    <Styled.HorizontalContainer>
-                        <Styled.BackButton >
+                    <Styled.HorizontalContainer style={{marginTop: "5rem", marginBottom: "1rem", justifyContent: "flex-end"}}>
+                        <Styled.Button >
                             <a href ='/onboarding2'> Next </a>
-                        </Styled.BackButton>
+                        </Styled.Button>
                     </Styled.HorizontalContainer>
                 </Form>
             </Styled.Container>
