@@ -3,28 +3,43 @@ import { Redirect } from "react-router-dom";
 import { GoogleLogin } from 'react-google-login';
 
 class Footer extends Component {
-  googleResponse = response => {
-    const tokenBlob = new Blob([JSON.stringify({ access_token: response.accessToken }, null, 2)], {
-      type: 'application/json'
-    });
-    const options = {
-      method: 'POST',
-      body: tokenBlob,
-      mode: 'cors',
-      cache: 'default'
+
+    state = {
+        flag: false
     };
-    fetch('/auth/google', options).then(r => {
-      r.json().then(() => {
-       this.props.onAuth(null);
-      });
-    });
-    //   fetch('/auth/google', options).then(_=>{
-    //       <Redirect to = "./applicant-viewer" />
-    //   })
 
-  };
+    renderRedirect = () => {
+        console.log(this.flag + "asdfads");
+        if (this.state.flag) {
+            return <Redirect to='./applicant-viewer'/>
+        }
+    };
 
-  loginFailed = _ => alert('Something went wrong. Please try again');
+    toggle = ()=> {
+        this.setState({
+            flag: true
+        })
+    };
+
+    googleResponse = response => {
+        const tokenBlob = new Blob([JSON.stringify({ access_token: response.accessToken }, null, 2)], {
+            type: 'application/json'
+        });
+        const options = {
+            method: 'POST',
+            body: tokenBlob,
+            mode: 'cors',
+            cache: 'default'
+        };
+        this.toggle();
+        // fetch('/auth/google', options).then(r => {
+        //     r.json().then(user => this.renderRedirect() && console.log(this));
+        // });
+    };
+
+
+
+    loginFailed = _ => alert('Something went wrong. Please try again');
 
   render() {
     return (
@@ -35,11 +50,12 @@ class Footer extends Component {
           onSuccess={this.googleResponse}
           onFailure={this.loginFailed}
         />
+          {this.renderRedirect()}
       </div>
     );
+
   }
 }
 
 export default Footer;
 
-// r.json().then(user => this.props.onAuth(user));
