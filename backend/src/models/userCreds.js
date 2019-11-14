@@ -44,7 +44,7 @@ userCredsSchema.statics.findOrCreate = function(
             googleId: profile.id,
             accessToken,
             refreshToken,
-            userDataId: savedUserData.id
+            userDataId: savedUserData._id
           });
           newUser.save((error, savedUser) => cb(error, savedUser));
         });
