@@ -4,12 +4,12 @@ import { Route, Redirect } from 'react-router-dom';
 import ApplicantViewer from './ApplicantViewer';
 import UserManager from './user/UserManager';
 import EventManager from './events/EventManager';
-import OnboardingManager from './onboarding/OnboardingManager';
-import OnboardingCreate from './onboarding/OnboardingCreate';
-import Onboarding1 from './onboarding/Onboarding1';
-import Onboarding2 from './onboarding/Onboarding2';
-import Onboarding3 from './onboarding/Onboarding3';
-import Onboarding4 from './onboarding/Onboarding4';
+import OnboardingManager from '../Splash/onboarding/OnboardingManager';
+import OnboardingCreate from '../Splash/onboarding/OnboardingCreate';
+import Onboarding1 from '../Splash/onboarding/Onboarding1';
+import Onboarding2 from '../Splash/onboarding/Onboarding2';
+import Onboarding3 from '../Splash/onboarding/Onboarding3';
+import Onboarding4 from '../Splash/onboarding/Onboarding4';
 
 
 const Container = styled.div`
