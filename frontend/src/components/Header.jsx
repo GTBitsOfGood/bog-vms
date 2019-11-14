@@ -235,7 +235,7 @@ class Header extends Component {
                     </Styled.Toggle>
                     <DropdownMenu style={{ width: '100%' }}>
                       <DropdownItem>My Profile</DropdownItem>
-                      <DropdownItem>
+                      <DropdownItem >
                         {' '}
                         <a href="/onboarding-manager"> Logout{' '} </a>
                       </DropdownItem>

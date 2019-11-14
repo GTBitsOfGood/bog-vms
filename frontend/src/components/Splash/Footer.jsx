@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React, {Component } from 'react';
+import { Redirect } from "react-router-dom";
 import { GoogleLogin } from 'react-google-login';
 
 class Footer extends Component {
@@ -13,8 +14,12 @@ class Footer extends Component {
       cache: 'default'
     };
     fetch('/auth/google', options).then(r => {
-      r.json().then(user => this.props.onAuth(user));
+      r.json().then(user => <Redirect to = "./applicant-viewer" />);
     });
+    //   fetch('/auth/google', options).then(_=>{
+    //       <Redirect to = "./applicant-viewer" />
+    //   })
+
   };
 
   loginFailed = _ => alert('Something went wrong. Please try again');
@@ -34,3 +39,5 @@ class Footer extends Component {
 }
 
 export default Footer;
+
+// r.json().then(user => this.props.onAuth(user));

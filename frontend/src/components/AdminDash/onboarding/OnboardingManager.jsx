@@ -4,6 +4,7 @@ import { Icon } from 'components/Shared';
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 import image from '../../../images/onboardingArt.png';
 import logo from '../../../images/bog_logo.png';
+import Footer from '../../Splash/Footer';
 const Styled = {
     Container: styled.div`
     width: 100%;
@@ -44,8 +45,28 @@ const Styled = {
 };
 
 
+
 const OnboardingManager = () => {
     const [loading] = useState(true);
+
+    function googleResponse(response) {
+        const tokenBlob = new Blob([JSON.stringify({ access_token: response.accessToken }, null, 2)], {
+            type: 'application/json'
+        });
+        const options = {
+            method: 'POST',
+            body: tokenBlob,
+            mode: 'cors',
+            cache: 'default'
+        };
+        fetch('/auth/google', options).then(r => {
+            r.json().then(user => this.props.onAuth(user));
+        });
+    };
+
+    function loginFailed() {
+        alert('Something went wrong. Please try again');
+    }
     return (
         <Styled.Container>
             <Styled.ContainerTest style={{ marginTop: '5rem'}}>
@@ -74,6 +95,7 @@ const OnboardingManager = () => {
                         Don't have an account? Let's <a href ='/onboarding1'>set it up</a>.
                     </FormText>
                 </Form>
+                <Footer />
             </Styled.ContainerTest>
             <Styled.ContainerTest>
                 <Styled.ImgContainer>

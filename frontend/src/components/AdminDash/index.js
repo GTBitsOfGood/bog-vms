@@ -10,7 +10,6 @@ import Onboarding1 from './onboarding/Onboarding1';
 import Onboarding2 from './onboarding/Onboarding2';
 import Onboarding3 from './onboarding/Onboarding3';
 import Onboarding4 from './onboarding/Onboarding4';
-import loggedin from './onboarding/Loggedin'
 
 
 const Container = styled.div`
