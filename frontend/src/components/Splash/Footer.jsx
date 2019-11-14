@@ -14,7 +14,9 @@ class Footer extends Component {
       cache: 'default'
     };
     fetch('/auth/google', options).then(r => {
-      r.json().then(user => <Redirect to = "./applicant-viewer" />);
+      r.json().then(() => {
+       this.props.onAuth(null);
+      });
     });
     //   fetch('/auth/google', options).then(_=>{
     //       <Redirect to = "./applicant-viewer" />
