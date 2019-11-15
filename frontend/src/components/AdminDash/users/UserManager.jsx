@@ -8,6 +8,7 @@ import InfiniteScroll from 'components/Shared/InfiniteScroll';
 import MailingListCollapsed from './MailingListCollapsed';
 import MailingListExpanded from './MailingListExpanded';
 import { LeftCaretIcon } from 'components/Shared/Icon';
+import update from 'immutability-helper';
 
 const Styled = {
   Container: styled.div`
@@ -86,13 +87,13 @@ class UserManager extends React.Component {
     });
   };
 
-  onToggleCollapse = () => {
-    this.setState(({ collapsed }) => ({
-      collapsed: !collapsed
+  onEditUser = () => {};
+
+  onToggleUserMailingList = idx => () => {
+    this.setState(({ users }) => ({
+      users: update(users, { [idx]: { inMailingList: { $set: !users[idx].inMailingList } } })
     }));
   };
-
-  onEditUser = () => {};
 
   render() {
     const { isLoading, users, collapsed } = this.state;
@@ -102,7 +103,11 @@ class UserManager extends React.Component {
         {collapsed && (
           <Styled.ListContainer>
             <InfiniteScroll loadCallback={this.loadMoreUsers} isLoading={isLoading}>
-              <UserTable users={users} editUserCallback={this.onEditUser} />
+              <UserTable
+                users={users}
+                editUserCallback={this.onEditUser}
+                onUserToggle={this.onToggleUserMailingList}
+              />
             </InfiniteScroll>
           </Styled.ListContainer>
         )}

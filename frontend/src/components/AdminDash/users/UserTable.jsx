@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import * as Table from '../shared/tableStyles';
 import * as Form from '../shared/formStyles';
+import Icon from 'components/Shared/Icon';
 
 const Styled = {
   Container: styled.div`
@@ -48,22 +49,27 @@ class UserTable extends React.Component {
     });
   };
   render() {
-    const { users, loading } = this.props;
+    const { users, loading, onUserToggle } = this.props;
     return (
       <Styled.Container>
         <Table.Table>
           <tbody>
             <tr>
+              <th></th>
               <th>Name</th>
               <th>Email</th>
             </tr>
             {!loading &&
               users.map((user, index) => (
-                <Table.Row
-                  key={index}
-                  evenIndex={index % 2 === 0}
-                  onClick={() => this.onDisplayEditUserModal(user)}
-                >
+                <Table.Row key={index} evenIndex={index % 2 === 0}>
+                  <td style={{ padding: '0.5rem' }}>
+                    <Icon
+                      name={user.inMailingList ? 'delete' : 'add'}
+                      color="grey"
+                      size="2.5rem"
+                      onClick={onUserToggle(index)}
+                    />
+                  </td>
                   <td>{user.name}</td>
                   <td>{user.email}</td>
                 </Table.Row>
@@ -145,5 +151,6 @@ export default UserTable;
 UserTable.propTypes = {
   users: PropTypes.array.isRequired,
   loading: PropTypes.bool,
-  editUserCallback: PropTypes.func.isRequired
+  editUserCallback: PropTypes.func.isRequired,
+  onUserToggle: PropTypes.func.isRequired
 };
