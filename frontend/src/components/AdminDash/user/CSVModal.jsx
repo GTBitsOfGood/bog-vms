@@ -23,7 +23,7 @@ const Styled = {
     margin-bottom: 1rem;
   `,
   Button: styled(Button)`
-    background: white;
+    
     border: none;
 
     ${props => props.disabled && 'background: white !important'}
@@ -63,7 +63,7 @@ class CSVModal extends React.Component {
   render() {
     return (
       <div>
-        <Styled.Button onClick={this.toggle}>
+        <Styled.Button color="primary" size="lg" onClick={this.toggle}>
           <Icon color="grey3" name="refresh" />
           <span>{this.props.buttonLabel}</span>
         </Styled.Button>

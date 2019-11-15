@@ -120,7 +120,6 @@ class UserManager extends React.Component {
             <Icon color="grey3" name="refresh" />
             <span> Refresh</span>
           </Styled.Button>
-          <CSVModal buttonLabel="Upload CSV"/>
           {currentPage > 0 && (
             <Styled.ToBeginningButton onClick={this.onToBeginning}>
               To Beginning
