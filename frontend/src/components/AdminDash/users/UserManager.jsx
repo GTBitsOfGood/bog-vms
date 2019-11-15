@@ -89,6 +89,12 @@ class UserManager extends React.Component {
 
   onEditUser = () => {};
 
+  onToggleCollapse = () => {
+    this.setState(({ collapsed }) => ({
+      collapsed: !collapsed
+    }));
+  };
+
   onToggleUserMailingList = idx => () => {
     this.setState(({ users }) => ({
       users: update(users, { [idx]: { inMailingList: { $set: !users[idx].inMailingList } } })
