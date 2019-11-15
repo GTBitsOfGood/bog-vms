@@ -103,6 +103,7 @@ class UserManager extends React.Component {
 
   render() {
     const { isLoading, users, collapsed } = this.state;
+    const addedUsers = users.filter(user => user.inMailingList);
     return (
       <Styled.Container>
         <FilterSidebar />
@@ -121,7 +122,11 @@ class UserManager extends React.Component {
           <Styled.ToggleButton collapsed={collapsed} onClick={this.onToggleCollapse}>
             <LeftCaretIcon />
           </Styled.ToggleButton>
-          {collapsed ? <MailingListCollapsed /> : <MailingListExpanded />}
+          {collapsed ? (
+            <MailingListCollapsed userCount={addedUsers.length} />
+          ) : (
+            <MailingListExpanded />
+          )}
         </Styled.MailingListContainer>
       </Styled.Container>
     );
