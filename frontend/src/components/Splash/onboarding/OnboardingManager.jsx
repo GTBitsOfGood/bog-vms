@@ -5,6 +5,8 @@ import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 import image from '../../../images/onboardingArt.png';
 import logo from '../../../images/bog_logo.png';
 import Footer from '../Footer';
+
+
 const Styled = {
     Container: styled.div`
         width: 100%;
