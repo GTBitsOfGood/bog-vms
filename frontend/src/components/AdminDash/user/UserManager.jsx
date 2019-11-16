@@ -6,6 +6,7 @@ import { Button } from 'reactstrap';
 // import { Button, FormGroup, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 // import { Form, Checkbox } from '../Forms';
 import { Icon } from '../../Shared';
+import CSVModal from './CSVModal';
 
 const PAGE_SIZE = 10;
 
@@ -134,6 +135,7 @@ class UserManager extends React.Component {
             </Styled.Button>
           </Styled.PaginationContainer>
         </Styled.ButtonContainer>
+        
         <UserTable
           users={this.getUsersAtPage()}
           loading={loadingMoreUsers}
@@ -145,3 +147,4 @@ class UserManager extends React.Component {
 }
 
 export default UserManager;
+

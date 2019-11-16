@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Route, Redirect } from 'react-router-dom';
 import ApplicantViewer from './ApplicantViewer';
 import UserManager from './user/UserManager';
+import Settings from './user/Settings';
 import EventManager from './events/EventManager';
 import OnboardingManager from '../Splash/onboarding/OnboardingManager';
 import OnboardingCreate from '../Splash/onboarding/OnboardingCreate';
@@ -36,6 +37,7 @@ class AdminDash extends React.Component {
     return (
       <Container>
         {this.renderRedirect()}
+        <Route path="/settings" component={Settings} />
         <Route path="/applicant-viewer" component={ApplicantViewer} />
         <Route path="/user-manager" component={UserManager} />
         <Route path="/events" component={EventManager} />
