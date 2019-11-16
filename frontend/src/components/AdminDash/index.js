@@ -5,7 +5,6 @@ import ApplicantViewer from './ApplicantViewer';
 import UserManager from './user/UserManager';
 import EventManager from './events/EventManager';
 import OnboardingManager from '../Splash/onboarding/OnboardingManager';
-import OnboardingCreate from '../Splash/onboarding/OnboardingCreate';
 import Onboarding1 from '../Splash/onboarding/Onboarding1';
 import Onboarding2 from '../Splash/onboarding/Onboarding2';
 import Onboarding3 from '../Splash/onboarding/Onboarding3';

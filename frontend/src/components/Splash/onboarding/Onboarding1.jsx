@@ -2,7 +2,6 @@ import React, { Component, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Icon } from 'components/Shared';
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
-import Stats from './OnboardingCreate';
 import Onboarding2 from './Onboarding2'
 import { Route, Redirect } from 'react-router-dom';
 
@@ -55,6 +54,8 @@ const Styled = {
 };
 
 const Onboarding1 = () => {
+
+
     const [loading] = useState(true);
         return (
             <Styled.Container>
@@ -97,7 +98,7 @@ const Onboarding1 = () => {
                         </Styled.FormField>
                     </Styled.HorizontalContainer>
                     <Styled.HorizontalContainer style={{marginTop: "5rem", marginBottom: "1rem", justifyContent: "flex-end"}}>
-                        <Styled.Button >
+                        <Styled.Button>
                             <a href ='/onboarding2'> Next </a>
                         </Styled.Button>
                     </Styled.HorizontalContainer>
