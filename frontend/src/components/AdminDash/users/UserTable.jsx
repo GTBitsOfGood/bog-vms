@@ -68,6 +68,7 @@ class UserTable extends React.Component {
                       color="grey"
                       size="2.5rem"
                       onClick={onUserToggle(index)}
+                      style={{ cursor: 'pointer' }}
                     />
                   </td>
                   <td>{user.name}</td>

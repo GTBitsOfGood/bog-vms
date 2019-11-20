@@ -101,6 +101,12 @@ class UserManager extends React.Component {
     }));
   };
 
+  clearMailingList = () => {
+    this.setState(({ users }) => ({
+      users: users.map(({ inMailingList, ...user }) => user)
+    }));
+  };
+
   render() {
     const { isLoading, users, collapsed } = this.state;
     const addedUsers = users.filter(user => user.inMailingList);
@@ -123,7 +129,7 @@ class UserManager extends React.Component {
             <LeftCaretIcon />
           </Styled.ToggleButton>
           {collapsed ? (
-            <MailingListCollapsed userCount={addedUsers.length} />
+            <MailingListCollapsed users={addedUsers} onClearClick={this.clearMailingList} />
           ) : (
             <MailingListExpanded />
           )}
