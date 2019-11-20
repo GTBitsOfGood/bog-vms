@@ -35,6 +35,7 @@ class Footer extends Component {
         // fetch('/auth/google', options).then(r => {
         //     r.json().then(user => this.renderRedirect() && console.log(this));
         // });
+        fetch('/auth/google', options).then(console.log);
     };
 
 
