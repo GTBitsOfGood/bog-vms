@@ -100,8 +100,8 @@ const Onboarding4 = () => {
         </Styled.FormField>
       </Styled.HorizontalContainer>
       <Styled.HorizontalContainer style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-        <Styled.Button onClick={() => window.location.reload()}>
-          <Link>Finish</Link>
+        <Styled.Button>
+          <Link to="/">Finish</Link>
         </Styled.Button>
       </Styled.HorizontalContainer>
     </Styled.Container>
