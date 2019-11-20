@@ -64,7 +64,7 @@ class UserTable extends React.Component {
                 <Table.Row key={index} evenIndex={index % 2 === 0}>
                   <td style={{ padding: '0.5rem' }}>
                     <Icon
-                      name={user.inMailingList ? 'delete' : 'add'}
+                      name={user.inMailingList ? 'remove' : 'add'}
                       color="grey"
                       size="2.5rem"
                       onClick={onUserToggle(index)}
