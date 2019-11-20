@@ -5,12 +5,11 @@ import styled from 'styled-components';
 import CSVModal from './CSVModal';
 
 const Styled = {
-  ButtonContainer: styled.div`
-    width: 95%;
-    max-width: 80rem;
+  Container: styled.div`
+    width: 100%;
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 1rem;
+    justify-content: center;
+    padding: 1rem;
   `,
   Button: styled(Button)`
     background: white;
@@ -21,13 +20,11 @@ const Styled = {
 };
 
 class Settings extends React.Component {
-  
-
   render() {
     return (
-      <div>
-        <CSVModal buttonLabel="Upload CSV"/>
-      </div>
+      <Styled.Container>
+        <CSVModal buttonLabel="Upload CSV" />
+      </Styled.Container>
     );
   }
 }
