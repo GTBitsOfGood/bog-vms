@@ -9,7 +9,7 @@
     },
     "sourceType": "module"
   },
-  "extends": ["prettier/standard", "prettier", "prettier/react"],
+  "extends": ["prettier/standard", "prettier", "prettier/react", "plugin:react/recommended"],
   "parser": "babel-eslint",
   "plugins": ["prettier", "react-hooks"],
   "rules": {

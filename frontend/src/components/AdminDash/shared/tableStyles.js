@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 const Container = styled.div`
   background: white;
-  width: 95%;
+  width: 100%;
   max-width: 80rem;
   border-radius: 0.5rem;
   padding: 1rem;
@@ -22,8 +22,7 @@ const Table = styled.table`
 `;
 const Row = styled.tr`
   ${props => props.evenIndex && 'background: #FFFFFF'};
-  cursor: pointer;
-  border-bottom: 2px solid #F0F0F0
+  border-bottom: 2px solid #f0f0f0;
 `;
 const LoadingBody = styled.div`
   height: 39rem;

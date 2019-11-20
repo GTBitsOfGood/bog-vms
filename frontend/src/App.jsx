@@ -16,7 +16,7 @@ const Styled = {
   `,
   Content: styled.main`
     flex: 1;
-    overflow-y: scroll;
+    height: 100%;
   `
 };
 

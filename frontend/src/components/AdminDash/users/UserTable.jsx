@@ -3,8 +3,18 @@ import { roles, statuses } from '../applicantInfoHelpers';
 import { Button, ModalHeader, ModalBody, ModalFooter, Modal } from 'reactstrap';
 import Loading from '../../Shared/Loading';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 import * as Table from '../shared/tableStyles';
 import * as Form from '../shared/formStyles';
+import Icon from 'components/Shared/Icon';
+
+const Styled = {
+  Container: styled.div`
+    background: white;
+    width: 100%;
+    padding: 1rem;
+  `
+};
 
 const keyToValue = key => {
   key = key.replace(/_/g, ' ');
@@ -39,28 +49,30 @@ class UserTable extends React.Component {
     });
   };
   render() {
-    const { users, loading } = this.props;
+    const { users, loading, onUserToggle } = this.props;
     return (
-      <Table.Container>
+      <Styled.Container>
         <Table.Table>
           <tbody>
             <tr>
+              <th></th>
               <th>Name</th>
               <th>Email</th>
-              <th>Role</th>
-              <th>Status</th>
             </tr>
             {!loading &&
               users.map((user, index) => (
-                <Table.Row
-                  key={index}
-                  evenIndex={index % 2 === 0}
-                  onClick={() => this.onDisplayEditUserModal(user)}
-                >
+                <Table.Row key={index} evenIndex={index % 2 === 0}>
+                  <td style={{ padding: '0.5rem' }}>
+                    <Icon
+                      name={user.inMailingList ? 'delete' : 'add'}
+                      color="grey"
+                      size="2.5rem"
+                      onClick={onUserToggle(index)}
+                      style={{ cursor: 'pointer' }}
+                    />
+                  </td>
                   <td>{user.name}</td>
                   <td>{user.email}</td>
-                  <td>{roles[user.role]}</td>
-                  <td>{statuses[user.status]}</td>
                 </Table.Row>
               ))}
           </tbody>
@@ -96,7 +108,9 @@ class UserTable extends React.Component {
                   name="roleSelected"
                 >
                   {Object.keys(roles).map((t, i) => (
-                    <option value={t}>{keyToValue(t)}</option>
+                    <option key={t + i} value={t}>
+                      {keyToValue(t)}
+                    </option>
                   ))}
                 </Form.Dropdown>
                 <Form.Label>Status</Form.Label>
@@ -108,7 +122,9 @@ class UserTable extends React.Component {
                   name="statusSelected"
                 >
                   {Object.keys(statuses).map((t, i) => (
-                    <option value={t}>{keyToValue(t)}</option>
+                    <option key={t + i} value={t}>
+                      {keyToValue(t)}
+                    </option>
                   ))}
                 </Form.Dropdown>
               </Form.FormGroup>
@@ -126,7 +142,7 @@ class UserTable extends React.Component {
               </Button> */}
           </ModalFooter>
         </Modal>
-      </Table.Container>
+      </Styled.Container>
     );
   }
 }
@@ -136,5 +152,6 @@ export default UserTable;
 UserTable.propTypes = {
   users: PropTypes.array.isRequired,
   loading: PropTypes.bool,
-  editUserCallback: PropTypes.func.isRequired
+  editUserCallback: PropTypes.func.isRequired,
+  onUserToggle: PropTypes.func.isRequired
 };

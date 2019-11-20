@@ -11,7 +11,6 @@ import Onboarding2 from '../Splash/onboarding/Onboarding2';
 import Onboarding3 from '../Splash/onboarding/Onboarding3';
 import Onboarding4 from '../Splash/onboarding/Onboarding4';
 
-
 const Container = styled.div`
   background: white;
   height: 100%;
@@ -42,9 +41,9 @@ class AdminDash extends React.Component {
         <Route path="/events" component={EventManager} />
         <Route path="/onboarding-manager" component={OnboardingManager} />
         <Route path="/onboarding1" component={Onboarding1} />
-          <Route path="/onboarding2" component={Onboarding2} />
-          <Route path="/onboarding3" component={Onboarding3} />
-          <Route path="/onboarding4" component={Onboarding4} />
+        <Route path="/onboarding2" component={Onboarding2} />
+        <Route path="/onboarding3" component={Onboarding3} />
+        <Route path="/onboarding4" component={Onboarding4} />
       </Container>
     );
   }
