@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
 
@@ -29,6 +29,7 @@ class App extends Component {
     e.preventDefault();
     this.setState({ isAuthenticated: false, user: null });
     axios.get('/auth/logout');
+    this.props.history.push('/');
   };
   auth = user => {
     this.setState({ isAuthenticated: true, user });
@@ -37,24 +38,22 @@ class App extends Component {
   render() {
     const { isAuthenticated, user } = this.state;
     return (
-      <Router>
-        <StyleProvider>
-          <RequestProvider>
-            <Styled.Container>
-              <Header
-                onLogout={this.logout}
-                loggedIn={isAuthenticated}
-                role={user ? user.role : null}
-              />
-              <Styled.Content>
-                {user ? <Authenticated user={user} /> : <Splash onAuth={this.fakeAuth} />}
-              </Styled.Content>
-            </Styled.Container>
-          </RequestProvider>
-        </StyleProvider>
-      </Router>
+      <StyleProvider>
+        <RequestProvider>
+          <Styled.Container>
+            <Header
+              onLogout={this.logout}
+              loggedIn={isAuthenticated}
+              role={user ? user.role : null}
+            />
+            <Styled.Content>
+              {user ? <Authenticated user={user} /> : <Splash onAuth={this.fakeAuth} />}
+            </Styled.Content>
+          </Styled.Container>
+        </RequestProvider>
+      </StyleProvider>
     );
   }
 }
 
-export default App;
+export default withRouter(App);

@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { Icon } from './Shared';
 // import { GoogleLogout } from 'react-google-login';
 
-
 import {
   Collapse,
   Navbar,
@@ -39,7 +38,7 @@ const pageSwitchWidth = currPath => {
 
 const pageSwitchLeft = currPath => {
   switch (currPath) {
-    case '/applicant-viewer':
+    case '/':
       return '-1rem';
     case '/user-manager':
       return '8.3rem';
@@ -180,6 +179,10 @@ class Header extends Component {
 
   render() {
     const { onLogout, loggedIn, location, role } = this.props;
+    if (!loggedIn) {
+      return null;
+    }
+
     return (
       <div>
         <Styled.Navbar light expand="md">
@@ -193,10 +196,7 @@ class Header extends Component {
               {loggedIn ? (
                 <Styled.FlexContainer className="navbar-nav">
                   <Styled.PageSwitch currPathName={location.pathname}>
-                    <Styled.PageLink
-                      to="/applicant-viewer"
-                      selected={this.currPageMatches('/applicant-viewer')}
-                    >
+                    <Styled.PageLink to="/" selected={this.currPageMatches('/')}>
                       Applicant Viewer
                     </Styled.PageLink>
                     {role === 'admin' && (
@@ -204,16 +204,13 @@ class Header extends Component {
                         to="/user-manager"
                         selected={this.currPageMatches('/user-manager')}
                       >
-                        User Manager
+                        Mailing List
                       </Styled.PageLink>
                     )}
                     <Styled.PageLink to="/events" selected={this.currPageMatches('/events')}>
                       Events
                     </Styled.PageLink>
                     <Styled.PageLink to="/settings" selected={this.currPageMatches('/settings')}>
-                      Settings
-                    </Styled.PageLink>
-                    <Styled.PageLink to="/onboarding-manager" selected={this.currPageMatches('/onboarding-manager')}>
                       Settings
                     </Styled.PageLink>
                   </Styled.PageSwitch>
@@ -235,11 +232,8 @@ class Header extends Component {
                       </Styled.UserContainer>
                     </Styled.Toggle>
                     <DropdownMenu style={{ width: '100%' }}>
-                      <DropdownItem>My Profile</DropdownItem>
-                      <DropdownItem >
-                        {' '}
-                        <a href="/onboarding-manager"> Logout{' '} </a>
-                      </DropdownItem>
+                      {/* <DropdownItem>My Profile</DropdownItem> */}
+                      <DropdownItem onClick={onLogout}> Logout</DropdownItem>
                     </DropdownMenu>
                   </Styled.Dropdown>
                 </Styled.FlexContainer>
@@ -255,5 +249,3 @@ class Header extends Component {
 }
 
 export default withRouter(Header);
-
-// onClick={onLogout} href="/"

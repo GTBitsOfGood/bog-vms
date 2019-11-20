@@ -1,12 +1,10 @@
 import React, { Component, useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { Icon } from 'components/Shared';
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
-import Onboarding2 from './Onboarding2'
-import { Route, Redirect } from 'react-router-dom';
 
-import onboarding1 from '../../../images/onboarding_update1.svg'
-import OnboardingManager from "./OnboardingManager";
+import onboarding1 from '../../../images/onboarding_update1.svg';
+import OnboardingManager from './OnboardingManager';
 // import {Route} from "react-router-dom";
 const Styled = {
   Container: styled.div`
@@ -20,7 +18,7 @@ const Styled = {
   `,
   HorizontalContainer: styled.div`
     display: flex;
-    flex-direction: row; 
+    flex-direction: row;
     margin-left: 8rem;
     margin-right: 8rem;
     justify-content: stretch;
@@ -54,57 +52,57 @@ const Styled = {
 };
 
 const Onboarding1 = () => {
-
-
-    const [loading] = useState(true);
-        return (
-            <Styled.Container>
-                <Styled.HorizontalContainer style={{margin: '1rem'}}>
-                    <Styled.BackButton >
-                        <a href ='/onboarding-manager'> Back </a>
-                    </Styled.BackButton>
-                </Styled.HorizontalContainer>
-                <Styled.HorizontalContainer style={{textAlign: 'center'}}>
-                    <legend> Hi, let's get your account set up.</legend>
-                </Styled.HorizontalContainer>
-                <Styled.ImgContainer>
-                    <img style={{width: '900px', height: '87px'}} alt="onboard" src={onboarding1}/>
-                </Styled.ImgContainer>
-                <Styled.HorizontalContainer style={{marginTop: "3rem"}}>
-                    <legend>Account Information</legend>
-                </Styled.HorizontalContainer>
-                <Form>
-                    <Styled.HorizontalContainer style={{justifyContent: "stretch", marginTop: "2rem"}}>
-                        <Styled.FormField style={{ marginRight: "50px"}}>
-                            <Input type="email" name="email" id="exampleEmail" placeholder="Email" />
-                        </Styled.FormField>
-                        <Styled.FormField>
-                            <Input type="password" name="password" id="examplePassword" placeholder="Password" />
-                        </Styled.FormField>
-                    </Styled.HorizontalContainer>
-                    <Styled.HorizontalContainer style={{justifyContent: "stretch", marginTop: "1rem"}}>
-                        <Styled.FormField style={{ marginRight: "50px"}}>
-                            <Input type="text" name="fname" id="firstName" placeholder="First Name" />
-                        </Styled.FormField>
-                        <Styled.FormField style={{ marginRight: "50px"}}>
-                            <Input type="text" name="lname" id="lastName" placeholder="Last Name" />
-                        </Styled.FormField>
-                        <Styled.FormField>
-                            <Input type="select" name="select" id="roleSelect">
-                                <option>Role1</option>
-                                <option>Role2</option>
-                                <option>Role3</option>
-                            </Input>
-                        </Styled.FormField>
-                    </Styled.HorizontalContainer>
-                    <Styled.HorizontalContainer style={{marginTop: "5rem", marginBottom: "1rem", justifyContent: "flex-end"}}>
-                        <Styled.Button>
-                            <a href ='/onboarding2'> Next </a>
-                        </Styled.Button>
-                    </Styled.HorizontalContainer>
-                </Form>
-            </Styled.Container>
-        );
-    };
+  const [loading] = useState(true);
+  return (
+    <Styled.Container>
+      <Styled.HorizontalContainer style={{ margin: '1rem' }}>
+        <Styled.BackButton>
+          <Link to="/"> Back </Link>
+        </Styled.BackButton>
+      </Styled.HorizontalContainer>
+      <Styled.HorizontalContainer style={{ textAlign: 'center' }}>
+        <legend> Hi, let's get your account set up.</legend>
+      </Styled.HorizontalContainer>
+      <Styled.ImgContainer>
+        <img style={{ width: '900px', height: '87px' }} alt="onboard" src={onboarding1} />
+      </Styled.ImgContainer>
+      <Styled.HorizontalContainer style={{ marginTop: '3rem' }}>
+        <legend>Account Information</legend>
+      </Styled.HorizontalContainer>
+      <Form>
+        <Styled.HorizontalContainer style={{ justifyContent: 'stretch', marginTop: '2rem' }}>
+          <Styled.FormField style={{ marginRight: '50px' }}>
+            <Input type="email" name="email" id="exampleEmail" placeholder="Email" />
+          </Styled.FormField>
+          <Styled.FormField>
+            <Input type="password" name="password" id="examplePassword" placeholder="Password" />
+          </Styled.FormField>
+        </Styled.HorizontalContainer>
+        <Styled.HorizontalContainer style={{ justifyContent: 'stretch', marginTop: '1rem' }}>
+          <Styled.FormField style={{ marginRight: '50px' }}>
+            <Input type="text" name="fname" id="firstName" placeholder="First Name" />
+          </Styled.FormField>
+          <Styled.FormField style={{ marginRight: '50px' }}>
+            <Input type="text" name="lname" id="lastName" placeholder="Last Name" />
+          </Styled.FormField>
+          <Styled.FormField>
+            <Input type="select" name="select" id="roleSelect">
+              <option>Role1</option>
+              <option>Role2</option>
+              <option>Role3</option>
+            </Input>
+          </Styled.FormField>
+        </Styled.HorizontalContainer>
+        <Styled.HorizontalContainer
+          style={{ marginTop: '5rem', marginBottom: '1rem', justifyContent: 'flex-end' }}
+        >
+          <Styled.Button>
+            <Link to="/onboarding2"> Next </Link>
+          </Styled.Button>
+        </Styled.HorizontalContainer>
+      </Form>
+    </Styled.Container>
+  );
+};
 
 export default Onboarding1;

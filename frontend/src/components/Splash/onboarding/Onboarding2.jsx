@@ -1,9 +1,9 @@
 import React, { Component, useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Icon } from 'components/Shared';
+import { Link } from 'react-router-dom';
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 
-import onboarding2 from '../../../images/onboarding_update2.svg'
+import onboarding2 from '../../../images/onboarding_update2.svg';
 const Styled = {
   Container: styled.div`
     width: 100%;
@@ -16,7 +16,7 @@ const Styled = {
   `,
   HorizontalContainer: styled.div`
     display: flex;
-    flex-direction: row; 
+    flex-direction: row;
     margin-left: 8rem;
     margin-right: 8rem;
     justify-content: stretch;
@@ -49,50 +49,53 @@ const Styled = {
   `
 };
 
-
 const Onboarding2 = () => {
-    const [loading] = useState(true);
-        return (
-            <Styled.Container>
-                <Styled.HorizontalContainer style={{margin: '1rem'}}>
-                    <Styled.BackButton>
-                        <a href ='/onboarding1'> Back </a>
-                    </Styled.BackButton>
-                </Styled.HorizontalContainer>
-                <Styled.HorizontalContainer style={{textAlign: 'center'}}>
-                    <legend> Let's set up your organization.</legend>
-                </Styled.HorizontalContainer>
-                <Styled.ImgContainer>
-                    <img style={{width: '900px', height: '87px'}} alt="onboard" src={onboarding2}/>
-                </Styled.ImgContainer>
-                <Form style={{marginTop: "3rem"}}>
-                    <Styled.HorizontalContainer style={{marginLeft: "5rem", marginRight: "5rem"}}>
-                        <Styled.FormField style={{marginRight: "50px", marginTop: "80px"}}>
-                          <legend> Organization Information</legend>
-                          <Input type="text" name="compName" id="companyName" placeholder="Company Name"/>
-                        </Styled.FormField>
-                        <Styled.FormField style={{border: "dotted", borderRadius: "25px", padding: "50px"}}>
-                            <Styled.HorizontalContainer style={{ marginBottom: "1rem"}}>
-                              <Label for="exampleFile">Upload your company logo</Label>
-                            </Styled.HorizontalContainer>
-                            <Styled.HorizontalContainer style={{ marginBottom: "1rem"}}>
-                              <Input type="file" name="file" id="exampleFile"/>
-                            </Styled.HorizontalContainer>
-                            <Styled.HorizontalContainer style={{justifyContent: "center", marginLeft: "none", marginRight: "none"}}>
-                              <FormText style={{color: "muted", textAlign: "center"}}>
-                                  Drag an image here or browse for an image to upload
-                              </FormText>
-                            </Styled.HorizontalContainer>
-                        </Styled.FormField>
-                    </Styled.HorizontalContainer>
-                    <Styled.HorizontalContainer style={{marginTop: "5rem", marginBottom: "1rem", justifyContent: "flex-end"}}>
-                        <Styled.Button>
-                            <a href ='/onboarding4'> Next </a>
-                        </Styled.Button>
-                    </Styled.HorizontalContainer>
-                </Form>
-            </Styled.Container>
-        );
+  const [loading] = useState(true);
+  return (
+    <Styled.Container>
+      <Styled.HorizontalContainer style={{ margin: '1rem' }}>
+        <Styled.BackButton>
+          <Link to="/onboarding1"> Back </Link>
+        </Styled.BackButton>
+      </Styled.HorizontalContainer>
+      <Styled.HorizontalContainer style={{ textAlign: 'center' }}>
+        <legend> Let's set up your organization.</legend>
+      </Styled.HorizontalContainer>
+      <Styled.ImgContainer>
+        <img style={{ width: '900px', height: '87px' }} alt="onboard" src={onboarding2} />
+      </Styled.ImgContainer>
+      <Form style={{ marginTop: '3rem' }}>
+        <Styled.HorizontalContainer style={{ marginLeft: '5rem', marginRight: '5rem' }}>
+          <Styled.FormField style={{ marginRight: '50px', marginTop: '80px' }}>
+            <legend> Organization Information</legend>
+            <Input type="text" name="compName" id="companyName" placeholder="Company Name" />
+          </Styled.FormField>
+          <Styled.FormField style={{ border: 'dotted', borderRadius: '25px', padding: '50px' }}>
+            <Styled.HorizontalContainer style={{ marginBottom: '1rem' }}>
+              <Label for="exampleFile">Upload your company logo</Label>
+            </Styled.HorizontalContainer>
+            <Styled.HorizontalContainer style={{ marginBottom: '1rem' }}>
+              <Input type="file" name="file" id="exampleFile" />
+            </Styled.HorizontalContainer>
+            <Styled.HorizontalContainer
+              style={{ justifyContent: 'center', marginLeft: 'none', marginRight: 'none' }}
+            >
+              <FormText style={{ color: 'muted', textAlign: 'center' }}>
+                Drag an image here or browse for an image to upload
+              </FormText>
+            </Styled.HorizontalContainer>
+          </Styled.FormField>
+        </Styled.HorizontalContainer>
+        <Styled.HorizontalContainer
+          style={{ marginTop: '5rem', marginBottom: '1rem', justifyContent: 'flex-end' }}
+        >
+          <Styled.Button>
+            <Link to="/onboarding3"> Next </Link>
+          </Styled.Button>
+        </Styled.HorizontalContainer>
+      </Form>
+    </Styled.Container>
+  );
 };
 
 export default Onboarding2;
