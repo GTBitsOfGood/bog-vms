@@ -12,8 +12,9 @@ import {
 import Icon from '../Shared/Icon';
 
 const Styled = {
-  FilterContainer: styled.form`
+  FilterContainer: styled.div`
     display: flex;
+    flex-direction: column;
     margin-bottom: 1rem;
   `,
   BackButton: styled.button`
@@ -24,6 +25,10 @@ const Styled = {
     overflow: hidden;
     padding: 0;
   `,
+  SearchContainer: styled.form`
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 1rem;`,
   DropdownToggle: styled(DropdownToggle)`
     background: white;
     border: 1px solid ${props => props.theme.grey8};
@@ -44,7 +49,6 @@ class ApplicantSearch extends React.Component {
       dropdownOpen: false,
       placeholder: 'All',
       textInput: '',
-      showFilterModal: false,
       appliedFilters: null
     };
   }
@@ -79,47 +83,40 @@ class ApplicantSearch extends React.Component {
     });
   };
 
-  onShowFilterModal = () => {
-    this.setState({
-      showFilterModal: !this.state.showFilterModal
-    });
-  };
   onApplyFilters = filters => {
+    console.log(filters);
     this.setState({
       appliedFilters: filters
     });
     this.props.applyFiltersCallback(filters);
   };
+
   render() {
     return (
       <Styled.FilterContainer onSubmit={this.onSubmitSearch}>
-        <Styled.BackButton type="reset" show={this.state.textInput} onClick={this.onClearSearch}>
-          <Icon name="back-arrow" />
-        </Styled.BackButton>
-        <Styled.SearchBox
-          type="text"
-          placeholder={'Search By ' + this.state.placeholder}
-          onChange={this.onSearchChange}
-        />
+        <Styled.SearchContainer>
+          <Styled.BackButton type="reset" show={this.state.textInput} onClick={this.onClearSearch}>
+            <Icon name="back-arrow" />
+          </Styled.BackButton>
+          <Styled.SearchBox
+            type="text"
+            placeholder={'Search By ' + this.state.placeholder}
+            onChange={this.onSearchChange}
+          />
 
-        <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-          <Styled.DropdownToggle caret />
-          <DropdownMenu>
-            <DropdownItem header>Search by...</DropdownItem>
-            <DropdownItem onClick={this.selectSearchOption}>All</DropdownItem>
-            <DropdownItem onClick={this.selectSearchOption}>Bio</DropdownItem>
-            <DropdownItem onClick={this.selectSearchOption}>Email</DropdownItem>
-            <DropdownItem onClick={this.selectSearchOption}>Phone Number</DropdownItem>
-          </DropdownMenu>
-        </ButtonDropdown>
-        <Button onClick={this.onShowFilterModal}>Filter</Button>
+          <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+            <Styled.DropdownToggle caret />
+            <DropdownMenu>
+              <DropdownItem header>Search by...</DropdownItem>
+              <DropdownItem onClick={this.selectSearchOption}>All</DropdownItem>
+              <DropdownItem onClick={this.selectSearchOption}>Bio</DropdownItem>
+              <DropdownItem onClick={this.selectSearchOption}>Email</DropdownItem>
+              <DropdownItem onClick={this.selectSearchOption}>Phone Number</DropdownItem>
+            </DropdownMenu>
+          </ButtonDropdown>
+        </Styled.SearchContainer>
 
-        <Filters
-          show={this.state.showFilterModal}
-          appliedFilters={this.state.appliedFilters}
-          toggleCallback={this.onShowFilterModal}
-          submitCallback={this.onApplyFilters}
-        />
+        <Filters appliedFilters={this.state.appliedFilters} changeCallback={this.onApplyFilters} />
       </Styled.FilterContainer>
     );
   }

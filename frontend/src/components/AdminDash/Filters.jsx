@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, FormGroup, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { FormGroup, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Form, Checkbox } from '../Forms';
+import {  Collapse } from '../Shared';
 import { statuses } from './applicantInfoHelpers';
 import styled from 'styled-components';
 
@@ -77,50 +78,32 @@ const keyToLabel = key => {
   }
 };
 
-const Filters = ({ show, toggleCallback, submitCallback, appliedFilters }) => (
-  <Modal isOpen={show} toggle={toggleCallback}>
-    <ModalHeader toggle={toggleCallback}>Filters</ModalHeader>
-    <Form
-      initialValues={appliedFilters || defaultValues}
-      onSubmit={values => {
-        toggleCallback();
-        submitCallback(values);
-      }}
-    >
-      <ModalBody>
-        {Object.entries(defaultValues).map(([groupKey, filterGroup], index) => (
-          <FormGroup key={index}>
-            <Styled.Label>{filterGroup.label}</Styled.Label>
-            {Object.keys(filterGroup.values).map((filter, index2) => (
-              <Checkbox
-                key={index2}
-                name={`${groupKey}.values.${filter}`}
-                value={keyToLabel(filter)}
-              />
-            ))}
-          </FormGroup>
-        ))}
-      </ModalBody>
-      <ModalFooter>
-        <Button color="secondary" onClick={toggleCallback}>
-          Cancel
-        </Button>
-        <Button color="secondary" type="reset">
-          Clear Filters
-        </Button>
-        <Button color="primary" type="submit">
-          Submit
-        </Button>
-      </ModalFooter>
-    </Form>
-  </Modal>
+const Filters = ({ changeCallback, appliedFilters }) => (
+  <Form
+    initialValues={appliedFilters || defaultValues}
+    onChange={values => {
+      changeCallback(values);
+    }}
+  >
+    {Object.entries(defaultValues).map(([groupKey, filterGroup]) => (
+      <FormGroup key={groupKey}>
+        <Collapse title={filterGroup.label}>
+          {Object.keys(filterGroup.values).map(filter => (
+            <Checkbox
+              key={filter}
+              name={`${groupKey}.values.${filter}`}
+              value={keyToLabel(filter)}
+            />
+          ))}
+        </Collapse>
+      </FormGroup>
+    ))}
+  </Form>
 );
 
 export default Filters;
 
 Filters.propTypes = {
-  show: PropTypes.bool.isRequired,
-  toggleCallback: PropTypes.func.isRequired,
-  submitCallback: PropTypes.func.isRequired,
+  changeCallback: PropTypes.func.isRequired,
   appliedFilters: PropTypes.object
 };
