@@ -92,15 +92,18 @@ const OnboardingManager = () => {
               Forgot Password?
             </Styled.Button>
           </Styled.ButtonContainer>
-          <FormText style={{ marginTop: '5rem' }}>
-            Don't have an account? Let's <Link to="/onboarding1">set it up</Link>.
+          <FormText style={{marginTop: '3rem'}}>
+            Need to create a volunteer account? Let's <Link to="https://google.com">do it</Link>.
+          </FormText>
+          <FormText style={{ marginTop: '0rem' }}>
+            Want to register your nonprofit? Let's <Link to="/onboarding1">set it up</Link>.
           </FormText>
         </Form>
         <Footer />
       </Styled.ContainerTest>
       <Styled.ContainerTest>
         <Styled.ImgContainer>
-          <img style={{ width: '720px', height: '783px' }} alt="onboardingImage" src={image} />
+          <img style={{ width: '50vw', height: '100vh' }} alt="onboardingImage" src={image} />
         </Styled.ImgContainer>
       </Styled.ContainerTest>
     </Styled.Container>
