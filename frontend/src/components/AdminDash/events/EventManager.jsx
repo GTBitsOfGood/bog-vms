@@ -94,14 +94,15 @@ const EventManager = () => {
           <span> Refresh</span>
         </Styled.Button>
       </Styled.HeaderContainer>
-      <EventTable
+
+     {/* <EventTable
         events={events}
         loading={loading}
         onEditClicked={onEditClicked}
         onDeleteClicked={onDeleteClicked}
       >
         {' '}
-      </EventTable>
+      </EventTable>*/}
       <EventCreateModal open={showCreateModal} toggle={toggleCreateModal} />
       <EventEditModal open={showEditModal} toggle={toggleEditModal} event={currEvent} />
       <EventDeleteModal open={showDeleteModal} toggle={toggleDeleteModal} event={currEvent} />
