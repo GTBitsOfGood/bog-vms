@@ -36,9 +36,6 @@ const Styled = {
 };
 
 class ApplicantSearch extends React.Component {
-  // Use ref to control filters component to imperatively clear form upon "Clear Filters" press
-  filtersRef = React.createRef();
-
   constructor(props) {
     super(props);
     this.state = {
