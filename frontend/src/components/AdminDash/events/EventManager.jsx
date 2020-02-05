@@ -8,7 +8,7 @@ import EventCreateModal from './EventCreateModal';
 import EventEditModal from './EventEditModal';
 import EventDeleteModal from './EventDeleteModal';
 import * as Table from '../shared/tableStyles';
-import EventCard from './EventCard';
+import EventCardGrid from './EventCardGrid';
 
 const Styled = {
   Container: styled.div`
@@ -96,8 +96,11 @@ const EventManager = () => {
         </Styled.Button>
       </Styled.HeaderContainer>
 
-      <EventCard imgUrl = {"https://image.shutterstock.com/image-photo/beautiful-water-drop-on-dandelion-260nw-789676552.jpg"} eventTitle = {"First Event"} eventDescription= {"This is a test"} />
-
+      <EventCardGrid 
+        events={events} 
+        loading={loading}
+      />
+      
      {/* <EventTable
         events={events}
         loading={loading}

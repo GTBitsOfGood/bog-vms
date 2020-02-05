@@ -10,15 +10,23 @@ const Container = styled.div `
 `;
 
 const cardGrid = styled.div `
-    display: flex;
+  display: flex;
+  background: white;
+  width: 100%;
+  max-width: 80rem;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  border: 0.1rem solid ${props => props.theme.grey9};
 `;
+
 
 const Card = styled.div `
   position: relative;
   overflow: hidden;
   margin: 10px;
   width: 25%;
-  min-width: 100px;
+  min-width: 250px;
+  min-height: 250px;
   padding-bottom: 25%;
   border-radius: 10px;
   background: #e0e0e0;
@@ -40,7 +48,6 @@ const cardContainer = styled.div `
 
 const imgPlaceholder = styled.img `
     width: 100%;
-    height: 100%;
     background: #efa0a0; /*placeholder color if no image is found */
 `;
 

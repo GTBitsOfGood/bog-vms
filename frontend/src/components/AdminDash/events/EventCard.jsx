@@ -12,7 +12,7 @@ function EventCard(props) {
             <Card.imgPlaceholder src = {props.imgUrl} />
             <Card.cardText>
                 <h4>{props.eventTitle}</h4>
-                <p>{props.eventDescription}</p>            
+                <p>{props.eventDate}</p>            
             </Card.cardText>
         </Card.cardContainer>
     </Card.Card>
