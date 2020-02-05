@@ -9,11 +9,10 @@ import { Button } from 'reactstrap';
 function EventCard(props) {
     return <Card.Card>
         <Card.cardContainer>
-            <Card.imgPlaceholder>
-
-            </Card.imgPlaceholder>
+            <Card.imgPlaceholder src = {props.imgUrl} />
             <Card.cardText>
-            
+                <h4>{props.eventTitle}</h4>
+                <p>{props.eventDescription}</p>            
             </Card.cardText>
         </Card.cardContainer>
     </Card.Card>

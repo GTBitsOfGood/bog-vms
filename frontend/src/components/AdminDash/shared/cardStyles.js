@@ -38,10 +38,10 @@ const cardContainer = styled.div `
     height: 100%;
 `;
 
-const imgPlaceholder = styled.div `
+const imgPlaceholder = styled.img `
     width: 100%;
     height: 100%;
-    background: #efa0a0;
+    background: #efa0a0; /*placeholder color if no image is found */
 `;
 
 const cardText = styled.div `

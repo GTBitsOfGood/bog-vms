@@ -96,9 +96,7 @@ const EventManager = () => {
         </Styled.Button>
       </Styled.HeaderContainer>
 
-      <EventCard>
-        
-      </EventCard>
+      <EventCard imgUrl = {"https://image.shutterstock.com/image-photo/beautiful-water-drop-on-dandelion-260nw-789676552.jpg"} eventTitle = {"First Event"} eventDescription= {"This is a test"} />
 
      {/* <EventTable
         events={events}
