@@ -1,14 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import Filters from './Filters';
-import {
-  Button,
-  Input,
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem
-} from 'reactstrap';
+import { Input, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import Icon from '../Shared/Icon';
 
 const Styled = {
@@ -28,13 +21,13 @@ const Styled = {
   SearchContainer: styled.form`
     display: flex;
     flex-direction: row;
-    margin-bottom: 1rem;`,
+    margin-bottom: 1rem;
+  `,
   DropdownToggle: styled(DropdownToggle)`
     background: white;
     border: 1px solid ${props => props.theme.grey8};
     border-left: none;
     border-radius: 0 0.5rem 0.5rem 0;
-    margin-right: 0.5rem;
   `,
   SearchBox: styled(Input)`
     border: 1px solid ${props => props.theme.grey8};
@@ -43,6 +36,9 @@ const Styled = {
 };
 
 class ApplicantSearch extends React.Component {
+  // Use ref to control filters component to imperatively clear form upon "Clear Filters" press
+  filtersRef = React.createRef();
+
   constructor(props) {
     super(props);
     this.state = {
@@ -84,11 +80,14 @@ class ApplicantSearch extends React.Component {
   };
 
   onApplyFilters = filters => {
-    console.log(filters);
     this.setState({
       appliedFilters: filters
     });
     this.props.applyFiltersCallback(filters);
+  };
+
+  onClearFilters = () => {
+    this.onApplyFilters(null);
   };
 
   render() {
@@ -115,8 +114,7 @@ class ApplicantSearch extends React.Component {
             </DropdownMenu>
           </ButtonDropdown>
         </Styled.SearchContainer>
-
-        <Filters appliedFilters={this.state.appliedFilters} changeCallback={this.onApplyFilters} />
+        <Filters onChange={this.onApplyFilters} onClear={this.onClearFilters} />
       </Styled.FilterContainer>
     );
   }

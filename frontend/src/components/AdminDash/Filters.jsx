@@ -1,14 +1,36 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormGroup, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { Form, Checkbox } from '../Forms';
-import {  Collapse } from '../Shared';
+import { FormGroup } from 'reactstrap';
+import { Form, Checkbox, FormOnChange, FormResetButton } from '../Forms';
+import { Collapse } from '../Shared';
 import { statuses } from './applicantInfoHelpers';
 import styled from 'styled-components';
 
 const Styled = {
-  Label: styled.label`
-    font-weight: 600;
+  GroupWrapper: styled.div`
+    padding-top: 1rem;
+  `,
+  Checkbox: styled(Checkbox)`
+    &:not(:last-child) {
+      margin-bottom: 0.5rem;
+    }
+
+    .form-check {
+      padding-left: 0.6rem;
+    }
+
+    // Increase spacing between checkbox and label
+    .custom-control {
+      // Default: 1.5rem
+      padding-left: 1.75rem;
+    }
+    .custom-control-label {
+      &::before,
+      &::after {
+        // Default: -1.5rem
+        left: -1.75rem;
+      }
+    }
   `
 };
 
@@ -78,32 +100,36 @@ const keyToLabel = key => {
   }
 };
 
-const Filters = ({ changeCallback, appliedFilters }) => (
-  <Form
-    initialValues={appliedFilters || defaultValues}
-    onChange={values => {
-      changeCallback(values);
-    }}
-  >
-    {Object.entries(defaultValues).map(([groupKey, filterGroup]) => (
-      <FormGroup key={groupKey}>
-        <Collapse title={filterGroup.label}>
-          {Object.keys(filterGroup.values).map(filter => (
-            <Checkbox
-              key={filter}
-              name={`${groupKey}.values.${filter}`}
-              value={keyToLabel(filter)}
-            />
-          ))}
-        </Collapse>
-      </FormGroup>
-    ))}
-  </Form>
-);
+const noop = () => {};
+
+const Filters = ({ onChange, onClear }) => {
+  return (
+    <Form initialValues={defaultValues} onSubmit={noop}>
+      <FormOnChange onChange={onChange} />
+      {Object.entries(defaultValues).map(([groupKey, filterGroup]) => (
+        <FormGroup key={groupKey}>
+          <Collapse title={filterGroup.label}>
+            <Styled.GroupWrapper>
+              {Object.keys(filterGroup.values).map(filter => (
+                <Styled.Checkbox
+                  small
+                  key={filter}
+                  name={`${groupKey}.values.${filter}`}
+                  value={keyToLabel(filter)}
+                />
+              ))}
+            </Styled.GroupWrapper>
+          </Collapse>
+        </FormGroup>
+      ))}
+      <FormResetButton onClick={onClear}>Clear Filters</FormResetButton>
+    </Form>
+  );
+};
 
 export default Filters;
 
 Filters.propTypes = {
-  changeCallback: PropTypes.func.isRequired,
-  appliedFilters: PropTypes.object
+  onChange: PropTypes.func,
+  onClear: PropTypes.func
 };

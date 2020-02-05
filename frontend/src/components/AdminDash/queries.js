@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export const filterApplicants = filterGroups => {
   let filtersToApply = {};
-  const query = Object.entries(filterGroups).reduce((queryString, [group, { values }]) => {
+  const query = Object.entries(filterGroups || {}).reduce((queryString, [group, { values }]) => {
     Object.entries(values).forEach(([filter, filterValue]) => {
       if (filterValue) {
         console.log(filterValue);
