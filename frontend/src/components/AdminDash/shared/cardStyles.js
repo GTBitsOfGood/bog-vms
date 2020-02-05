@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const Container = styled.div`
+const Container = styled.div `
   background: white;
   width: 100%;
   max-width: 80rem;
@@ -13,7 +13,7 @@ const cardGrid = styled.div `
     display: flex;
 `;
 
-const Card = styled.div`
+const Card = styled.div `
   position: relative;
   overflow: hidden;
   margin: 10px;
@@ -54,9 +54,11 @@ const cardText = styled.div `
 `;
 
 
-const LoadingBody = styled.div`
+const LoadingBody = styled.div `
   height: 39rem;
   width: 100%;
   display: flex;
   align-items: center;
 `;
+
+export { Container, cardGrid, Card, cardContainer, LoadingBody, cardText, imgPlaceholder};

@@ -8,6 +8,7 @@ import EventCreateModal from './EventCreateModal';
 import EventEditModal from './EventEditModal';
 import EventDeleteModal from './EventDeleteModal';
 import * as Table from '../shared/tableStyles';
+import EventCard from './EventCard';
 
 const Styled = {
   Container: styled.div`
@@ -94,6 +95,10 @@ const EventManager = () => {
           <span> Refresh</span>
         </Styled.Button>
       </Styled.HeaderContainer>
+
+      <EventCard>
+        
+      </EventCard>
 
      {/* <EventTable
         events={events}
