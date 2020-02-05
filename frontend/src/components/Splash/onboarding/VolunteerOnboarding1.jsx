@@ -51,7 +51,7 @@ const Styled = {
   `
 };
 
-const Onboarding1 = () => {
+const VolunteerOnboarding1 = () => {
   const [loading] = useState(true);
   return (
     <Styled.Container>
@@ -63,9 +63,7 @@ const Onboarding1 = () => {
       <Styled.HorizontalContainer style={{ textAlign: 'center' }}>
         <legend> Hi, let's get your account set up.</legend>
       </Styled.HorizontalContainer>
-      <Styled.ImgContainer>
-        <img style={{ width: '900px', height: '87px' }} alt="onboard" src={onboarding1} />
-      </Styled.ImgContainer>
+
       <Styled.HorizontalContainer style={{ marginTop: '3rem' }}>
         <legend>Account Information</legend>
       </Styled.HorizontalContainer>
@@ -87,9 +85,7 @@ const Onboarding1 = () => {
           </Styled.FormField>
           <Styled.FormField>
             <Input type="select" name="select" id="roleSelect">
-              <option>Role1</option>
-              <option>Role2</option>
-              <option>Role3</option>
+              <option>Volunteer</option>
             </Input>
           </Styled.FormField>
         </Styled.HorizontalContainer>
@@ -97,7 +93,7 @@ const Onboarding1 = () => {
           style={{ marginTop: '5rem', marginBottom: '1rem', justifyContent: 'flex-end' }}
         >
           <Styled.Button>
-            <Link to="/onboarding2"> Next </Link>
+            <Link to="/"> Submit </Link>
           </Styled.Button>
         </Styled.HorizontalContainer>
       </Form>
@@ -105,4 +101,9 @@ const Onboarding1 = () => {
   );
 };
 
-export default Onboarding1;
+export default VolunteerOnboarding1;
+
+
+//<Styled.ImgContainer>
+//<img style={{ width: '900px', height: '87px' }} alt="onboard" src={onboarding1} />
+//</Styled.ImgContainer>

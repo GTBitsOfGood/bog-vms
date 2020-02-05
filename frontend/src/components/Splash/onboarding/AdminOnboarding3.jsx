@@ -45,7 +45,7 @@ const Styled = {
   `
 };
 
-const Onboarding3 = () => {
+const AdminOnboarding3 = () => {
   const [loading] = useState(true);
 
   return (
@@ -91,4 +91,4 @@ const Onboarding3 = () => {
   );
 };
 
-export default Onboarding3;
+export default AdminOnboarding3;

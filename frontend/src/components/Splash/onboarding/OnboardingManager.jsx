@@ -93,7 +93,7 @@ const OnboardingManager = () => {
             </Styled.Button>
           </Styled.ButtonContainer>
           <FormText style={{marginTop: '3rem'}}>
-            Need to create a volunteer account? Let's <Link to="https://google.com">do it</Link>.
+            Need to create a volunteer account? Let's <Link to="/onboarding5">do it</Link>.
           </FormText>
           <FormText style={{ marginTop: '0rem' }}>
             Want to register your nonprofit? Let's <Link to="/onboarding1">set it up</Link>.
