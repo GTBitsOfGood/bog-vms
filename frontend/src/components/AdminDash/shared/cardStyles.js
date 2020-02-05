@@ -9,14 +9,50 @@ const Container = styled.div`
   border: 0.1rem solid ${props => props.theme.grey9};
 `;
 
-const Card = styled.div`
-  width: 25%;
-  padding-top: 100%; /* 1:1 Aspect Ratio */ 
-  
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-  transition: 0.3s;
-  border-radius: 5px; /* 5px rounded corners */
+const cardGrid = styled.div `
+    display: flex;
 `;
+
+const Card = styled.div`
+  position: relative;
+  overflow: hidden;
+  margin: 10px;
+  width: 25%;
+  min-width: 100px;
+  padding-bottom: 25%;
+  border-radius: 10px;
+  background: #e0e0e0;
+  transition: 0.3s;
+ 
+  &:hover {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  }
+`;
+
+const cardContainer = styled.div `
+    position: absolute;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+`;
+
+const imgPlaceholder = styled.div `
+    width: 100%;
+    height: 100%;
+    background: #efa0a0;
+`;
+
+const cardText = styled.div `
+    margin-bottom: 0;
+    margin-top: auto;
+    padding: 0.5vw;
+    width: 100%;
+    font-family: "Calibri", sans-serif;
+    background: #f8f8f8;
+`;
+
 
 const LoadingBody = styled.div`
   height: 39rem;
