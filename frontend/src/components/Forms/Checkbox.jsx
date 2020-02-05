@@ -11,7 +11,7 @@ const Styled = {
     .custom-control-label {
       &::before,
       &::after {
-        top: ${props => (props.small ? '0.075rem' : '0.2rem')};
+        top: ${props => (props.small ? '0.06rem' : '0.2rem')};
       }
     }
   `,

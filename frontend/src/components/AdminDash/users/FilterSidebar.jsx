@@ -4,10 +4,11 @@ import ApplicantSearch from '../ApplicantSearch';
 
 const Styled = {
   Container: styled.div`
-    padding: 2rem 1rem;
+    padding: 1.5rem 1rem;
     max-width: 20rem;
     height: 100%;
     background-color: ${props => props.theme.greyBg};
+    overflow-y: auto;
   `
 };
 
