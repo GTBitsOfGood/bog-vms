@@ -31,7 +31,7 @@ const Card = styled.div `
   border-radius: 10px;
   background: #e0e0e0;
   transition: 0.3s;
- 
+
   &:hover {
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   }
@@ -53,10 +53,9 @@ const imgPlaceholder = styled.img `
 
 const cardText = styled.div `
     margin-bottom: 0;
-    margin-top: auto;
+    align-self: flex-end;
     padding: 0.5vw;
     width: 100%;
-    font-family: "Calibri", sans-serif;
     background: #f8f8f8;
 `;
 
