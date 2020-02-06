@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { transparentize } from 'polished';
-import { focusBorder } from "../../utility";
+import { focusBorder } from '../../utility';
 
 const Inner = styled.span`
   position: relative;
@@ -10,6 +10,8 @@ const Inner = styled.span`
   transition-duration: 0.25s;
   transition-timing-function: ease;
   border-radius: 0.5rem;
+  display: inline-block;
+  line-height: initial;
 `;
 
 const Styled = {
@@ -17,6 +19,7 @@ const Styled = {
   ClearButton: styled.button`
     background: none;
     border: none;
+    line-height: 1;
 
     // Select using inner button span to prevent focus style on mouse focus
     // See https://www.kizu.ru/keyboard-only-focus/
@@ -26,7 +29,8 @@ const Styled = {
     }
 
     // Remove base focus style
-    &:focus, ${Inner}:focus {
+    &:focus,
+    ${Inner}:focus {
       outline: none;
     }
 
@@ -34,7 +38,7 @@ const Styled = {
       background-color: ${props => transparentize(0.85, props.theme.grey5)};
     }
 
-    &:active > ${Inner}  {
+    &:active > ${Inner} {
       background-color: ${props => transparentize(0.7, props.theme.grey5)};
     }
   `
@@ -42,10 +46,7 @@ const Styled = {
 
 const ClearButton = ({ children, ...rest }) => {
   return (
-    <Styled.ClearButton
-      tabIndex="0"
-      {...rest}
-    >
+    <Styled.ClearButton tabIndex="0" {...rest}>
       <Styled.Inner tabIndex="-1">{children}</Styled.Inner>
     </Styled.ClearButton>
   );

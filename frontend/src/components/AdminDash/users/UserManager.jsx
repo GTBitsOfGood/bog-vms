@@ -1,9 +1,10 @@
 import React from 'react';
 import UserTable from './UserTable';
 import styled from 'styled-components';
-import { fetchUserManagementData, fetchUserCount } from '../queries';
+import { fetchUserManagementData } from '../queries';
 import { Button } from 'reactstrap';
 import FilterSidebar from './FilterSidebar';
+import FilterInfo from "./FilterInfo";
 import InfiniteScroll from 'components/Shared/InfiniteScroll';
 import MailingListCollapsed from './MailingListCollapsed';
 import MailingListExpanded from './MailingListExpanded';
@@ -116,6 +117,7 @@ class UserManager extends React.Component {
         {collapsed && (
           <Styled.ListContainer>
             <InfiniteScroll loadCallback={this.loadMoreUsers} isLoading={isLoading}>
+              <FilterInfo filtersApplied={true} onClickAddAll={() => null} matchedCount={50} />
               <UserTable
                 users={users}
                 editUserCallback={this.onEditUser}

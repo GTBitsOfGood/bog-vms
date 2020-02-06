@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { FormGroup } from 'reactstrap';
 import { Form, Checkbox, FormOnChange, FormResetButton } from '../Forms';
 import { Collapse } from '../Shared';
-import { statuses } from './applicantInfoHelpers';
+import { formValues } from './applicantFilters';
 import styled from 'styled-components';
 
 const Styled = {
@@ -34,55 +34,6 @@ const Styled = {
   `
 };
 
-const defaultValues = {
-  date: {
-    label: 'Date Range',
-    values: {
-      past_6_months: false,
-      past_month: false,
-      from_current_year: false,
-      from_one_year_ago: false,
-      from_two_years_ago: false,
-      older: false
-    }
-  },
-  status: {
-    label: 'Status',
-    values: Object.keys(statuses).reduce((obj, status) => {
-      obj[status] = false;
-      return obj;
-    }, {})
-  },
-  role: {
-    label: 'Role',
-    values: {
-      admin: false,
-      volunteer: false,
-      manager: false
-    }
-  },
-  skills_interests: {
-    label: 'Skills and Interests',
-    values: {
-      admin_office: false,
-      admin_virtual: false,
-      atlanta_shelter: false,
-      orlando_shelter: false,
-      graphic_web_design: false,
-      special_events: false,
-      grant_writing: false,
-      writing_editing: false,
-      social_media: false,
-      fundraising: false,
-      finance: false,
-      office_maintenance_housekeeping: false,
-      international_projects: false,
-      volunteer_coordination: false,
-      outreach: false
-    }
-  }
-};
-
 const keyToLabel = key => {
   const words = key.split('_');
   const capitalizedWords = words.map(word => `${word[0].toUpperCase()}${word.slice(1)}`);
@@ -104,9 +55,9 @@ const noop = () => {};
 
 const Filters = ({ onChange, onClear }) => {
   return (
-    <Form initialValues={defaultValues} onSubmit={noop}>
+    <Form initialValues={formValues} onSubmit={noop}>
       <FormOnChange onChange={onChange} />
-      {Object.entries(defaultValues).map(([groupKey, filterGroup]) => (
+      {Object.entries(formValues).map(([groupKey, filterGroup]) => (
         <FormGroup key={groupKey}>
           <Collapse title={filterGroup.label}>
             <Styled.GroupWrapper>

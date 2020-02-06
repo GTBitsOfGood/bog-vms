@@ -21,6 +21,7 @@ const Styled = {
     // Adjust inner padding
     & > span {
       overflow: hidden;
+      display: inline;
       padding: 0.5rem 0rem;
       border-radius: 20rem;
     }
