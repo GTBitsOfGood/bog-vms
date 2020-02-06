@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { ClearButton } from 'components/Shared';
+import { transparentize } from "polished";
 
 const Styled = {
   Outer: styled.div`
@@ -14,13 +15,16 @@ const Styled = {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0 4px 4px 0 ${props => props.theme.shadowLight};
+    z-index: 1;
+    position: relative;
   `,
   Count: styled.span`
-    background-color: ${props => props.theme.grey8};
+    background-color: ${props => transparentize(0.5, props.theme.grey8)};
     border-radius: 4px;
     display: inline-block;
-    padding: 0.5rem 0.75rem;
-    margin-right: 0.5rem;
+    padding: 0.5rem 0.85rem;
+    margin-right: 0.75rem;
   `,
   AddButton: styled(ClearButton)`
     // Override default styles
@@ -30,11 +34,13 @@ const Styled = {
     }
 
     &:hover > span {
-      background-color: ${props => props.theme.grey8} !important;
+      box-shadow: 0 4px 4px 0 ${props => props.theme.shadowLight};
+      background-color: ${props => props.theme.grey10} !important;
     }
 
     &:active > span {
-      background-color: ${props => props.theme.grey7} !important;
+      box-shadow: 0 4px 8px 0 ${props => props.theme.shadow};
+      background-color: ${props => props.theme.grey10} !important;
     }
   `
 };

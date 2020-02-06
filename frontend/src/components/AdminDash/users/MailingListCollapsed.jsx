@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import FilterList from './FilterList';
 
 const Styled = {
   Container: styled.div`
@@ -61,6 +62,11 @@ const MailingListCollapsed = ({ users, onClearClick }) => {
         <Styled.Text>Currently you have</Styled.Text>
         <Styled.UserCountBlock>{users.length || 0} volunteers</Styled.UserCountBlock>
         <Styled.Text>in your mailing list</Styled.Text>
+        <FilterList
+          filters={[{ key: 'label', label: 'Label' }, { key: 'long', label: 'Very long filter test string label' }]}
+          clearFilter={k => console.log(k)}
+          vertical
+        />
       </div>
       <Styled.ButtonContainer>
         <Styled.Button dark={true} onClick={onExportClick}>

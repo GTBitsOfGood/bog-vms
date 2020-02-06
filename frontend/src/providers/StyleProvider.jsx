@@ -12,7 +12,8 @@ const theme = {
   grey9: 'hsl(0, 0%, 95%)',
   grey10: 'hsl(0, 0%, 100%)',
   greyBg: '#F0F0F0',
-  shadow: 'hsl(0, 0%, 10%)',
+  shadow: 'rgba(0, 0, 0, 0.1)',
+  shadowLight: 'rgba(0, 0, 0, 0.06)',
   primaryGrey: '#607177',
   danger: {
     base: 'hsl(0, 100%, 63%)',
