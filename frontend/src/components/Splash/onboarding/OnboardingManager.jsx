@@ -92,14 +92,14 @@ const OnboardingManager = () => {
               Forgot Password?
             </Styled.Button>
           </Styled.ButtonContainer>
-          <div style={{width: '80%', height: '20px', borderBottom: '1px solid black', textAlign: 'center', marginTop:'2em', marginBottom:'2em', }}>
-            <span style={{backgroundColor: '#F3F5F6', padding: '0 10px'}}>
+          <div style={{ width: '80%', height: '20px', borderBottom: '1px solid black', textAlign: 'center', marginTop: '2em', marginBottom: '2em', }}>
+            <span style={{ backgroundColor: '#F3F5F6', padding: '0 10px' }}>
               OR
             </span>
           </div>
           <GoogleAuthBtn />
           <FormText style={{ marginTop: '3rem' }}>
-            Need to create a volunteer account? Let's <Link to="https://google.com">do it</Link>.
+            Need to create a volunteer account? Let's <Link to="/onboarding5">do it</Link>.
           </FormText>
           <FormText style={{ marginTop: '0rem' }}>
             Want to register your nonprofit? Let's <Link to="/onboarding1">set it up</Link>.

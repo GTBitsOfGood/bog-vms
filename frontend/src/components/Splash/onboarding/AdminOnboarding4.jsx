@@ -49,7 +49,7 @@ const Styled = {
   `
 };
 
-const Onboarding4 = () => {
+const AdminOnboarding4 = () => {
   const [loading] = useState(true);
   return (
     <Styled.Container>
@@ -108,4 +108,4 @@ const Onboarding4 = () => {
   );
 };
 
-export default Onboarding4;
+export default AdminOnboarding4;
