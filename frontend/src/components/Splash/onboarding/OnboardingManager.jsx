@@ -5,7 +5,7 @@ import { Icon } from 'components/Shared';
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 import image from '../../../images/onboardingArt.png';
 import logo from '../../../images/bog_logo.png';
-import Footer from '../Footer';
+import GoogleAuthBtn from '../GoogleAuthBtn';
 
 const Styled = {
   Container: styled.div`
@@ -45,7 +45,7 @@ const Styled = {
     justify-content: center;
     align-items: center
     flex-direction: row
-  `
+  `,
 };
 
 const OnboardingManager = () => {
@@ -92,14 +92,19 @@ const OnboardingManager = () => {
               Forgot Password?
             </Styled.Button>
           </Styled.ButtonContainer>
-          <FormText style={{marginTop: '3rem'}}>
+          <div style={{width: '80%', height: '20px', borderBottom: '1px solid black', textAlign: 'center', marginTop:'2em', marginBottom:'2em', }}>
+            <span style={{backgroundColor: '#F3F5F6', padding: '0 10px'}}>
+              OR
+            </span>
+          </div>
+          <GoogleAuthBtn />
+          <FormText style={{ marginTop: '3rem' }}>
             Need to create a volunteer account? Let's <Link to="https://google.com">do it</Link>.
           </FormText>
           <FormText style={{ marginTop: '0rem' }}>
             Want to register your nonprofit? Let's <Link to="/onboarding1">set it up</Link>.
           </FormText>
         </Form>
-        <Footer />
       </Styled.ContainerTest>
       <Styled.ContainerTest>
         <Styled.ImgContainer>
