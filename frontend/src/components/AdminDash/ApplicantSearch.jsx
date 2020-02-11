@@ -22,7 +22,7 @@ const Styled = {
     & > span {
       overflow: hidden;
       display: inline;
-      padding: 0.5rem 0rem;
+      padding: 0;
       border-radius: 20rem;
     }
 

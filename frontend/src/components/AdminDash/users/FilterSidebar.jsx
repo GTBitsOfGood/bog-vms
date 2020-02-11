@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import PropTypes from "prop-types";
 import ApplicantSearch from '../ApplicantSearch';
 
 const Styled = {
@@ -12,10 +13,7 @@ const Styled = {
   `
 };
 
-const FilterSidebar = () => {
-  const onSearchSubmit = (textInput, type) => {};
-  const onApplyFilters = filters => {};
-
+const FilterSidebar = ({onSearchSubmit, onApplyFilters}) => {
   return (
     <Styled.Container>
       <ApplicantSearch
@@ -25,5 +23,10 @@ const FilterSidebar = () => {
     </Styled.Container>
   );
 };
+
+FilterSidebar.propTypes = {
+  onSearchSubmit: PropTypes.func.isRequired,
+  onApplyFilters: PropTypes.func.isRequired
+}
 
 export default FilterSidebar;

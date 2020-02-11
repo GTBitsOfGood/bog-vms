@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { fetchUserManagementData } from '../queries';
 import { Button } from 'reactstrap';
 import FilterSidebar from './FilterSidebar';
-import FilterInfo from "./FilterInfo";
+import FilterInfo from './FilterInfo';
 import InfiniteScroll from 'components/Shared/InfiniteScroll';
 import MailingListCollapsed from './MailingListCollapsed';
 import MailingListExpanded from './MailingListExpanded';
@@ -63,9 +63,15 @@ const Styled = {
 
 class UserManager extends React.Component {
   state = {
-    users: [],
+    exploreUsers: [],
+    exploreCount: 0,
+    exploreFilters: [],
+    exploreSearchValue: null,
+    exploreSearchTerm: null,
     isLoading: false,
-    collapsed: true
+    collapsed: true,
+    stagingFilters: [],
+    stagingUsers: []
   };
 
   componentDidMount() {
@@ -73,53 +79,129 @@ class UserManager extends React.Component {
   }
 
   loadMoreUsers = () => {
-    const { users } = this.state;
-    const lastPaginationId = users.length ? users[users.length - 1]._id : 0;
+    // TODO make function use current filters
+    const { exploreUsers } = this.state;
+    const lastPaginationId = exploreUsers.length ? exploreUsers[exploreUsers.length - 1]._id : 0;
     this.setState({
       isLoading: true
     });
     fetchUserManagementData(lastPaginationId).then(result => {
       if (result && result.data && result.data.users) {
-        this.setState(({ users }) => ({
-          users: users.concat(result.data.users),
+        this.setState(({ exploreUsers }) => ({
+          exploreUsers: exploreUsers.concat(result.data.users),
           isLoading: false
         }));
       }
     });
   };
 
-  onEditUser = () => {};
+  onEditUser = () => {
+    // TODO implement?
+    // ? what is this function for?
+  };
 
   onToggleCollapse = () => {
+    // TODO implement collapse view
     this.setState(({ collapsed }) => ({
       collapsed: !collapsed
     }));
   };
 
   onToggleUserMailingList = idx => () => {
-    this.setState(({ users }) => ({
-      users: update(users, { [idx]: { inMailingList: { $set: !users[idx].inMailingList } } })
-    }));
+    // TODO implement
+    const { exploreUsers } = this.state;
+    const user = exploreUsers[idx];
+    console.log(user);
   };
 
   clearMailingList = () => {
-    this.setState(({ users }) => ({
-      users: users.map(({ inMailingList, ...user }) => user)
-    }));
+    this.setState({
+      stagingFilters: [],
+      stagingUsers: []
+    });
   };
 
+  onSearchSubmit = (searchValue, searchTerm) => {
+    // TODO dispatch API call to update table and count
+    const isEmpty = searchValue === '';
+    this.setState({
+      exploreSearchValue: isEmpty ? null : searchValue,
+      exploreSearchTerm: isEmpty ? null : searchTerm
+    });
+  };
+
+  // Converts filter shape from:
+  //   { group1: { valueA: false, valueB: true }, group2: { valueA: false } }
+  // to: (valueA gets removed,, and group2 isn't included)
+  //   [ { key: "group1", values: { valueB: true } } ]
+  // This makes it easier to determine if any filters have been applied and
+  // to convert the current filter set to a JSON-serializable API query param
+  onApplyFilters = filters => {
+    // TODO dispatch API call to update table and count
+    this.setState({
+      exploreFilters: Object.entries(filters).reduce((filterEntries, [groupKey, { values }]) => {
+        let reducedFilterOptions = null;
+        Object.entries(values).forEach(([optionKey, optionValue]) => {
+          if (optionValue) {
+            // Truthy filter value: add to reduced options
+            if (reducedFilterOptions == null) reducedFilterOptions = {};
+            reducedFilterOptions[optionKey] = optionValue;
+          }
+        });
+
+        if (reducedFilterOptions == null) {
+          // Skip empty filter groups
+          return filterEntries;
+        } else {
+          return [...filterEntries, { key: groupKey, values: reducedFilterOptions }];
+        }
+      }, [])
+    });
+  };
+
+  onAddAllClick = () => {
+    // TODO implement
+  };
+
+  onClearFilter = key => {
+    // TODO implement
+  };
+
+  hasFilters() {
+    const { exploreFilters, exploreSearchTerm } = this.state;
+    return exploreFilters.length > 0 || exploreSearchTerm != null;
+  }
+
   render() {
-    const { isLoading, users, collapsed } = this.state;
-    const addedUsers = users.filter(user => user.inMailingList);
+    const {
+      isLoading,
+      exploreUsers,
+      exploreCount,
+      stagingUsers,
+      stagingFilters,
+      collapsed
+    } = this.state;
+
+    // Add the inMailingList prop to the currently displayed table users
+    const stagingUserIds = new Set(stagingUsers.map(user => user._id));
+    const mappedExploreUsers = exploreUsers.map(user => ({
+      ...user,
+      inMailingList: stagingUserIds.has(user._id)
+    }));
+
     return (
       <Styled.Container>
-        <FilterSidebar />
+        <FilterSidebar onSearchSubmit={this.onSearchSubmit} onApplyFilters={this.onApplyFilters} />
         {collapsed && (
           <Styled.ListContainer>
             <InfiniteScroll loadCallback={this.loadMoreUsers} isLoading={isLoading}>
-              <FilterInfo filtersApplied={true} onClickAddAll={() => null} matchedCount={50} />
+              <FilterInfo
+                filtersApplied={this.hasFilters()}
+                onClickAddAll={this.onAddAllClick}
+                matchedCount={exploreCount}
+              />
               <UserTable
-                users={users}
+                users={mappedExploreUsers}
                 editUserCallback={this.onEditUser}
                 onUserToggle={this.onToggleUserMailingList}
               />
@@ -131,7 +213,12 @@ class UserManager extends React.Component {
             <LeftCaretIcon />
           </Styled.ToggleButton>
           {collapsed ? (
-            <MailingListCollapsed users={addedUsers} onClearClick={this.clearMailingList} />
+            <MailingListCollapsed
+              users={stagingUsers}
+              filters={stagingFilters}
+              onClearClick={this.clearMailingList}
+              onClearFilter={this.onClearFilter}
+            />
           ) : (
             <MailingListExpanded />
           )}

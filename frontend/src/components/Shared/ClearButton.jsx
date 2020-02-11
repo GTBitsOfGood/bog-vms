@@ -12,6 +12,7 @@ const Inner = styled.span`
   border-radius: 0.5rem;
   display: inline-block;
   line-height: initial;
+  flex-grow: 1;
 `;
 
 const Styled = {
@@ -20,10 +21,13 @@ const Styled = {
     background: none;
     border: none;
     line-height: 1;
+    padding: 0;
+    display: flex;
+    align-items: stretch;
 
     // Select using inner button span to prevent focus style on mouse focus
     // See https://www.kizu.ru/keyboard-only-focus/
-    &:focus > ${Inner} {
+    &:focus:not(:disabled) > ${Inner} {
       background-color: ${props => transparentize(0.95, props.theme.grey5)};
       ${props => focusBorder(props.theme.grey5)}
     }
@@ -34,11 +38,11 @@ const Styled = {
       outline: none;
     }
 
-    &:hover > ${Inner} {
+    &:hover:not(:disabled) > ${Inner} {
       background-color: ${props => transparentize(0.85, props.theme.grey5)};
     }
 
-    &:active > ${Inner} {
+    &:active:not(:disabled) > ${Inner} {
       background-color: ${props => transparentize(0.7, props.theme.grey5)};
     }
   `

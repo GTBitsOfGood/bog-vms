@@ -2,16 +2,21 @@ import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { Icon } from 'components/Shared';
+import { transparentize } from "polished";
 
 const RemoveButton = styled.div`
   border-radius: 20rem;
-  background-color: transparent;
-  transition: opacity 0.15s, background-color 0.15s;
+  transition: opacity 0.15s;
   opacity: 0;
   position: absolute;
-  left: 0.25rem;
+  left: 0.35rem;
   top: 50%;
   transform: translateY(-50%);
+
+  & svg {
+    height: 1.6rem;
+    width: 1.6rem;
+  }
 `;
 
 const Label = styled.div`
@@ -37,9 +42,14 @@ const FilterButton = styled.button`
 
   &:active,
   &:focus {
+    background-color: ${props => transparentize(0.7, props.theme.grey10)};
     ${RemoveButton} {
       opacity: 1;
     }
+  }
+
+  &:active {
+    transform: translateY(1px);
   }
 
   &:hover,
@@ -47,10 +57,6 @@ const FilterButton = styled.button`
   &:focus {
     border-color: ${props => props.theme.grey5};
     color: ${props => props.theme.grey3};
-
-    & ${RemoveButton} {
-      background-color: ${props => props.theme.grey9};
-    }
   }
 
   &:focus {
@@ -89,14 +95,14 @@ const Styled = {
 const Filter = ({ name, label, clearFilter }) => (
   <Styled.FilterButton onClick={useCallback(() => clearFilter(name), [clearFilter, name])}>
     <Styled.RemoveButton>
-      <Icon name="remove" color="grey7" />
+      <Icon name="close" color="grey5" />
     </Styled.RemoveButton>
     <Styled.Label>{label}</Styled.Label>
   </Styled.FilterButton>
 );
 
-const FilterList = ({ filters, clearFilter, vertical = false }) => (
-  <Styled.Outer vertical={vertical}>
+const FilterList = ({ filters, clearFilter, vertical = false, className }) => (
+  <Styled.Outer vertical={vertical} className={className}>
     {filters.map(({ key, label }) => (
       <Filter name={key} key={key} label={label} clearFilter={clearFilter} />
     ))}

@@ -15,12 +15,11 @@ const Styled = {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 4px 4px 0 ${props => props.theme.shadowLight};
     z-index: 1;
     position: relative;
   `,
   Count: styled.span`
-    background-color: ${props => transparentize(0.5, props.theme.grey8)};
+    background-color: ${props => transparentize(0.4, props.theme.grey8)};
     border-radius: 4px;
     display: inline-block;
     padding: 0.5rem 0.85rem;
@@ -30,17 +29,16 @@ const Styled = {
     // Override default styles
     & > span {
       padding: 0.9rem 1rem;
+      box-shadow: 0 2px 2px 0 ${props => props.theme.shadowLight};
       background-color: ${props => props.theme.grey10} !important;
     }
 
-    &:hover > span {
-      box-shadow: 0 4px 4px 0 ${props => props.theme.shadowLight};
-      background-color: ${props => props.theme.grey10} !important;
+    &:hover:not(:active) > span {
+      box-shadow: 0 4px 4px 0 ${props => props.theme.shadow};
     }
 
     &:active > span {
-      box-shadow: 0 4px 8px 0 ${props => props.theme.shadow};
-      background-color: ${props => props.theme.grey10} !important;
+      transform: translateY(1px);
     }
   `
 };

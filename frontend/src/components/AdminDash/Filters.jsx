@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { FormGroup } from 'reactstrap';
 import { Form, Checkbox, FormOnChange, FormResetButton } from '../Forms';
 import { Collapse } from '../Shared';
-import { formValues } from './applicantFilters';
+import { formValues } from './userFilters';
 import styled from 'styled-components';
 
 const Styled = {
