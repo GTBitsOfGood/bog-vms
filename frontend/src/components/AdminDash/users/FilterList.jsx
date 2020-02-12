@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { Icon } from 'components/Shared';
-import { transparentize } from "polished";
+import { transparentize } from 'polished';
 
 const RemoveButton = styled.div`
   border-radius: 20rem;
@@ -24,44 +24,66 @@ const Label = styled.div`
   line-height: 1.2;
 `;
 
-const FilterButton = styled.button`
+const FilterButtonInner = styled.div`
+  position: relative;
+  display: inline-block;
+  line-height: initial;
+  flex-grow: 1;
   border-radius: 20rem;
   border: 2px solid ${props => props.theme.grey7};
-  display: block;
-  cursor: pointer;
-  position: relative;
   background-color: transparent;
   transition: border-color 0.15s, color 0.15s;
   color: ${props => props.theme.grey5};
+  position: relative;
+`;
 
-  &:hover,
-  &:focus {
+const FilterButton = styled.button`
+  background: none;
+  border: none;
+  line-height: 1;
+  padding: 0;
+  display: flex;
+  align-items: stretch;
+  cursor: pointer;
+
+  // Select using inner button span to prevent focus style on mouse focus
+  // See https://www.kizu.ru/keyboard-only-focus/
+  &:focus > ${FilterButtonInner} {
+    background-color: ${props => transparentize(0.7, props.theme.grey10)};
+
     ${RemoveButton} {
       opacity: 0.7;
     }
   }
 
-  &:active,
-  &:focus {
-    background-color: ${props => transparentize(0.7, props.theme.grey10)};
+  // Remove base focus style
+  &:focus,
+  ${FilterButtonInner}:focus {
+    outline: none;
   }
 
-  &:active {
+  &:hover > ${FilterButtonInner} {
+    ${RemoveButton} {
+      opacity: 0.7;
+    }
+  }
+
+  &:active > ${FilterButtonInner} {
     transform: translateY(1px);
+    background-color: ${props => transparentize(0.7, props.theme.grey10)};
+
     ${RemoveButton} {
       opacity: 1;
     }
   }
 
-  &:hover,
+  &:focus,
   &:active,
-  &:focus {
-    border-color: ${props => props.theme.grey5};
-    color: ${props => props.theme.grey3};
-  }
-
-  &:focus {
-    outline: none;
+  &:hover {
+    & > ${FilterButtonInner} {
+      border-color: ${props => props.theme.grey5};
+      color: ${props => props.theme.grey3};
+    }
   }
 `;
 
@@ -69,6 +91,7 @@ const Styled = {
   RemoveButton,
   Label,
   FilterButton,
+  FilterButtonInner,
   Outer: styled.div`
     display: flex;
     justify-content: flex-start;
@@ -94,11 +117,16 @@ const Styled = {
 };
 
 const Filter = ({ name, label, clearFilter }) => (
-  <Styled.FilterButton onClick={useCallback(() => clearFilter(name), [clearFilter, name])}>
-    <Styled.RemoveButton>
-      <Icon name="close" color="grey5" />
-    </Styled.RemoveButton>
-    <Styled.Label>{label}</Styled.Label>
+  <Styled.FilterButton
+    onClick={useCallback(() => clearFilter(name), [clearFilter, name])}
+    tabIndex="0"
+  >
+    <Styled.FilterButtonInner tabIndex="-1">
+      <Styled.RemoveButton>
+        <Icon name="close" color="grey5" />
+      </Styled.RemoveButton>
+      <Styled.Label>{label}</Styled.Label>
+    </Styled.FilterButtonInner>
   </Styled.FilterButton>
 );
 

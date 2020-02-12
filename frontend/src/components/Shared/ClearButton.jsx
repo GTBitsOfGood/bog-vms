@@ -5,14 +5,14 @@ import { focusBorder } from '../../utility';
 
 const Inner = styled.span`
   position: relative;
+  display: inline-block;
+  line-height: initial;
+  flex-grow: 1;
   padding: 0.6rem 0.8rem 0.5rem;
   transition-property: background-color, box-shadow;
   transition-duration: 0.25s;
   transition-timing-function: ease;
   border-radius: 0.5rem;
-  display: inline-block;
-  line-height: initial;
-  flex-grow: 1;
 `;
 
 const Styled = {
