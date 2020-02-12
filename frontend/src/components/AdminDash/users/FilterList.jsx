@@ -34,7 +34,8 @@ const FilterButton = styled.button`
   transition: border-color 0.15s, color 0.15s;
   color: ${props => props.theme.grey5};
 
-  &:hover {
+  &:hover,
+  &:focus {
     ${RemoveButton} {
       opacity: 0.7;
     }
@@ -43,13 +44,13 @@ const FilterButton = styled.button`
   &:active,
   &:focus {
     background-color: ${props => transparentize(0.7, props.theme.grey10)};
-    ${RemoveButton} {
-      opacity: 1;
-    }
   }
 
   &:active {
     transform: translateY(1px);
+    ${RemoveButton} {
+      opacity: 1;
+    }
   }
 
   &:hover,

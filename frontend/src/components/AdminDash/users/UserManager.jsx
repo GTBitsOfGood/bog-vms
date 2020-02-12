@@ -3,13 +3,13 @@ import UserTable from './UserTable';
 import styled from 'styled-components';
 import { fetchUserManagementData } from '../queries';
 import { Button } from 'reactstrap';
+import { Set, Map } from 'immutable';
 import FilterSidebar from './FilterSidebar';
 import FilterInfo from './FilterInfo';
 import InfiniteScroll from 'components/Shared/InfiniteScroll';
 import MailingListCollapsed from './MailingListCollapsed';
 import MailingListExpanded from './MailingListExpanded';
 import { LeftCaretIcon } from 'components/Shared/Icon';
-import update from 'immutability-helper';
 
 const Styled = {
   Container: styled.div`
@@ -61,6 +61,8 @@ const Styled = {
   `
 };
 
+const MANUAL_FILTER_KEY = '__manual';
+
 class UserManager extends React.Component {
   state = {
     exploreUsers: [],
@@ -71,8 +73,18 @@ class UserManager extends React.Component {
     isLoading: false,
     collapsed: true,
     stagingFilters: [],
-    stagingUsers: []
+    // User id => staging user object map { user: object, reason: Array<string> }
+    //  - Reason is string array of filter keys associated with why user is there
+    //  - The set of keys = all user ids in staging mailing list
+    //  - Uses immutable maps/sets
+    stagingUsers: Map(),
+    stagingManualUserIds: Set()
   };
+
+  isUserStaged(id) {
+    const { stagingUsers } = this.state;
+    return stagingUsers.has(id);
+  }
 
   componentDidMount() {
     this.loadMoreUsers();
@@ -101,7 +113,7 @@ class UserManager extends React.Component {
   };
 
   onToggleCollapse = () => {
-    // TODO implement collapse view
+    // TODO implement expanded view
     this.setState(({ collapsed }) => ({
       collapsed: !collapsed
     }));
@@ -111,13 +123,34 @@ class UserManager extends React.Component {
     // TODO implement
     const { exploreUsers } = this.state;
     const user = exploreUsers[idx];
-    console.log(user);
+    if (this.isUserStaged(user._id)) {
+      // Force unstage
+      const { stagingManualUserIds } = this.state;
+      this.setState(({ stagingUsers }) => ({ stagingUsers: stagingUsers.delete(user._id) }));
+      if (stagingManualUserIds.has(user._id)) {
+        // Only remove from manual Ids if staged with it to prevent new reference being created
+        // for stagingManualUserIds
+        this.setState(({ stagingManualUserIds }) => ({
+          stagingManualUserIds: stagingManualUserIds.delete(user._id)
+        }));
+      }
+    } else {
+      // Stage as manual
+      this.setState(({ stagingManualUserIds, stagingUsers }) => ({
+        stagingManualUserIds: stagingManualUserIds.add(user._id),
+        stagingUsers: stagingUsers.set(user._id, {
+          user,
+          reason: [MANUAL_FILTER_KEY]
+        })
+      }));
+    }
   };
 
   clearMailingList = () => {
     this.setState({
       stagingFilters: [],
-      stagingUsers: []
+      stagingUsers: Map(),
+      stagingManualUserIds: Set()
     });
   };
 
@@ -138,25 +171,31 @@ class UserManager extends React.Component {
   // to convert the current filter set to a JSON-serializable API query param
   onApplyFilters = filters => {
     // TODO dispatch API call to update table and count
-    this.setState({
-      exploreFilters: Object.entries(filters).reduce((filterEntries, [groupKey, { values }]) => {
-        let reducedFilterOptions = null;
-        Object.entries(values).forEach(([optionKey, optionValue]) => {
-          if (optionValue) {
-            // Truthy filter value: add to reduced options
-            if (reducedFilterOptions == null) reducedFilterOptions = {};
-            reducedFilterOptions[optionKey] = optionValue;
-          }
-        });
+    // TODO replaces partial functionality in queries.js
+    if (filters == null) {
+      // Clear filters
+      this.setState({ exploreFilters: [] });
+    } else {
+      this.setState({
+        exploreFilters: Object.entries(filters).reduce((filterEntries, [groupKey, { values }]) => {
+          let reducedFilterOptions = null;
+          Object.entries(values).forEach(([optionKey, optionValue]) => {
+            if (optionValue) {
+              // Truthy filter value: add to reduced options
+              if (reducedFilterOptions == null) reducedFilterOptions = {};
+              reducedFilterOptions[optionKey] = optionValue;
+            }
+          });
 
-        if (reducedFilterOptions == null) {
-          // Skip empty filter groups
-          return filterEntries;
-        } else {
-          return [...filterEntries, { key: groupKey, values: reducedFilterOptions }];
-        }
-      }, [])
-    });
+          if (reducedFilterOptions == null) {
+            // Skip empty filter groups
+            return filterEntries;
+          } else {
+            return [...filterEntries, { key: groupKey, values: reducedFilterOptions }];
+          }
+        }, [])
+      });
+    }
   };
 
   onAddAllClick = () => {
@@ -164,29 +203,53 @@ class UserManager extends React.Component {
   };
 
   onClearFilter = key => {
-    // TODO implement
+    if (key === MANUAL_FILTER_KEY) {
+      // Remove manual from list of reasons
+      this.setState(({ stagingManualUserIds, stagingUsers }) => ({
+        stagingManualUserIds: Set(),
+        stagingUsers: stagingUsers.withMutations(map => {
+          stagingManualUserIds.forEach(id => {
+            const { reason } = stagingUsers.get(id);
+            const newReason = reason.filter(r => r !== MANUAL_FILTER_KEY);
+            if (newReason.length === 0) {
+              // Evict
+              map.remove(id);
+            } else {
+              // Remove reason
+              map.set(id, newReason);
+            }
+          });
+        })
+      }));
+    }
+    // TODO implement other filters
   };
 
   hasFilters() {
-    const { exploreFilters, exploreSearchTerm } = this.state;
-    return exploreFilters.length > 0 || exploreSearchTerm != null;
+    const { exploreFilters, exploreSearchTerm, isLoading } = this.state;
+    return !isLoading && (exploreFilters.length > 0 || exploreSearchTerm != null);
+  }
+
+  getStagingFilters() {
+    const { stagingManualUserIds, stagingFilters } = this.state;
+    const manualCount = stagingManualUserIds.size;
+    const filters = [...stagingFilters];
+    if (manualCount) {
+      filters.push({
+        key: MANUAL_FILTER_KEY,
+        label: `+ ${manualCount} other ${manualCount === 1 ? 'volunteer' : 'volunteers'}`
+      });
+    }
+    return filters;
   }
 
   render() {
-    const {
-      isLoading,
-      exploreUsers,
-      exploreCount,
-      stagingUsers,
-      stagingFilters,
-      collapsed
-    } = this.state;
+    const { isLoading, exploreUsers, exploreCount, stagingUsers, collapsed } = this.state;
 
     // Add the inMailingList prop to the currently displayed table users
-    const stagingUserIds = new Set(stagingUsers.map(user => user._id));
     const mappedExploreUsers = exploreUsers.map(user => ({
       ...user,
-      inMailingList: stagingUserIds.has(user._id)
+      inMailingList: this.isUserStaged(user._id)
     }));
 
     return (
@@ -214,8 +277,8 @@ class UserManager extends React.Component {
           </Styled.ToggleButton>
           {collapsed ? (
             <MailingListCollapsed
-              users={stagingUsers}
-              filters={stagingFilters}
+              users={Array.from(stagingUsers.values())}
+              filters={this.getStagingFilters()}
               onClearClick={this.clearMailingList}
               onClearFilter={this.onClearFilter}
             />
