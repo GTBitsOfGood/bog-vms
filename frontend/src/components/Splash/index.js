@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Route, Redirect, Switch } from 'react-router-dom';
 import OnboardingManager from './onboarding/OnboardingManager';
+import AdminOnboarding from './onboarding/AdminOnboarding';
 import AdminOnboarding1 from './onboarding/AdminOnboarding1';
 import AdminOnboarding2 from './onboarding/AdminOnboarding2';
 import AdminOnboarding3 from './onboarding/AdminOnboarding3';
@@ -21,7 +22,7 @@ const Splash = () => {
     <Styled.Container>
       <Switch>
         <Route exact path="/" component={OnboardingManager} />
-        <Route exact path="/onboarding1" component={AdminOnboarding1} />
+        <Route exact path="/onboarding" component={AdminOnboarding} />
         <Route exact path="/onboarding2" component={AdminOnboarding2} />
         <Route exact path="/onboarding3" component={AdminOnboarding3} />
         <Route exact path="/onboarding4" component={AdminOnboarding4} />

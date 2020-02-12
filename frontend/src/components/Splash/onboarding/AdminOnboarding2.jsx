@@ -49,53 +49,60 @@ const Styled = {
   `
 };
 
-const AdminOnboarding2 = () => {
-  const [loading] = useState(true);
-  return (
-    <Styled.Container>
-      <Styled.HorizontalContainer style={{ margin: '1rem' }}>
-        <Styled.BackButton>
-          <Link to="/onboarding1"> Back </Link>
-        </Styled.BackButton>
-      </Styled.HorizontalContainer>
-      <Styled.HorizontalContainer style={{ textAlign: 'center' }}>
-        <legend> Let's set up your organization.</legend>
-      </Styled.HorizontalContainer>
-      <Styled.ImgContainer>
-        <img style={{ width: '900px', height: '87px' }} alt="onboard" src={onboarding2} />
-      </Styled.ImgContainer>
-      <Form style={{ marginTop: '3rem' }}>
-        <Styled.HorizontalContainer style={{ marginLeft: '5rem', marginRight: '5rem' }}>
-          <Styled.FormField style={{ marginRight: '50px', marginTop: '80px' }}>
-            <legend> Organization Information</legend>
-            <Input type="text" name="compName" id="companyName" placeholder="Company Name" />
-          </Styled.FormField>
-          <Styled.FormField style={{ border: 'dotted', borderRadius: '25px', padding: '50px' }}>
-            <Styled.HorizontalContainer style={{ marginBottom: '1rem' }}>
-              <Label for="exampleFile">Upload your company logo</Label>
-            </Styled.HorizontalContainer>
-            <Styled.HorizontalContainer style={{ marginBottom: '1rem' }}>
-              <Input type="file" name="file" id="exampleFile" />
-            </Styled.HorizontalContainer>
-            <Styled.HorizontalContainer
-              style={{ justifyContent: 'center', marginLeft: 'none', marginRight: 'none' }}
-            >
-              <FormText style={{ color: 'muted', textAlign: 'center' }}>
-                Drag an image here or browse for an image to upload
+class AdminOnboarding2 extends React.Component {
+
+  render() {
+    return (
+      <Styled.Container>
+        <Styled.HorizontalContainer style={{ margin: '1rem' }}>
+          <Styled.BackButton onClick={() => {
+            this.props.previousStep()
+          }}>
+            <span style={{ color: '#f79a0d' }}>Back</span>
+          </Styled.BackButton>
+        </Styled.HorizontalContainer>
+        <Styled.HorizontalContainer style={{ textAlign: 'center' }}>
+          <legend> Let's set up your organization.</legend>
+        </Styled.HorizontalContainer>
+        <Styled.ImgContainer>
+          <img style={{ width: '900px', height: '87px' }} alt="onboard" src={onboarding2} />
+        </Styled.ImgContainer>
+        <Form style={{ marginTop: '3rem' }}>
+          <Styled.HorizontalContainer style={{ marginLeft: '5rem', marginRight: '5rem' }}>
+            <Styled.FormField style={{ marginRight: '50px', marginTop: '80px' }}>
+              <legend> Organization Information</legend>
+              <Input type="text" name="compName" id="companyName" placeholder="Company Name" />
+            </Styled.FormField>
+            <Styled.FormField style={{ border: 'dotted', borderRadius: '25px', padding: '50px' }}>
+              <Styled.HorizontalContainer style={{ marginBottom: '1rem' }}>
+                <Label for="exampleFile">Upload your company logo</Label>
+              </Styled.HorizontalContainer>
+              <Styled.HorizontalContainer style={{ marginBottom: '1rem' }}>
+                <Input type="file" name="file" id="exampleFile" />
+              </Styled.HorizontalContainer>
+              <Styled.HorizontalContainer
+                style={{ justifyContent: 'center', marginLeft: 'none', marginRight: 'none' }}
+              >
+                <FormText style={{ color: 'muted', textAlign: 'center' }}>
+                  Drag an image here or browse for an image to upload
               </FormText>
-            </Styled.HorizontalContainer>
-          </Styled.FormField>
-        </Styled.HorizontalContainer>
-        <Styled.HorizontalContainer
-          style={{ marginTop: '5rem', marginBottom: '1rem', justifyContent: 'flex-end' }}
-        >
-          <Styled.Button>
-            <Link to="/onboarding3"> Next </Link>
-          </Styled.Button>
-        </Styled.HorizontalContainer>
-      </Form>
-    </Styled.Container>
-  );
+              </Styled.HorizontalContainer>
+            </Styled.FormField>
+          </Styled.HorizontalContainer>
+          <Styled.HorizontalContainer
+            style={{ marginTop: '5rem', marginBottom: '1rem', justifyContent: 'flex-end' }}
+          >
+            <Styled.Button onClick={() => {
+              this.props.nextStep()
+            }}>
+              <span style={{ color: '#f79a0d' }}>Next</span>
+              {/* <Link to="/onboarding3"> Next </Link> */}
+            </Styled.Button>
+          </Styled.HorizontalContainer>
+        </Form>
+      </Styled.Container>
+    );
+  }
 };
 
 export default AdminOnboarding2;

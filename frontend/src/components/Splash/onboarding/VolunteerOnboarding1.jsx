@@ -52,7 +52,16 @@ const Styled = {
 };
 
 const VolunteerOnboarding1 = () => {
+
   const [loading] = useState(true);
+  const [form] = useState({
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    accountType: 'volunteer'
+  })
+
   return (
     <Styled.Container>
       <Styled.HorizontalContainer style={{ margin: '1rem' }}>
@@ -70,30 +79,34 @@ const VolunteerOnboarding1 = () => {
       <Form>
         <Styled.HorizontalContainer style={{ justifyContent: 'stretch', marginTop: '2rem' }}>
           <Styled.FormField style={{ marginRight: '50px' }}>
-            <Input type="email" name="email" id="exampleEmail" placeholder="Email" />
+            <Input type="email" name="email" id="exampleEmail" placeholder="Email" onChange={(e)=> form.email = e.target.value}/>
           </Styled.FormField>
           <Styled.FormField>
-            <Input type="password" name="password" id="examplePassword" placeholder="Password" />
+            <Input type="password" name="password" id="examplePassword" placeholder="Password" onChange={(e)=> form.password = e.target.value} />
           </Styled.FormField>
         </Styled.HorizontalContainer>
         <Styled.HorizontalContainer style={{ justifyContent: 'stretch', marginTop: '1rem' }}>
           <Styled.FormField style={{ marginRight: '50px' }}>
-            <Input type="text" name="fname" id="firstName" placeholder="First Name" />
+            <Input type="text" name="fname" id="firstName" placeholder="First Name" onChange={(e)=> form.firstName = e.target.value} />
           </Styled.FormField>
           <Styled.FormField style={{ marginRight: '50px' }}>
-            <Input type="text" name="lname" id="lastName" placeholder="Last Name" />
+            <Input type="text" name="lname" id="lastName" placeholder="Last Name" onChange={(e)=> form.lastName = e.target.value} />
           </Styled.FormField>
           <Styled.FormField>
-            <Input type="select" name="select" id="roleSelect">
-              <option>Volunteer</option>
+            <Input type="select" name="select" id="roleSelect" value={form.accountType} onChange={(e)=> form.accountType = e.target.value}>
+              <option value="volunteer">Volunteer</option>
+              <option value="other">Other</option>
             </Input>
           </Styled.FormField>
         </Styled.HorizontalContainer>
         <Styled.HorizontalContainer
           style={{ marginTop: '5rem', marginBottom: '1rem', justifyContent: 'flex-end' }}
         >
-          <Styled.Button>
-            <Link to="/"> Submit </Link>
+          <Styled.Button onClick={() => {
+            console.log(form);
+          }}>
+            <span style={{color: '#f79a0d'}}>Submit</span>
+            {/* <Link to="/"> Submit </Link> */}
           </Styled.Button>
         </Styled.HorizontalContainer>
       </Form>

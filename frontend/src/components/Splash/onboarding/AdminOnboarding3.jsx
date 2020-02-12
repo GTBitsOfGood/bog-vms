@@ -45,50 +45,56 @@ const Styled = {
   `
 };
 
-const AdminOnboarding3 = () => {
-  const [loading] = useState(true);
+class AdminOnboarding3 extends React.Component {
 
-  return (
-    <Styled.Container>
-      <Styled.HorizontalContainer style={{ margin: '1rem' }}>
-        <Styled.BackButton>
-          <Link to="/onboarding2"> Back </Link>
-        </Styled.BackButton>
-      </Styled.HorizontalContainer>
-      <Styled.TxtContainer style={{ textAlign: 'center' }}>
-        <legend> How do you want this app to look? </legend>
-      </Styled.TxtContainer>
-      <Styled.ImgContainer>
-        <img style={{ width: '900px', height: '87px' }} alt="onboard" src={onboarding3} />
-      </Styled.ImgContainer>
-      <Styled.HorizontalContainer style={{ justifyContent: 'space-around' }}>
-        <FormGroup>
-          <Input type="select" name="selectMulti" id="exampleSelectMulti" multiple>
-            <option>Dark</option>
-            <option>Light</option>
-          </Input>
-        </FormGroup>
-        <Button>Red</Button>
-        <Button>Orange</Button>
-        <Button>Yellow</Button>
-        <Button>Green</Button>
-        <Button>Blue</Button>
-        <Button>Purple</Button>
-      </Styled.HorizontalContainer>
-      <Styled.HorizontalContainer
-        style={{
-          flexDirection: 'row',
-          marginTop: '5rem',
-          marginBottom: '1rem',
-          justifyContent: 'flex-end'
-        }}
-      >
-        <Styled.Button>
-          <Link to="/onboarding4"> Next </Link>
-        </Styled.Button>
-      </Styled.HorizontalContainer>
-    </Styled.Container>
-  );
-};
-
-export default AdminOnboarding3;
+  render() {
+    return (
+      <Styled.Container>
+        <Styled.HorizontalContainer style={{ margin: '1rem' }}>
+          <Styled.BackButton onClick={() => {
+              this.props.previousStep()
+            }}>
+              <span style={{ color: '#f79a0d' }}>Back</span>
+          </Styled.BackButton>
+        </Styled.HorizontalContainer>
+          <Styled.TxtContainer style={{ textAlign: 'center' }}>
+            <legend> How do you want this app to look? </legend>
+          </Styled.TxtContainer>
+          <Styled.ImgContainer>
+            <img style={{ width: '900px', height: '87px' }} alt="onboard" src={onboarding3} />
+          </Styled.ImgContainer>
+          <Styled.HorizontalContainer style={{ justifyContent: 'space-around' }}>
+            <FormGroup>
+              <Input type="select" name="selectMulti" id="exampleSelectMulti" multiple>
+                <option>Dark</option>
+                <option>Light</option>
+              </Input>
+            </FormGroup>
+            <Button>Red</Button>
+            <Button>Orange</Button>
+            <Button>Yellow</Button>
+            <Button>Green</Button>
+            <Button>Blue</Button>
+            <Button>Purple</Button>
+          </Styled.HorizontalContainer>
+          <Styled.HorizontalContainer
+            style={{
+              flexDirection: 'row',
+              marginTop: '5rem',
+              marginBottom: '1rem',
+              justifyContent: 'flex-end'
+            }}
+          >
+            <Styled.Button onClick={() => {
+              this.props.nextStep()
+            }}>
+              <span style={{ color: '#f79a0d' }}>Next</span>
+              {/* <Link to="/onboarding4"> Next </Link> */}
+            </Styled.Button>
+          </Styled.HorizontalContainer>
+      </Styled.Container>
+        );
+      }
+    };
+    
+    export default AdminOnboarding3;

@@ -51,58 +51,77 @@ const Styled = {
   `
 };
 
-const AdminOnboarding1 = () => {
-  const [loading] = useState(true);
-  return (
-    <Styled.Container>
-      <Styled.HorizontalContainer style={{ margin: '1rem' }}>
-        <Styled.BackButton>
-          <Link to="/"> Back </Link>
-        </Styled.BackButton>
-      </Styled.HorizontalContainer>
-      <Styled.HorizontalContainer style={{ textAlign: 'center' }}>
-        <legend> Hi, let's get your account set up.</legend>
-      </Styled.HorizontalContainer>
-      <Styled.ImgContainer>
-        <img style={{ width: '900px', height: '87px' }} alt="onboard" src={onboarding1} />
-      </Styled.ImgContainer>
-      <Styled.HorizontalContainer style={{ marginTop: '3rem' }}>
-        <legend>Account Information</legend>
-      </Styled.HorizontalContainer>
-      <Form>
-        <Styled.HorizontalContainer style={{ justifyContent: 'stretch', marginTop: '2rem' }}>
-          <Styled.FormField style={{ marginRight: '50px' }}>
-            <Input type="email" name="email" id="exampleEmail" placeholder="Email" />
-          </Styled.FormField>
-          <Styled.FormField>
-            <Input type="password" name="password" id="examplePassword" placeholder="Password" />
-          </Styled.FormField>
+class AdminOnboarding1 extends React.Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      email: '',
+      password: '',
+      firstName: '',
+      lastName: '',
+      accountType: 'volunteer'
+    }
+  }
+
+
+  render() {
+    console.log(this.props.data);
+    return (
+      <Styled.Container>
+        <Styled.HorizontalContainer style={{ margin: '1rem' }}>
+          <Styled.BackButton>
+            <Link to="/">Back</Link>
+          </Styled.BackButton>
         </Styled.HorizontalContainer>
-        <Styled.HorizontalContainer style={{ justifyContent: 'stretch', marginTop: '1rem' }}>
-          <Styled.FormField style={{ marginRight: '50px' }}>
-            <Input type="text" name="fname" id="firstName" placeholder="First Name" />
-          </Styled.FormField>
-          <Styled.FormField style={{ marginRight: '50px' }}>
-            <Input type="text" name="lname" id="lastName" placeholder="Last Name" />
-          </Styled.FormField>
-          <Styled.FormField>
-            <Input type="select" name="select" id="roleSelect">
-              <option>Role1</option>
-              <option>Role2</option>
-              <option>Role3</option>
-            </Input>
-          </Styled.FormField>
+        <Styled.HorizontalContainer style={{ textAlign: 'center' }}>
+          <legend> Hi, let's get your account set up.</legend>
         </Styled.HorizontalContainer>
-        <Styled.HorizontalContainer
-          style={{ marginTop: '5rem', marginBottom: '1rem', justifyContent: 'flex-end' }}
-        >
-          <Styled.Button>
-            <Link to="/onboarding2"> Next </Link>
-          </Styled.Button>
+        <Styled.ImgContainer>
+          <img style={{ width: '900px', height: '87px' }} alt="onboard" src={onboarding1} />
+        </Styled.ImgContainer>
+        <Styled.HorizontalContainer style={{ marginTop: '3rem' }}>
+          <legend>Account Information</legend>
         </Styled.HorizontalContainer>
-      </Form>
-    </Styled.Container>
-  );
+        <Form>
+          <Styled.HorizontalContainer style={{ justifyContent: 'stretch', marginTop: '2rem' }}>
+            <Styled.FormField style={{ marginRight: '50px' }}>
+              <Input type="email" name="email" id="exampleEmail" placeholder="Email" onChange={(e)=> this.setState({ email: e.target.value})}/>
+            </Styled.FormField>
+            <Styled.FormField>
+              <Input type="password" name="password" id="examplePassword" placeholder="Password" onChange={(e)=> this.setState({ password: e.target.value})}/>
+            </Styled.FormField>
+          </Styled.HorizontalContainer>
+          <Styled.HorizontalContainer style={{ justifyContent: 'stretch', marginTop: '1rem' }}>
+            <Styled.FormField style={{ marginRight: '50px' }}>
+              <Input type="text" name="fname" id="firstName" placeholder="First Name" onChange={(e)=> this.setState({ firstName: e.target.value})}/>
+            </Styled.FormField>
+            <Styled.FormField style={{ marginRight: '50px' }}>
+              <Input type="text" name="lname" id="lastName" placeholder="Last Name" onChange={(e)=> this.setState({ lastName: e.target.value})}/>
+            </Styled.FormField>
+            <Styled.FormField>
+              <Input type="select" name="select" id="roleSelect">
+                <option>Role1</option>
+                <option>Role2</option>
+                <option>Role3</option>
+              </Input>
+            </Styled.FormField>
+          </Styled.HorizontalContainer>
+          <Styled.HorizontalContainer
+            style={{ marginTop: '5rem', marginBottom: '1rem', justifyContent: 'flex-end' }}
+          >
+            <Styled.Button onClick={() => {
+              this.props.setData('onboarding1', this.state);
+              this.props.nextStep();
+            }}>
+              <span style={{ color: '#f79a0d' }}>Next</span>
+              {/* <Link to="/onboarding2"> Next </Link> */}
+            </Styled.Button>
+          </Styled.HorizontalContainer>
+        </Form>
+      </Styled.Container>
+    );
+  }
 };
 
 export default AdminOnboarding1;

@@ -12,7 +12,6 @@ const Styled = {
     width: 100vw;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
   `,
   Content: styled.main`
     flex: 1;
