@@ -58,10 +58,38 @@ const Styled = {
     border: none;
     margin-left: auto;
     margin-right: 1rem;
+  `,
+  Term: styled.span`
+    color: ${props => props.theme.grey5};
   `
 };
 
 const MANUAL_FILTER_KEY = '__manual';
+const SEARCH_KEY_PREFIX = '__search@';
+
+const isSearchKey = key => key.startsWith(SEARCH_KEY_PREFIX);
+const makeSearchKey = (term, value) => `${SEARCH_KEY_PREFIX}${term}>>>${value}`;
+const makeSearchLabel = (term, label) => (
+  <React.Fragment>
+    <Styled.Term>{term}:</Styled.Term> &ldquo;{label}&rdquo;
+  </React.Fragment>
+);
+
+// Use Immutable's withMutations method to batch mutations
+const removeReason = (stagingUsers, reason, ids) =>
+  stagingUsers.withMutations(map =>
+    ids.forEach(id => {
+      const { reasons: oldReasons } = map.get(id);
+      const newReasons = oldReasons.filter(r => r !== reason);
+      if (newReasons.length === 0) {
+        // Evict
+        map.remove(id);
+      } else {
+        // Remove reason
+        map.set(id, newReasons);
+      }
+    })
+  );
 
 class UserManager extends React.Component {
   state = {
@@ -73,8 +101,8 @@ class UserManager extends React.Component {
     isLoading: false,
     collapsed: true,
     stagingFilters: [],
-    // User id => staging user object map { user: object, reason: Array<string> }
-    //  - Reason is string array of filter keys associated with why user is there
+    // User id => staging user object map { user: object, reasons: Array<string> }
+    //  - Reasons is string array of filter keys associated with why user is there
     //  - The set of keys = all user ids in staging mailing list
     //  - Uses immutable maps/sets
     stagingUsers: Map(),
@@ -140,7 +168,7 @@ class UserManager extends React.Component {
         stagingManualUserIds: stagingManualUserIds.add(user._id),
         stagingUsers: stagingUsers.set(user._id, {
           user,
-          reason: [MANUAL_FILTER_KEY]
+          reasons: [MANUAL_FILTER_KEY]
         })
       }));
     }
@@ -199,7 +227,7 @@ class UserManager extends React.Component {
   };
 
   onAddAllClick = () => {
-    // TODO implement
+    // TODO implement dispatching API call to get all users
   };
 
   onClearFilter = key => {
@@ -207,22 +235,13 @@ class UserManager extends React.Component {
       // Remove manual from list of reasons
       this.setState(({ stagingManualUserIds, stagingUsers }) => ({
         stagingManualUserIds: Set(),
-        stagingUsers: stagingUsers.withMutations(map => {
-          stagingManualUserIds.forEach(id => {
-            const { reason } = stagingUsers.get(id);
-            const newReason = reason.filter(r => r !== MANUAL_FILTER_KEY);
-            if (newReason.length === 0) {
-              // Evict
-              map.remove(id);
-            } else {
-              // Remove reason
-              map.set(id, newReason);
-            }
-          });
-        })
+        stagingUsers: removeReason(stagingUsers, MANUAL_FILTER_KEY, stagingManualUserIds)
+      }));
+    } else {
+      this.setState(({ stagingUsers }) => ({
+        stagingUsers: removeReason(stagingUsers, key, stagingUsers.keySeq())
       }));
     }
-    // TODO implement other filters
   };
 
   hasFilters() {
