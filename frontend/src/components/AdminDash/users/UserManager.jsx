@@ -70,6 +70,7 @@ const Styled = {
 const MANUAL_FILTER_KEY = '__manual';
 const SEARCH_KEY_PREFIX = '__search@';
 const FILTER_KEY_PREFIX = '__filter@';
+const GLOBAL_FILTER_KEY = '__filter=global';
 
 const isSearchKey = key => key.startsWith(SEARCH_KEY_PREFIX);
 const makeSearchKey = (term, value) => `${SEARCH_KEY_PREFIX}${term}>>>${value}`;
@@ -81,6 +82,7 @@ const makeSearchLabel = (term, label) => (
 
 const makeFilterKey = (groupKey, entryKey, value) =>
   `${FILTER_KEY_PREFIX}${groupKey}>>>${entryKey}=${value}`;
+const globalFilterLabel = "All Volunteers";
 
 // Use Immutable's withMutations method to batch mutations
 const removeReason = (stagingUsers, reason, ids) =>
@@ -284,7 +286,13 @@ class UserManager extends React.Component {
         });
       }
 
-      // Add in all global reasons
+      if (exploreSearchValue == null && exploreFilters.length === 0) {
+        // All users were added at once
+        newFilters.push({ key: GLOBAL_FILTER_KEY, label: globalFilterLabel });
+        globalReasons.push(GLOBAL_FILTER_KEY);
+      }
+
+      // Add all reasons in global reasons to each new user
       newUsers.forEach(({ _id }) => {
         newUserReasonMap.update(_id, reasons => [...reasons, globalReasons]);
       });
@@ -353,6 +361,8 @@ class UserManager extends React.Component {
       inMailingList: this.isUserStaged(user._id)
     }));
 
+    const resolvedStagingFilters = this.getStagingFilters();
+    const stagingUserArray = Array.from(stagingUsers.values());
     return (
       <UserFilterContext.Provider
         value={{ initialValues: filterInitialValues, labels: filterLabels }}
@@ -385,10 +395,11 @@ class UserManager extends React.Component {
             </Styled.ToggleButton>
             {collapsed ? (
               <MailingListCollapsed
-                users={Array.from(stagingUsers.values())}
-                filters={this.getStagingFilters()}
+                users={stagingUserArray}
+                filters={resolvedStagingFilters}
                 onClearClick={this.clearMailingList}
                 onClearFilter={this.onClearFilter}
+                isEmpty={stagingUsers.size === 0 && resolvedStagingFilters.length === 0}
               />
             ) : (
               <MailingListExpanded />

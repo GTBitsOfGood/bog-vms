@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import FilterList from './FilterList';
 import { Button } from 'reactstrap';
-import { ClearButton } from '../../Shared';
+import { ClearButton, Icon } from '../../Shared';
 
 const Styled = {
   Container: styled.div`
@@ -50,10 +50,25 @@ const Styled = {
   `,
   FilterList: styled(FilterList)`
     margin-top: 1rem;
+  `,
+  EmptyContainer: styled.div`
+    margin: auto;
+    padding: 2rem;
+    text-align: center;
+  `,
+  EmptyText: styled.h4`
+    margin-bottom: 0;
+    font-size: 1.5rem;
+    line-height: 1.3;
+    color: ${props => props.theme.grey5};
+  `,
+  EmptyIcon: styled(Icon)`
+    transform: scale(3);
+    margin-bottom: 2.5rem;
   `
 };
 
-const MailingListCollapsed = ({ users, filters, onClearFilter, onClearClick }) => {
+const MailingListCollapsed = ({ users, filters, onClearFilter, onClearClick, isEmpty }) => {
   const onExportClick = () => {
     let url = users.reduce((prev, user) => prev + user.email + ',', 'mailto:');
     window.open(url, '_blank');
@@ -61,21 +76,31 @@ const MailingListCollapsed = ({ users, filters, onClearFilter, onClearClick }) =
 
   return (
     <Styled.Container>
-      <Styled.TopSection>
-        <Styled.Title>Mailing List</Styled.Title>
-        <Styled.Text>Currently you have</Styled.Text>
-        <Styled.UserCountBlock>{users.length || 0} volunteers</Styled.UserCountBlock>
-        <Styled.Text>in your mailing list with the filters:</Styled.Text>
-        <Styled.FilterList filters={filters} clearFilter={onClearFilter} vertical />
-      </Styled.TopSection>
-      <Styled.ButtonSection>
-        <Button onClick={onExportClick} color="dark" disabled={users.length === 0}>
-          Export
-        </Button>
-        <ClearButton onClick={onClearClick} disabled={users.length === 0}>
-          Clear List
-        </ClearButton>
-      </Styled.ButtonSection>
+      {isEmpty && (
+        <Styled.EmptyContainer>
+          <Styled.EmptyIcon name="empty" color="grey7" />
+          <Styled.EmptyText>Your mailing list is empty.</Styled.EmptyText>
+        </Styled.EmptyContainer>
+      )}
+      {!isEmpty && (
+        <>
+          <Styled.TopSection>
+            <Styled.Title>Mailing List</Styled.Title>
+            <Styled.Text>Currently you have</Styled.Text>
+            <Styled.UserCountBlock>{users.length || 0} volunteers</Styled.UserCountBlock>
+            <Styled.Text>in your mailing list with the filters:</Styled.Text>
+            <Styled.FilterList filters={filters} clearFilter={onClearFilter} vertical />
+          </Styled.TopSection>
+          <Styled.ButtonSection>
+            <Button onClick={onExportClick} color="dark" disabled={users.length === 0}>
+              Export
+            </Button>
+            <ClearButton onClick={onClearClick} disabled={users.length === 0}>
+              Clear List
+            </ClearButton>
+          </Styled.ButtonSection>
+        </>
+      )}
     </Styled.Container>
   );
 };
