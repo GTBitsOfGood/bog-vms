@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { FormGroup } from 'reactstrap';
 import { Form, Checkbox, FormOnChange, FormResetButton } from '../Forms';
 import { Collapse } from '../Shared';
-import { formValues } from './userFilters';
+import { UserFilterContext } from './users/context';
 import styled from 'styled-components';
 
 const Styled = {
@@ -34,30 +34,14 @@ const Styled = {
   `
 };
 
-const keyToLabel = key => {
-  const words = key.split('_');
-  const capitalizedWords = words.map(word => `${word[0].toUpperCase()}${word.slice(1)}`);
-  var d = new Date();
-  if (key === 'from_current_year') {
-    return d.getFullYear();
-  } else if (key === 'from_one_year_ago') {
-    return d.getFullYear() - 1;
-  } else if (key === 'from_two_years_ago') {
-    return d.getFullYear() - 2;
-  } else if (key === 'older') {
-    return d.getFullYear() - 3 + ' and older';
-  } else {
-    return capitalizedWords.join(' ');
-  }
-};
-
 const noop = () => {};
 
 const Filters = ({ onChange, onClear }) => {
+  const { labels, initialValues } = useContext(UserFilterContext);
   return (
-    <Form initialValues={formValues} onSubmit={noop}>
+    <Form initialValues={initialValues} onSubmit={noop}>
       <FormOnChange onChange={onChange} />
-      {Object.entries(formValues).map(([groupKey, filterGroup]) => (
+      {Object.entries(initialValues).map(([groupKey, filterGroup]) => (
         <FormGroup key={groupKey}>
           <Collapse title={filterGroup.label}>
             <Styled.GroupWrapper>
@@ -66,7 +50,7 @@ const Filters = ({ onChange, onClear }) => {
                   small
                   key={filter}
                   name={`${groupKey}.values.${filter}`}
-                  value={keyToLabel(filter)}
+                  value={labels[groupKey][filter]}
                 />
               ))}
             </Styled.GroupWrapper>

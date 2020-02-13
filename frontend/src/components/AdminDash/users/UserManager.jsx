@@ -10,6 +10,8 @@ import InfiniteScroll from 'components/Shared/InfiniteScroll';
 import MailingListCollapsed from './MailingListCollapsed';
 import MailingListExpanded from './MailingListExpanded';
 import { LeftCaretIcon } from 'components/Shared/Icon';
+import { initialValues, labels } from './userFilters';
+import { UserFilterContext } from './context';
 
 const Styled = {
   Container: styled.div`
@@ -27,10 +29,11 @@ const Styled = {
   MailingListContainer: styled.div`
     position: relative;
     height: 100%;
-    width: ${props => (props.collapsed ? '25rem' : '100%')};
-    ${props => !props.collapsed && 'margin-left: 2rem;'}
+    width: ${props => (props.isCollapsed ? '25rem' : '100%')};
+    ${props => !props.isCollapsed && 'margin-left: 2rem;'}
   `,
-  ToggleButton: styled(Button)`
+  // Remove isCollapsed to prevent it from being passed to the DOM
+  ToggleButton: styled(({ isCollapsed, ...rest }) => <Button {...rest} />)`
     position: absolute;
     padding: 0;
     display: flex;
@@ -45,7 +48,7 @@ const Styled = {
     border: none;
     border-radius: 50%;
     color: #969696;
-    ${props => !props.collapsed && 'transform: rotate(180deg);'}
+    ${props => !props.isCollapsed && 'transform: rotate(180deg);'}
 
     :focus {
       box-shadow: none;
@@ -60,12 +63,13 @@ const Styled = {
     margin-right: 1rem;
   `,
   Term: styled.span`
-    color: ${props => props.theme.grey5};
+    opacity: 0.7;
   `
 };
 
 const MANUAL_FILTER_KEY = '__manual';
 const SEARCH_KEY_PREFIX = '__search@';
+const FILTER_KEY_PREFIX = '__filter@';
 
 const isSearchKey = key => key.startsWith(SEARCH_KEY_PREFIX);
 const makeSearchKey = (term, value) => `${SEARCH_KEY_PREFIX}${term}>>>${value}`;
@@ -74,6 +78,9 @@ const makeSearchLabel = (term, label) => (
     <Styled.Term>{term}:</Styled.Term> &ldquo;{label}&rdquo;
   </React.Fragment>
 );
+
+const makeFilterKey = (groupKey, entryKey, value) =>
+  `${FILTER_KEY_PREFIX}${groupKey}>>>${entryKey}=${value}`;
 
 // Use Immutable's withMutations method to batch mutations
 const removeReason = (stagingUsers, reason, ids) =>
@@ -99,14 +106,18 @@ class UserManager extends React.Component {
     exploreSearchValue: null,
     exploreSearchTerm: null,
     isLoading: false,
+    isLoadingAddAll: false,
     collapsed: true,
     stagingFilters: [],
     // User id => staging user object map { user: object, reasons: Array<string> }
     //  - Reasons is string array of filter keys associated with why user is there
     //  - The set of keys = all user ids in staging mailing list
-    //  - Uses immutable maps/sets
+    //  - Uses immutable maps/sets from immutable.js
     stagingUsers: Map(),
-    stagingManualUserIds: Set()
+    stagingManualUserIds: Set(),
+    // Can be eventually refactored to be dynamic
+    filterInitialValues: initialValues,
+    filterLabels: labels
   };
 
   isUserStaged(id) {
@@ -148,7 +159,6 @@ class UserManager extends React.Component {
   };
 
   onToggleUserMailingList = idx => () => {
-    // TODO implement
     const { exploreUsers } = this.state;
     const user = exploreUsers[idx];
     if (this.isUserStaged(user._id)) {
@@ -227,7 +237,69 @@ class UserManager extends React.Component {
   };
 
   onAddAllClick = () => {
+    // Grab current filters into closure
+    const { exploreFilters, exploreSearchValue, exploreSearchTerm } = this.state;
+    this.setState({ isLoadingAddAll: true });
     // TODO implement dispatching API call to get all users
+    new Promise(resolve => setTimeout(resolve, 300)).then(() => {
+      const newUsers = []; // TODO replaceme with API result
+      const { stagingUsers, stagingFilters, filterLabels } = this.state;
+      const newUserReasonMap = stagingUsers.asMutable(); // Create as mutable to batch mutations
+      this.setState({ isLoadingAddAll: false });
+
+      // Add all users to new user reason map
+      newUsers.forEach(({ _id }) => {
+        if (!newUserReasonMap.has(_id)) {
+          newUserReasonMap.set(_id, []);
+        }
+      });
+
+      // Add filters to stagingFilters
+      const newFilters = [];
+      // Prepare global list of reasons to batch add at the end
+      const globalReasons = [];
+
+      if (exploreSearchValue != null) {
+        const searchKey = makeSearchKey(exploreSearchTerm, exploreSearchValue);
+        const searchLabel = makeSearchLabel(exploreSearchTerm, exploreSearchValue);
+        newFilters.push({ key: searchKey, label: searchLabel });
+        // Search values must apply to entire returned set, so add as global reason
+        globalReasons.push(searchKey);
+      }
+
+      if (exploreFilters.length > 0) {
+        exploreFilters.forEach(({ key: groupKey, values }) => {
+          const hasMultipleValues = values.length > 1;
+          Object.entries(values).forEach(([entryKey, entryValue]) => {
+            const filterKey = makeFilterKey(groupKey, entryKey, entryValue);
+            const filterLabel = filterLabels[groupKey][entryKey];
+            newFilters.push({ key: filterKey, label: filterLabel });
+            if (hasMultipleValues) {
+              // Single filter values must apply to entire returned set, so add as global reason
+              globalReasons.push(filterKey);
+            } else {
+              // TODO resolve non-disjoint filter reasons per user
+            }
+          });
+        });
+      }
+
+      // Add in all global reasons
+      newUsers.forEach(({ _id }) => {
+        newUserReasonMap.update(_id, reasons => [...reasons, globalReasons]);
+      });
+
+      this.setState(({ stagingFilters }) => {
+        const existingFilterKeys = new Set(stagingFilters.map(({ key }) => key));
+        return {
+          stagingUsers: newUserReasonMap.asImmutable(),
+          stagingFilters: [
+            ...stagingFilters,
+            ...newFilters.filter(({ key }) => !existingFilterKeys.has(key))
+          ]
+        };
+      });
+    });
   };
 
   onClearFilter = key => {
@@ -238,8 +310,9 @@ class UserManager extends React.Component {
         stagingUsers: removeReason(stagingUsers, MANUAL_FILTER_KEY, stagingManualUserIds)
       }));
     } else {
-      this.setState(({ stagingUsers }) => ({
-        stagingUsers: removeReason(stagingUsers, key, stagingUsers.keySeq())
+      this.setState(({ stagingUsers, stagingFilters }) => ({
+        stagingUsers: removeReason(stagingUsers, key, stagingUsers.keySeq()),
+        stagingFilters: stagingFilters.filter(({ key: filterKey }) => filterKey !== key)
       }));
     }
   };
@@ -263,7 +336,16 @@ class UserManager extends React.Component {
   }
 
   render() {
-    const { isLoading, exploreUsers, exploreCount, stagingUsers, collapsed } = this.state;
+    const {
+      isLoading,
+      exploreUsers,
+      exploreCount,
+      stagingUsers,
+      collapsed,
+      isLoadingAddAll,
+      filterInitialValues,
+      filterLabels
+    } = this.state;
 
     // Add the inMailingList prop to the currently displayed table users
     const mappedExploreUsers = exploreUsers.map(user => ({
@@ -272,40 +354,48 @@ class UserManager extends React.Component {
     }));
 
     return (
-      <Styled.Container>
-        <FilterSidebar onSearchSubmit={this.onSearchSubmit} onApplyFilters={this.onApplyFilters} />
-        {collapsed && (
-          <Styled.ListContainer>
-            <InfiniteScroll loadCallback={this.loadMoreUsers} isLoading={isLoading}>
-              <FilterInfo
-                filtersApplied={this.hasFilters()}
-                onClickAddAll={this.onAddAllClick}
-                matchedCount={exploreCount}
-              />
-              <UserTable
-                users={mappedExploreUsers}
-                editUserCallback={this.onEditUser}
-                onUserToggle={this.onToggleUserMailingList}
-              />
-            </InfiniteScroll>
-          </Styled.ListContainer>
-        )}
-        <Styled.MailingListContainer collapsed={collapsed}>
-          <Styled.ToggleButton collapsed={collapsed} onClick={this.onToggleCollapse}>
-            <LeftCaretIcon />
-          </Styled.ToggleButton>
-          {collapsed ? (
-            <MailingListCollapsed
-              users={Array.from(stagingUsers.values())}
-              filters={this.getStagingFilters()}
-              onClearClick={this.clearMailingList}
-              onClearFilter={this.onClearFilter}
-            />
-          ) : (
-            <MailingListExpanded />
+      <UserFilterContext.Provider
+        value={{ initialValues: filterInitialValues, labels: filterLabels }}
+      >
+        <Styled.Container>
+          <FilterSidebar
+            onSearchSubmit={this.onSearchSubmit}
+            onApplyFilters={this.onApplyFilters}
+          />
+          {collapsed && (
+            <Styled.ListContainer>
+              <InfiniteScroll loadCallback={this.loadMoreUsers} isLoading={isLoading}>
+                <FilterInfo
+                  filtersApplied={this.hasFilters()}
+                  onClickAddAll={this.onAddAllClick}
+                  matchedCount={exploreCount}
+                  loading={isLoadingAddAll}
+                />
+                <UserTable
+                  users={mappedExploreUsers}
+                  editUserCallback={this.onEditUser}
+                  onUserToggle={this.onToggleUserMailingList}
+                />
+              </InfiniteScroll>
+            </Styled.ListContainer>
           )}
-        </Styled.MailingListContainer>
-      </Styled.Container>
+          <Styled.MailingListContainer isCollapsed={collapsed}>
+            <Styled.ToggleButton isCollapsed={collapsed} onClick={this.onToggleCollapse}>
+              <LeftCaretIcon />
+            </Styled.ToggleButton>
+            {collapsed ? (
+              <MailingListCollapsed
+                users={Array.from(stagingUsers.values())}
+                filters={this.getStagingFilters()}
+                onClearClick={this.clearMailingList}
+                onClearFilter={this.onClearFilter}
+              />
+            ) : (
+              <MailingListExpanded />
+            )}
+          </Styled.MailingListContainer>
+        </Styled.Container>
+      </UserFilterContext.Provider>
     );
   }
 }

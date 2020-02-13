@@ -22,7 +22,7 @@ const Styled = {
     margin: 0.5rem 0;
   `,
   UserCountBlock: styled.div`
-    padding: 0.5rem 1rem;
+    padding: 0.6rem 1rem 0.5rem;
     background: #e5e5e5;
     border-radius: 2px;
     font-weight: bold;

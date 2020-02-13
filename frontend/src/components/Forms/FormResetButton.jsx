@@ -19,7 +19,7 @@ const FormResetButton = ({ formik, onClick, children, className, style }) => {
       onClick={useCallback(() => {
         formik.resetForm();
         onClick();
-      }, [formik.resetForm, onClick])}
+      }, [formik, onClick])}
       className={className}
       style={style}
     >

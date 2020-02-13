@@ -1,10 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { ClearButton } from 'components/Shared';
-import { transparentize } from "polished";
+import { ClearButton, Loading } from 'components/Shared';
+import { transparentize } from 'polished';
 
 const Styled = {
+  AddButtonContents: styled.span`
+    flex-grow: 1;
+  `,
   Outer: styled.div`
     background-color: ${props => props.theme.grey9};
     border-radius: 0 0 8px 8px;
@@ -28,25 +31,37 @@ const Styled = {
   AddButton: styled(ClearButton)`
     // Override default styles
     & > span {
-      padding: 0.9rem 1rem;
+      display: inline-flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 0.95rem 1rem 0.8rem;
       box-shadow: 0 2px 2px 0 ${props => props.theme.shadowLight};
       background-color: ${props => props.theme.grey10} !important;
+
+      // Decrease padding on left during loading
+      ${props => props.isLoading && `padding-left: 0.7rem;`}
     }
 
-    &:hover:not(:active) > span {
+    &:not(:disabled):hover:not(:active) > span {
       box-shadow: 0 4px 4px 0 ${props => props.theme.shadow};
     }
 
-    &:active > span {
+    &:not(:disabled):active > span {
       transform: translateY(1px);
     }
+  `,
+  Loading: styled(Loading)`
+    transform: scale(0.7);
+    width: initial !important;
+    margin: 0 0.5rem 0 0 !important;
+    opacity: 0.6;
   `
 };
 
 const formatVolunteerCount = amount =>
   amount === 1 ? `${amount} volunteer` : `${amount} volunteers`;
 
-const FilterInfo = ({ filtersApplied, onClickAddAll, matchedCount }) => (
+const FilterInfo = ({ filtersApplied, onClickAddAll, matchedCount, loading }) => (
   <Styled.Outer>
     <div>
       {filtersApplied ? (
@@ -57,13 +72,17 @@ const FilterInfo = ({ filtersApplied, onClickAddAll, matchedCount }) => (
         <>No search filters applied.</>
       )}
     </div>
-    <Styled.AddButton onClick={onClickAddAll}>Add all to mailing list</Styled.AddButton>
+    <Styled.AddButton onClick={onClickAddAll} disabled={loading} isLoading={loading}>
+      {loading && <Styled.Loading />}
+      <Styled.AddButtonContents>Add all to mailing list</Styled.AddButtonContents>
+    </Styled.AddButton>
   </Styled.Outer>
 );
 
 export default FilterInfo;
 
 FilterInfo.propTypes = {
+  loading: PropTypes.bool,
   filtersApplied: PropTypes.bool,
   matchedCount: PropTypes.number.isRequired,
   onClickAddAll: PropTypes.func

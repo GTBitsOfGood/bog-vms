@@ -7,7 +7,8 @@ const Styled = {
   ErrorMsg: styled(ErrorMessage)`
     color: red;
   `,
-  CustomInput: styled(CustomInput)`
+  // Remove small to prevent it from being passed to the DOM
+  CustomInput: styled(({small, ...rest}) => <CustomInput {...rest} />)`
     .custom-control-label {
       &::before,
       &::after {
