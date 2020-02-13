@@ -82,20 +82,21 @@ const makeSearchLabel = (term, label) => (
 
 const makeFilterKey = (groupKey, entryKey, value) =>
   `${FILTER_KEY_PREFIX}${groupKey}>>>${entryKey}=${value}`;
-const globalFilterLabel = "All Volunteers";
+const globalFilterLabel = 'All Volunteers';
 
 // Use Immutable's withMutations method to batch mutations
 const removeReason = (stagingUsers, reason, ids) =>
   stagingUsers.withMutations(map =>
     ids.forEach(id => {
-      const { reasons: oldReasons } = map.get(id);
+      const entry = map.get(id);
+      const oldReasons = entry.reasons;
       const newReasons = oldReasons.filter(r => r !== reason);
       if (newReasons.length === 0) {
         // Evict
         map.remove(id);
       } else {
         // Remove reason
-        map.set(id, newReasons);
+        map.set(id, { ...entry, reasons: oldReasons });
       }
     })
   );
@@ -245,14 +246,14 @@ class UserManager extends React.Component {
     // TODO implement dispatching API call to get all users
     new Promise(resolve => setTimeout(resolve, 300)).then(() => {
       const newUsers = []; // TODO replaceme with API result
-      const { stagingUsers, stagingFilters, filterLabels } = this.state;
+      const { stagingUsers, filterLabels } = this.state;
       const newUserReasonMap = stagingUsers.asMutable(); // Create as mutable to batch mutations
       this.setState({ isLoadingAddAll: false });
 
       // Add all users to new user reason map
-      newUsers.forEach(({ _id }) => {
-        if (!newUserReasonMap.has(_id)) {
-          newUserReasonMap.set(_id, []);
+      newUsers.forEach(user => {
+        if (!newUserReasonMap.has(user._id)) {
+          newUserReasonMap.set(user._id, { user, reasons: [] });
         }
       });
 
@@ -294,7 +295,10 @@ class UserManager extends React.Component {
 
       // Add all reasons in global reasons to each new user
       newUsers.forEach(({ _id }) => {
-        newUserReasonMap.update(_id, reasons => [...reasons, globalReasons]);
+        newUserReasonMap.update(_id, ({ user, reasons }) => ({
+          user,
+          reasons: [...reasons, globalReasons]
+        }));
       });
 
       this.setState(({ stagingFilters }) => {
@@ -311,6 +315,7 @@ class UserManager extends React.Component {
   };
 
   onClearFilter = key => {
+    console.log(this.state.stagingUsers);
     if (key === MANUAL_FILTER_KEY) {
       // Remove manual from list of reasons
       this.setState(({ stagingManualUserIds, stagingUsers }) => ({
@@ -362,7 +367,10 @@ class UserManager extends React.Component {
     }));
 
     const resolvedStagingFilters = this.getStagingFilters();
-    const stagingUserArray = Array.from(stagingUsers.values());
+    const stagingUserArray = stagingUsers
+      .valueSeq()
+      .map(({ user }) => user)
+      .toArray();
     return (
       <UserFilterContext.Provider
         value={{ initialValues: filterInitialValues, labels: filterLabels }}
