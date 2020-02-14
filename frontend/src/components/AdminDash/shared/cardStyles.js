@@ -35,6 +35,15 @@ const Card = styled.div `
   &:hover {
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   }
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+    margin-right: 0;
+    min-width: 0px;
+    min-height: 0px;
+    width: 100%;
+    padding-bottom: 100%;
+  }
 `;
 
 const cardContainer = styled.div `
