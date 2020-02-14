@@ -96,9 +96,10 @@ const EventManager = () => {
         </Styled.Button>
       </Styled.HeaderContainer>
 
-      <EventCardGrid 
-        events={events} 
+      <EventCardGrid
+        events={events}
         loading={loading}
+        onDeleteClicked={onDeleteClicked}
       />
 
      {/* <EventTable

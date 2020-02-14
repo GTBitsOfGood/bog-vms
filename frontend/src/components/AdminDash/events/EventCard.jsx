@@ -18,16 +18,16 @@ const Styled = {
 
 function TODO(){}
 
-function EventCard(props) {
+function EventCard({event, imgUrl, onDeleteClicked}) {
     return <Card.Card>
         <Card.cardContainer>
-            <Styled.Button onClick={() => TODO} close aria-label="Delete Event">
+            <Styled.Button onClick={() => onDeleteClicked(event)} close aria-label="Delete Event">
                 <Icon name="delete" color="grey9" />
             </Styled.Button>
-            <Card.imgPlaceholder src = {props.imgUrl} />
+            <Card.imgPlaceholder src = {imgUrl} />
             <Card.cardText>
-                <h4>{props.eventTitle}</h4>
-                <p>{props.eventDate}</p>
+                <h4>{event.name}</h4>
+                <p>{event.date}</p>
             </Card.cardText>
         </Card.cardContainer>
     </Card.Card>
