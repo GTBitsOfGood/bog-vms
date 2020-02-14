@@ -9,9 +9,10 @@ import { Button } from 'reactstrap';
 const Styled = {
     Button: styled(Button)`
         position: absolute;
-        margin-left: 80%;
+        align-self: flex-end;
         background: none;
         border: none;
+        opacity: 1.0;
     `
 };
 
@@ -20,7 +21,7 @@ function TODO(){}
 function EventCard(props) {
     return <Card.Card>
         <Card.cardContainer>
-            <Styled.Button onClick={() => TODO}>
+            <Styled.Button onClick={() => TODO} close aria-label="Delete Event">
                 <Icon name="delete" color="grey9" />
             </Styled.Button>
             <Card.imgPlaceholder src = {props.imgUrl} />
