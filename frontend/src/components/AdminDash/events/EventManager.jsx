@@ -100,7 +100,7 @@ const EventManager = () => {
         events={events} 
         loading={loading}
       />
-      
+
      {/* <EventTable
         events={events}
         loading={loading}
