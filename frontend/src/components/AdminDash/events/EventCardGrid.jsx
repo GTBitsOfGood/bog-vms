@@ -7,19 +7,31 @@ import styled from 'styled-components';
 import { Button } from 'reactstrap';
 import EventCard from './EventCard';
 
+const Styled = {
+    CardGridContainer: styled.div`
+        width: 100%;
+    `,
+    CardGridHeader: styled.h2 `
+     color: ${props => props.theme.primaryGrey};
+    `
+};
+
 
 function EventCardGrid(props) {
-    return <Card.cardGrid>
-        {!props.loading &&
-            props.events.map((event, idx) => (
-                <EventCard
-                    key = {event._id}
-                    event = {event}
-                    imgUrl = {"https://image.shutterstock.com/image-photo/beautiful-water-drop-on-dandelion-260nw-789676552.jpg"}
-                    onDeleteClicked = {props.onDeleteClicked}
-                />
+    return <Styled.CardGridContainer>
+        <Styled.CardGridHeader>{props.title}</Styled.CardGridHeader>
+        <Card.cardGrid>
+            {!props.loading &&
+                props.events.map((event, idx) => (
+                    <EventCard
+                        key = {event._id}
+                        event = {event}
+                        imgUrl = {"https://image.shutterstock.com/image-photo/beautiful-water-drop-on-dandelion-260nw-789676552.jpg"}
+                        onDeleteClicked = {props.onDeleteClicked}
+                    />
             ))}
-    </Card.cardGrid>
+        </Card.cardGrid>
+    </Styled.CardGridContainer>
 }
 
 export default EventCardGrid;

@@ -97,6 +97,7 @@ const EventManager = () => {
       </Styled.HeaderContainer>
 
       <EventCardGrid
+        title="All Events"
         events={events}
         loading={loading}
         onDeleteClicked={onDeleteClicked}
