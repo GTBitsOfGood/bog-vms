@@ -16,8 +16,6 @@ const Styled = {
     `
 };
 
-function TODO(){}
-
 function EventCard({event, imgUrl, onDeleteClicked}) {
     return <Card.Card>
         <Card.cardContainer>

@@ -13,7 +13,7 @@ const cardGrid = styled.div `
   display: flex;
   background: white;
   width: 100%;
-  max-width: 80rem;
+  overflow-x: auto;
   border-radius: 0.5rem;
   padding: 1rem;
   border: 0.1rem solid ${props => props.theme.grey9};
@@ -25,8 +25,8 @@ const Card = styled.div `
   overflow: hidden;
   margin: 10px;
   width: 25%;
-  min-width: 250px;
-  min-height: 250px;
+  min-width: 200px;
+  min-height: 200px;
   padding-bottom: 25%;
   border-radius: 10px;
   background: #e0e0e0;
@@ -34,15 +34,6 @@ const Card = styled.div `
 
   &:hover {
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-  }
-
-  @media (max-width: 768px) {
-    margin-left: 0;
-    margin-right: 0;
-    min-width: 0px;
-    min-height: 0px;
-    width: 100%;
-    padding-bottom: 100%;
   }
 `;
 
