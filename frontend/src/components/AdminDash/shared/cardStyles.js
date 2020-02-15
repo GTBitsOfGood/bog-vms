@@ -1,14 +1,5 @@
 import styled from 'styled-components';
 
-const Container = styled.div `
-  background: white;
-  width: 100%;
-  max-width: 80rem;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  border: 0.1rem solid ${props => props.theme.grey9};
-`;
-
 const cardGrid = styled.div `
   display: flex;
   background: white;
@@ -28,7 +19,7 @@ const Card = styled.div `
   min-width: 200px;
   min-height: 200px;
   padding-bottom: 25%;
-  border-radius: 10px;
+  border-radius: 0.5rem;
   background: #e0e0e0;
   transition: 0.3s;
 
@@ -61,12 +52,4 @@ const cardText = styled.div `
     background: #f8f8f8;
 `;
 
-
-const LoadingBody = styled.div `
-  height: 39rem;
-  width: 100%;
-  display: flex;
-  align-items: center;
-`;
-
-export { Container, cardGrid, Card, cardContainer, LoadingBody, cardText, imgPlaceholder};
+export { cardGrid, Card, cardContainer, cardText, imgPlaceholder};

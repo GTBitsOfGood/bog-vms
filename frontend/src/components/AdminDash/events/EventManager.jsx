@@ -19,6 +19,7 @@ const Styled = {
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow-y: auto;
   `,
   HeaderContainer: styled.div`
     width: 100%;

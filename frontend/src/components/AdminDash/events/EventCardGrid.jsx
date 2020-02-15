@@ -1,10 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import * as Card from '../shared/cardStyles';
-import Loading from 'components/Shared/Loading';
-import { Icon } from 'components/Shared';
 import styled from 'styled-components';
-import { Button } from 'reactstrap';
 import EventCard from './EventCard';
 
 const Styled = {
@@ -18,9 +14,17 @@ const Styled = {
 
 
 function EventCardGrid(props) {
+    // Check if any events exist and were loaded
+    let emptyEventsText;
+    if (!props.loading && props.events.length === 0) {
+        emptyEventsText = <h2>No events were found!</h2>
+    }
+
+    // Display a list of events
     return <Styled.CardGridContainer>
         <Styled.CardGridHeader>{props.title}</Styled.CardGridHeader>
         <Card.cardGrid>
+            {emptyEventsText}
             {!props.loading &&
                 props.events.map((event, idx) => (
                     <EventCard
@@ -29,7 +33,7 @@ function EventCardGrid(props) {
                         imgUrl = {"https://image.shutterstock.com/image-photo/beautiful-water-drop-on-dandelion-260nw-789676552.jpg"}
                         onDeleteClicked = {props.onDeleteClicked}
                     />
-            ))}
+                ))}
         </Card.cardGrid>
     </Styled.CardGridContainer>
 }
