@@ -17,6 +17,7 @@ const Styled = {
 };
 
 function EventCard({event, imgUrl, onDeleteClicked}) {
+    const eventDate = new Date(event.date);
     return <Card.Card>
         <Card.cardContainer>
             <Styled.Button onClick={() => onDeleteClicked(event)} close aria-label="Delete Event">
@@ -25,7 +26,7 @@ function EventCard({event, imgUrl, onDeleteClicked}) {
             <Card.imgPlaceholder src = {imgUrl} />
             <Card.cardText>
                 <h4>{event.name}</h4>
-                <p>{event.date}</p>
+                <p>{eventDate.toLocaleDateString()}</p>
             </Card.cardText>
         </Card.cardContainer>
     </Card.Card>

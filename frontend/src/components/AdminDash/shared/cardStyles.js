@@ -56,6 +56,8 @@ const cardText = styled.div `
     align-self: flex-end;
     padding: 0.5vw;
     width: 100%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     background: #f8f8f8;
 `;
 
