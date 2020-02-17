@@ -334,7 +334,7 @@ class UserManager extends React.Component {
 
   exportMailingList = () => {
     const { stagingUsers } = this.state;
-    let url = stagingUsers.reduce((prev, user) => prev + user.email + ',', 'mailto:');
+    let url = stagingUsers.reduce((prev, { user }) => prev + user.email + ',', 'mailto:');
     window.open(url, '_blank');
   };
 

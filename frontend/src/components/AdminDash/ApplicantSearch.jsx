@@ -12,7 +12,7 @@ const Styled = {
   `,
   BackButton: styled(ClearButton)`
     padding: 0;
-    transition: margin-right 0.2s, width 0.2s, opacity 0.2s;;
+    transition: margin-right 0.2s, width 0.2s, opacity 0.2s;
     width: ${props => (props.show ? '3.2rem' : '0')};
     margin-right: ${props => (props.show ? '0.2rem' : '0')};
     opacity: ${props => (props.show ? '1' : '0')};
@@ -32,7 +32,7 @@ const Styled = {
       transition: background-color 0.15s ease;
     }
   `,
-  SearchContainer: styled.form`
+  SearchContainer: styled.div`
     display: flex;
     flex-direction: row;
     margin-bottom: 1rem;
@@ -60,6 +60,8 @@ const Styled = {
   `
 };
 
+const SEARCH_DEBOUNCE_TIMEOUT = 500;
+
 class ApplicantSearch extends React.Component {
   constructor(props) {
     super(props);
@@ -70,16 +72,24 @@ class ApplicantSearch extends React.Component {
     };
   }
 
+  debounceSubmitTimeout = null;
   onSearchChange = event => {
     this.setState({ textInput: event.target.value });
     if (event.target.value === '') {
       this.onClearSearch();
+    } else {
+      const { searchSubmitCallback } = this.props;
+      const { textInput, placeholder } = this.state;
+      if (this.debounceSubmitTimeout != null) window.clearTimeout(this.debounceSubmitTimeout);
+      this.debounceSubmitTimeout = window.setTimeout(
+        () => searchSubmitCallback(textInput, placeholder),
+        SEARCH_DEBOUNCE_TIMEOUT
+      );
     }
   };
 
   onSubmitSearch = event => {
     event.preventDefault();
-    this.props.searchSubmitCallback(this.state.textInput, this.state.placeholder);
   };
 
   onClearSearch = () => {
@@ -106,7 +116,7 @@ class ApplicantSearch extends React.Component {
 
   render() {
     return (
-      <Styled.FilterContainer onSubmit={this.onSubmitSearch}>
+      <Styled.FilterContainer>
         <Styled.SearchContainer>
           <Styled.BackButton type="reset" show={this.state.textInput} onClick={this.onClearSearch}>
             <Icon name="back-arrow" />
