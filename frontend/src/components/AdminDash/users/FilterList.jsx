@@ -20,7 +20,7 @@ const RemoveButton = styled.div`
 `;
 
 const Label = styled.div`
-  padding: 0.7rem 2rem 0.45rem;
+  padding: 0.6rem 2.4rem 0.45rem;
   line-height: 1.2;
 `;
 

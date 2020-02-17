@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import VolunteerPill from './VolunteerPill';
 import { ClearButton, Loading } from 'components/Shared';
-import { transparentize } from 'polished';
 
 const Styled = {
   AddButtonContents: styled.span`
@@ -21,11 +21,7 @@ const Styled = {
     z-index: 1;
     position: relative;
   `,
-  Count: styled.span`
-    background-color: ${props => transparentize(0.4, props.theme.grey8)};
-    border-radius: 4px;
-    display: inline-block;
-    padding: 0.5rem 0.85rem;
+  Count: styled(VolunteerPill)`
     margin-right: 0.75rem;
   `,
   AddButton: styled(ClearButton)`
@@ -58,15 +54,12 @@ const Styled = {
   `
 };
 
-const formatVolunteerCount = amount =>
-  amount === 1 ? `${amount} volunteer` : `${amount} volunteers`;
-
 const FilterInfo = ({ filtersApplied, onClickAddAll, matchedCount, loading }) => (
   <Styled.Outer>
     <div>
       {filtersApplied ? (
         <>
-          <Styled.Count>{formatVolunteerCount(matchedCount)}</Styled.Count>match your search filters
+          <Styled.Count count={matchedCount} />match your search filters
         </>
       ) : (
         <>No search filters applied.</>

@@ -3,7 +3,7 @@ import UserTable from './UserTable';
 import styled from 'styled-components';
 import { fetchUserManagementData } from '../queries';
 import { Button } from 'reactstrap';
-import { Set, Map } from 'immutable';
+import { Set, OrderedMap } from 'immutable';
 import FilterSidebar from './FilterSidebar';
 import FilterInfo from './FilterInfo';
 import InfiniteScroll from 'components/Shared/InfiniteScroll';
@@ -72,7 +72,6 @@ const SEARCH_KEY_PREFIX = '__search@';
 const FILTER_KEY_PREFIX = '__filter@';
 const GLOBAL_FILTER_KEY = '__filter=global';
 
-const isSearchKey = key => key.startsWith(SEARCH_KEY_PREFIX);
 const makeSearchKey = (term, value) => `${SEARCH_KEY_PREFIX}${term}>>>${value}`;
 const makeSearchLabel = (term, label) => (
   <React.Fragment>
@@ -116,11 +115,13 @@ class UserManager extends React.Component {
     //  - Reasons is string array of filter keys associated with why user is there
     //  - The set of keys = all user ids in staging mailing list
     //  - Uses immutable maps/sets from immutable.js
-    stagingUsers: Map(),
+    stagingUsers: OrderedMap(),
     stagingManualUserIds: Set(),
     // Can be eventually refactored to be dynamic
-    filterInitialValues: initialValues,
-    filterLabels: labels
+    filterContext: {
+      initialValues,
+      labels
+    }
   };
 
   isUserStaged(id) {
@@ -149,13 +150,7 @@ class UserManager extends React.Component {
     });
   };
 
-  onEditUser = () => {
-    // TODO implement?
-    // ? what is this function for?
-  };
-
   onToggleCollapse = () => {
-    // TODO implement expanded view
     this.setState(({ collapsed }) => ({
       collapsed: !collapsed
     }));
@@ -166,15 +161,7 @@ class UserManager extends React.Component {
     const user = exploreUsers[idx];
     if (this.isUserStaged(user._id)) {
       // Force unstage
-      const { stagingManualUserIds } = this.state;
-      this.setState(({ stagingUsers }) => ({ stagingUsers: stagingUsers.delete(user._id) }));
-      if (stagingManualUserIds.has(user._id)) {
-        // Only remove from manual Ids if staged with it to prevent new reference being created
-        // for stagingManualUserIds
-        this.setState(({ stagingManualUserIds }) => ({
-          stagingManualUserIds: stagingManualUserIds.delete(user._id)
-        }));
-      }
+      this.unstage(user._id);
     } else {
       // Stage as manual
       this.setState(({ stagingManualUserIds, stagingUsers }) => ({
@@ -187,10 +174,23 @@ class UserManager extends React.Component {
     }
   };
 
+  onUserUnstage = id => this.unstage(id);
+
+  unstage(id) {
+    this.setState(({ stagingManualUserIds, stagingUsers }) => ({
+      stagingUsers: stagingUsers.delete(id),
+      // Only remove from manual Ids if staged with it to prevent new collection being created
+      // for stagingManualUserIds when it doesn't change
+      stagingManualUserIds: stagingManualUserIds.has(id)
+        ? stagingManualUserIds.delete(id)
+        : stagingManualUserIds
+    }));
+  }
+
   clearMailingList = () => {
     this.setState({
       stagingFilters: [],
-      stagingUsers: Map(),
+      stagingUsers: OrderedMap(),
       stagingManualUserIds: Set()
     });
   };
@@ -246,7 +246,10 @@ class UserManager extends React.Component {
     // TODO implement dispatching API call to get all users
     new Promise(resolve => setTimeout(resolve, 300)).then(() => {
       const newUsers = []; // TODO replaceme with API result
-      const { stagingUsers, filterLabels } = this.state;
+      const {
+        stagingUsers,
+        filterContext: { labels }
+      } = this.state;
       const newUserReasonMap = stagingUsers.asMutable(); // Create as mutable to batch mutations
       this.setState({ isLoadingAddAll: false });
 
@@ -275,7 +278,7 @@ class UserManager extends React.Component {
           const hasMultipleValues = values.length > 1;
           Object.entries(values).forEach(([entryKey, entryValue]) => {
             const filterKey = makeFilterKey(groupKey, entryKey, entryValue);
-            const filterLabel = filterLabels[groupKey][entryKey];
+            const filterLabel = labels[groupKey][entryKey];
             newFilters.push({ key: filterKey, label: filterLabel });
             if (hasMultipleValues) {
               // Single filter values must apply to entire returned set, so add as global reason
@@ -315,7 +318,6 @@ class UserManager extends React.Component {
   };
 
   onClearFilter = key => {
-    console.log(this.state.stagingUsers);
     if (key === MANUAL_FILTER_KEY) {
       // Remove manual from list of reasons
       this.setState(({ stagingManualUserIds, stagingUsers }) => ({
@@ -330,6 +332,12 @@ class UserManager extends React.Component {
     }
   };
 
+  exportMailingList = () => {
+    const { stagingUsers } = this.state;
+    let url = stagingUsers.reduce((prev, user) => prev + user.email + ',', 'mailto:');
+    window.open(url, '_blank');
+  };
+
   hasFilters() {
     const { exploreFilters, exploreSearchTerm, isLoading } = this.state;
     return !isLoading && (exploreFilters.length > 0 || exploreSearchTerm != null);
@@ -339,7 +347,7 @@ class UserManager extends React.Component {
     const { stagingManualUserIds, stagingFilters } = this.state;
     const manualCount = stagingManualUserIds.size;
     const filters = [...stagingFilters];
-    if (manualCount) {
+    if (manualCount > 0) {
       filters.push({
         key: MANUAL_FILTER_KEY,
         label: `+ ${manualCount} other ${manualCount === 1 ? 'volunteer' : 'volunteers'}`
@@ -356,25 +364,13 @@ class UserManager extends React.Component {
       stagingUsers,
       collapsed,
       isLoadingAddAll,
-      filterInitialValues,
-      filterLabels
+      filterContext
     } = this.state;
 
-    // Add the inMailingList prop to the currently displayed table users
-    const mappedExploreUsers = exploreUsers.map(user => ({
-      ...user,
-      inMailingList: this.isUserStaged(user._id)
-    }));
-
     const resolvedStagingFilters = this.getStagingFilters();
-    const stagingUserArray = stagingUsers
-      .valueSeq()
-      .map(({ user }) => user)
-      .toArray();
+    const MailingList = collapsed ? MailingListCollapsed : MailingListExpanded;
     return (
-      <UserFilterContext.Provider
-        value={{ initialValues: filterInitialValues, labels: filterLabels }}
-      >
+      <UserFilterContext.Provider value={filterContext}>
         <Styled.Container>
           <FilterSidebar
             onSearchSubmit={this.onSearchSubmit}
@@ -389,9 +385,9 @@ class UserManager extends React.Component {
                   matchedCount={exploreCount}
                   loading={isLoadingAddAll}
                 />
-                <UserTable
-                  users={mappedExploreUsers}
-                  editUserCallback={this.onEditUser}
+                <StagableUserTable
+                  users={exploreUsers}
+                  stagingUsersMap={stagingUsers}
                   onUserToggle={this.onToggleUserMailingList}
                 />
               </InfiniteScroll>
@@ -401,17 +397,16 @@ class UserManager extends React.Component {
             <Styled.ToggleButton isCollapsed={collapsed} onClick={this.onToggleCollapse}>
               <LeftCaretIcon />
             </Styled.ToggleButton>
-            {collapsed ? (
-              <MailingListCollapsed
-                users={stagingUserArray}
-                filters={resolvedStagingFilters}
-                onClearClick={this.clearMailingList}
-                onClearFilter={this.onClearFilter}
-                isEmpty={stagingUsers.size === 0 && resolvedStagingFilters.length === 0}
-              />
-            ) : (
-              <MailingListExpanded />
-            )}
+            <MailingList
+              listSize={stagingUsers.size}
+              filters={resolvedStagingFilters}
+              onClearClick={this.clearMailingList}
+              onExportClick={this.exportMailingList}
+              onClearFilter={this.onClearFilter}
+              onUserRemove={this.onUserUnstage}
+              isEmpty={stagingUsers.size === 0 && resolvedStagingFilters.length === 0}
+              usersMap={stagingUsers}
+            />
           </Styled.MailingListContainer>
         </Styled.Container>
       </UserFilterContext.Provider>
@@ -420,3 +415,14 @@ class UserManager extends React.Component {
 }
 
 export default UserManager;
+
+// Memoize user list to prevent re-renders on actions such as add all to list API dispatch
+const StagableUserTable = React.memo(({ onUserToggle, users, stagingUsersMap }) => (
+  <UserTable
+    users={users.map(user => ({
+      ...user,
+      inMailingList: stagingUsersMap.has(user._id)
+    }))}
+    onUserToggle={onUserToggle}
+  />
+));

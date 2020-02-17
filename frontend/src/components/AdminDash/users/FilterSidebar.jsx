@@ -29,4 +29,4 @@ FilterSidebar.propTypes = {
   onApplyFilters: PropTypes.func.isRequired
 }
 
-export default FilterSidebar;
+export default React.memo(FilterSidebar);
