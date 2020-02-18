@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 import ApplicantSearch from '../ApplicantSearch';
 
 const Styled = {
@@ -13,20 +13,16 @@ const Styled = {
   `
 };
 
-const FilterSidebar = ({onSearchSubmit, onApplyFilters}) => {
+const FilterSidebar = ({ onSubmit }) => {
   return (
     <Styled.Container>
-      <ApplicantSearch
-        searchSubmitCallback={onSearchSubmit}
-        applyFiltersCallback={onApplyFilters}
-      />
+      <ApplicantSearch onSubmit={onSubmit} />
     </Styled.Container>
   );
 };
 
 FilterSidebar.propTypes = {
-  onSearchSubmit: PropTypes.func.isRequired,
-  onApplyFilters: PropTypes.func.isRequired
-}
+  onSubmit: PropTypes.func.isRequired
+};
 
 export default React.memo(FilterSidebar);

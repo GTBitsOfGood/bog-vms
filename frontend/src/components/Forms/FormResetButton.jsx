@@ -17,8 +17,8 @@ const FormResetButton = ({ formik, onClick, children, className, style }) => {
   return (
     <Styled.Button
       onClick={useCallback(() => {
-        formik.resetForm();
         onClick();
+        formik.resetForm();
       }, [formik, onClick])}
       className={className}
       style={style}

@@ -1,11 +1,18 @@
-import React from 'react';
+import { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'formik';
 
-const FormOnChange = ({ formik, onChange }) => {
+const FormOnChange = ({ formik, onChange, raiseInitial }) => {
   const { values } = formik;
-  React.useEffect(() => {
-    onChange(values);
+  const firstOnChange = useRef(true);
+  useEffect(() => {
+    // Skip first onChange
+    if (raiseInitial || !firstOnChange.current) {
+      console.log("form on change");
+      onChange(values);
+    }
+
+    if (firstOnChange.current) firstOnChange.current = false;
   }, [values, onChange]);
   return null;
 };
@@ -13,5 +20,6 @@ const FormOnChange = ({ formik, onChange }) => {
 export default connect(FormOnChange);
 
 FormOnChange.propTypes = {
-    onChange: PropTypes.func.isRequired
-}
+  onChange: PropTypes.func.isRequired,
+  raiseInitial: PropTypes.bool
+};

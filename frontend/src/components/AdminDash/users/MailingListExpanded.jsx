@@ -42,8 +42,7 @@ const Styled = {
     overflow: auto;
     background: ${props =>
       props.isEmpty ? transparentize(0.5, props.theme.grey10) : 'transparent'};
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+    margin: 1rem 0;
     padding: 0 1.5rem;
   `,
   FilterList: styled(FilterList)`
@@ -99,8 +98,8 @@ const MailingListExpanded = ({
       <Styled.Top>
         <Styled.Title>Mailing List</Styled.Title>
         <Styled.Text>
-          Currently, you have <Styled.Count count={listSize} /> on your mailing list with the
-          filters:
+          Currently, you have <Styled.Count count={listSize} /> on your mailing list with
+          {filters.length > 0 ? ' the filters:' : ' no filters.'}
         </Styled.Text>
         <Styled.FilterList filters={filters} clearFilter={onClearFilter} />
       </Styled.Top>

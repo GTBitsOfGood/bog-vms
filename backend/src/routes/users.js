@@ -62,6 +62,86 @@ router.post('/', USER_DATA_VALIDATOR, (req, res, next) => {
     });
 });
 
+// Added to fulfill requirements of UserManager page
+router.get('/search', (req, res, next) => {
+  const filter = {};
+  const invalidParam = name =>
+    res.status(400).json({ error: `Malformed request: invalid ${name} param` });
+
+  // Search param is for textual search: { value: '', term: 'All' }
+  if (req.query.search) {
+    try {
+      const search = JSON.parse(req.query.search);
+      if (search != null && search.value != null && search.term != null) {
+        // TODO implement text search via Mongoose
+      } else return invalidParam('search');
+    } catch (err) {
+      return invalidParam('search');
+    }
+  }
+
+  if (req.query.filters) {
+    try {
+      const filters = JSON.parse(req.query.filters);
+      if (
+        filters != null &&
+        typeof filters === 'object' &&
+        Array.isArray(filters)
+      ) {
+        // TODO implement filter matching via Mongoose
+      } else return invalidParam('filters');
+    } catch (err) {
+      return invalidParam('filters');
+    }
+  }
+
+  const parsedLimit = parseInt(req.query.limit, 10);
+  let limit = null;
+  // limit = 0 means no limit
+  if (parsedLimit !== 0) limit = parsedLimit || DEFAULT_PAGE_SIZE;
+  const baseAggregateStages = [
+    { $sort: { _id: -1 } },
+    { $match: filter },
+    {
+      $project: {
+        name: { $concat: ['$bio.first_name', ' ', '$bio.last_name'] },
+        email: '$bio.email',
+        role: 1,
+        status: 1
+      }
+    }
+  ];
+  if (req.query.start) {
+    // If pagination was supplied to the request, then do not load all users to count them
+    filter._id = { $lt: mongoose.Types.ObjectId(req.query.start) };
+    // Skip limit if not set
+    const aggregateStages =
+      limit == null
+        ? baseAggregateStages
+        : [...baseAggregateStages, { $limit: limit }];
+    UserData.aggregate(aggregateStages)
+      .then(users => res.status(200).json({ users }))
+      .catch(err => next(err));
+  } else {
+    // Pagination not supplied, so determine the total count for initial request
+    // See https://stackoverflow.com/a/49483919
+    const facet = {
+      $facet: {
+        // Skip limit if not set, use empty match as pipeline without limit
+        users: limit == null ? [{ $match: {} }] : [{ $limit: limit }],
+        count: [{ $count: 'count' }]
+      }
+    };
+    UserData.aggregate([...baseAggregateStages, facet])
+      .then(result => {
+        const [{ users, count: countResult }] = result;
+        const [{ count }] = countResult;
+        res.status(200).json({ users, count });
+      })
+      .catch(err => next(err));
+  }
+});
+
 router.get('/', (req, res, next) => {
   const filter = {};
   if (req.query.type) {

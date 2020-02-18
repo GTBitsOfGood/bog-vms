@@ -81,3 +81,5 @@ export const labels = {
   role: createLabels(initialValues.role.values),
   skills_interests: createLabels(initialValues.skills_interests.values)
 };
+
+export const searchTerms = ['All', 'Bio', 'Email', 'Phone Number'];

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { FormGroup } from 'reactstrap';
 import { Form, Checkbox, FormOnChange, FormResetButton } from '../Forms';
@@ -38,9 +38,21 @@ const noop = () => {};
 
 const Filters = ({ onChange, onClear }) => {
   const { labels, initialValues } = useContext(UserFilterContext);
+  // Prevent double invokation of callback functions on clear
+  const isClearing = useRef(false);
+  const handleClear = useCallback(() => {
+    isClearing.current = true;
+    onClear();
+  });
+  const handleChange = useCallback((...args) => {
+    if (isClearing.current) {
+      // Skip next onChange event
+      isClearing.current = false;
+    } else onChange(...args);
+  });
   return (
     <Form initialValues={initialValues} onSubmit={noop}>
-      <FormOnChange onChange={onChange} />
+      <FormOnChange onChange={handleChange} />
       {Object.entries(initialValues).map(([groupKey, filterGroup]) => (
         <FormGroup key={groupKey}>
           <Collapse title={filterGroup.label}>
@@ -57,7 +69,7 @@ const Filters = ({ onChange, onClear }) => {
           </Collapse>
         </FormGroup>
       ))}
-      <FormResetButton onClick={onClear}>Clear Filters</FormResetButton>
+      <FormResetButton onClick={handleClear}>Clear Filters</FormResetButton>
     </Form>
   );
 };

@@ -7,7 +7,7 @@ import { filterApplicants, fetchMoreApplicants, searchApplicants } from './queri
 import styled from 'styled-components';
 import ApplicantSearch from './ApplicantSearch';
 import { Button } from 'reactstrap';
-import { initialValues, labels } from './users/userFilters';
+import { initialValues, labels, searchTerms } from './users/userFilters';
 import { UserFilterContext } from './users/context';
 
 const Styled = {
@@ -50,8 +50,11 @@ class AdminDash extends Component {
     selectedApplicantIndex: 0,
     applicants: [],
     // Can be eventually refactored to be dynamic
-    filterInitialValues: initialValues,
-    filterLabels: labels
+    filterContext: {
+      initialValues,
+      searchTerms,
+      labels
+    }
   };
 
   onSelectApplicant = index => {
@@ -117,18 +120,11 @@ class AdminDash extends Component {
       })
     );
   };
+  
   render() {
-    const {
-      isLoading,
-      applicants,
-      selectedApplicantIndex,
-      filterInitialValues,
-      filterLabels
-    } = this.state;
+    const { isLoading, applicants, selectedApplicantIndex, filterContext } = this.state;
     return (
-      <UserFilterContext.Provider
-        value={{ initialValues: filterInitialValues, labels: filterLabels }}
-      >
+      <UserFilterContext.Provider value={filterContext}>
         <Styled.Container>
           <Styled.Main>
             <InfiniteScroll loadCallback={this.onLoadMoreApplicants} isLoading={isLoading}>

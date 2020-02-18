@@ -1,7 +1,7 @@
 import React from 'react';
 import UserTable from './UserTable';
 import styled from 'styled-components';
-import { fetchUserManagementData } from '../queries';
+import { fetchUserData } from '../queries';
 import { Button } from 'reactstrap';
 import { Set, OrderedMap } from 'immutable';
 import FilterSidebar from './FilterSidebar';
@@ -10,7 +10,7 @@ import InfiniteScroll from 'components/Shared/InfiniteScroll';
 import MailingListCollapsed from './MailingListCollapsed';
 import MailingListExpanded from './MailingListExpanded';
 import { LeftCaretIcon } from 'components/Shared/Icon';
-import { initialValues, labels } from './userFilters';
+import { initialValues, labels, searchTerms } from './userFilters';
 import { UserFilterContext } from './context';
 
 const Styled = {
@@ -95,10 +95,35 @@ const removeReason = (stagingUsers, reason, ids) =>
         map.remove(id);
       } else {
         // Remove reason
-        map.set(id, { ...entry, reasons: oldReasons });
+        map.set(id, { ...entry, reasons: newReasons });
       }
     })
   );
+
+// Converts filter shape from:
+//   { group1: { valueA: false, valueB: true }, group2: { valueA: false } }
+// to: (valueA gets removed,, and group2 isn't included)
+//   [ { key: "group1", values: { valueB: true } } ]
+// This makes it easier to determine if any filters have been applied and
+// to convert the current filter set to a JSON-serializable API query param
+const convertFilterShape = filters =>
+  Object.entries(filters).reduce((filterEntries, [groupKey, { values }]) => {
+    let reducedFilterOptions = null;
+    Object.entries(values).forEach(([optionKey, optionValue]) => {
+      if (optionValue) {
+        // Truthy filter value: add to reduced options
+        if (reducedFilterOptions == null) reducedFilterOptions = {};
+        reducedFilterOptions[optionKey] = optionValue;
+      }
+    });
+
+    if (reducedFilterOptions == null) {
+      // Skip empty filter groups
+      return filterEntries;
+    } else {
+      return [...filterEntries, { key: groupKey, values: reducedFilterOptions }];
+    }
+  }, []);
 
 class UserManager extends React.Component {
   state = {
@@ -120,6 +145,7 @@ class UserManager extends React.Component {
     // Can be eventually refactored to be dynamic
     filterContext: {
       initialValues,
+      searchTerms,
       labels
     }
   };
@@ -130,25 +156,9 @@ class UserManager extends React.Component {
   }
 
   componentDidMount() {
-    this.loadMoreUsers();
+    const { exploreFilters, exploreSearchTerm, exploreSearchValue } = this.state;
+    this.fetchUsers(exploreFilters, exploreSearchTerm, exploreSearchValue);
   }
-
-  loadMoreUsers = () => {
-    // TODO make function use current filters
-    const { exploreUsers } = this.state;
-    const lastPaginationId = exploreUsers.length ? exploreUsers[exploreUsers.length - 1]._id : 0;
-    this.setState({
-      isLoading: true
-    });
-    fetchUserManagementData(lastPaginationId).then(result => {
-      if (result && result.data && result.data.users) {
-        this.setState(({ exploreUsers }) => ({
-          exploreUsers: exploreUsers.concat(result.data.users),
-          isLoading: false
-        }));
-      }
-    });
-  };
 
   onToggleCollapse = () => {
     this.setState(({ collapsed }) => ({
@@ -195,57 +205,90 @@ class UserManager extends React.Component {
     });
   };
 
-  onSearchSubmit = (searchValue, searchTerm) => {
-    // TODO dispatch API call to update table and count
-    const isEmpty = searchValue === '';
-    this.setState({
-      exploreSearchValue: isEmpty ? null : searchValue,
-      exploreSearchTerm: isEmpty ? null : searchTerm
+  // Track when a new batch of users is being fetched to take priority over fetchMoreUsers" call
+  fetchingNewBatch = false;
+
+  // Fetches new batch of users (both initially and when filters/search change), clearing
+  // the current grid and taking priority over a "fetchMoreUsers" call
+  fetchUsers(filters, searchTerm, searchValue) {
+    this.fetchingNewBatch = true;
+    this.setState({ isLoading: true, exploreUsers: [] });
+    fetchUserData({ filters, searchTerm, searchValue, limit: 15 }).then(response => {
+      const { users, count } = response.data;
+      this.setState({ isLoading: false, exploreUsers: users, exploreCount: count });
+      this.fetchingNewBatch = false;
     });
+  }
+
+  // Fetches the next page of users from the API, using the current filters as the basis. Called
+  // using infinite scroll. The fetch action can be effectively cancelled by changing the filters/search
+  // during it, which will involve a call to "fetchUsers"
+  fetchMoreUsers(filters, searchTerm, searchValue, paginationId = null) {
+    if (this.fetchingNewBatch) return;
+    this.setState({ isLoading: true });
+    fetchUserData({ filters, searchTerm, searchValue, start: paginationId, limit: 10 }).then(
+      response => {
+        const { users } = response.data;
+        if (this.fetchingNewBatch) return;
+        this.setState(({ exploreUsers }) => ({
+          isLoading: false,
+          exploreUsers: exploreUsers.concat(users)
+        }));
+      }
+    );
+  }
+
+  // Fetches ever user that matches the given search/filter, used when the admin clicks "Add
+  // all to mailing list.sp"
+  fetchAllUsers(filters, searchTerm, searchValue) {
+    return fetchUserData({ filters, searchTerm, searchValue, limit: 0 }).then(
+      response => response.data.users
+    );
+  }
+
+  loadMoreUsers = () => {
+    const {
+      exploreUsers,
+      exploreCount,
+      exploreFilters,
+      exploreSearchTerm,
+      exploreSearchValue
+    } = this.state;
+    // Only fetch more users if there are more to fetch
+    if (exploreUsers.length < exploreCount) {
+      const lastPaginationId = exploreUsers.length
+        ? exploreUsers[exploreUsers.length - 1]._id
+        : null;
+      this.fetchMoreUsers(exploreFilters, exploreSearchTerm, exploreSearchValue, lastPaginationId);
+    }
   };
 
-  // Converts filter shape from:
-  //   { group1: { valueA: false, valueB: true }, group2: { valueA: false } }
-  // to: (valueA gets removed,, and group2 isn't included)
-  //   [ { key: "group1", values: { valueB: true } } ]
-  // This makes it easier to determine if any filters have been applied and
-  // to convert the current filter set to a JSON-serializable API query param
-  onApplyFilters = filters => {
-    // TODO dispatch API call to update table and count
-    // TODO replaces partial functionality in queries.js
+  onSubmit = (filters, searchValue, searchTerm) => {
+    let exploreFilters = null;
     if (filters == null) {
       // Clear filters
-      this.setState({ exploreFilters: [] });
+      exploreFilters = [];
     } else {
-      this.setState({
-        exploreFilters: Object.entries(filters).reduce((filterEntries, [groupKey, { values }]) => {
-          let reducedFilterOptions = null;
-          Object.entries(values).forEach(([optionKey, optionValue]) => {
-            if (optionValue) {
-              // Truthy filter value: add to reduced options
-              if (reducedFilterOptions == null) reducedFilterOptions = {};
-              reducedFilterOptions[optionKey] = optionValue;
-            }
-          });
-
-          if (reducedFilterOptions == null) {
-            // Skip empty filter groups
-            return filterEntries;
-          } else {
-            return [...filterEntries, { key: groupKey, values: reducedFilterOptions }];
-          }
-        }, [])
-      });
+      exploreFilters = convertFilterShape(filters);
     }
+
+    const isEmpty = searchValue === '';
+    const exploreSearchValue = isEmpty ? null : searchValue;
+    const exploreSearchTerm = isEmpty ? null : searchTerm;
+
+    this.setState({
+      exploreFilters,
+      exploreSearchValue: searchValue,
+      exploreSearchTerm: searchTerm
+    });
+    this.fetchUsers(exploreFilters, exploreSearchTerm, exploreSearchValue);
   };
 
   onAddAllClick = () => {
     // Grab current filters into closure
     const { exploreFilters, exploreSearchValue, exploreSearchTerm } = this.state;
     this.setState({ isLoadingAddAll: true });
-    // TODO implement dispatching API call to get all users
-    new Promise(resolve => setTimeout(resolve, 300)).then(() => {
-      const newUsers = []; // TODO replaceme with API result
+    this.fetchAllUsers(exploreFilters, exploreSearchValue, exploreSearchTerm).then(newUsers => {
       const {
         stagingUsers,
         filterContext: { labels }
@@ -300,7 +343,7 @@ class UserManager extends React.Component {
       newUsers.forEach(({ _id }) => {
         newUserReasonMap.update(_id, ({ user, reasons }) => ({
           user,
-          reasons: [...reasons, globalReasons]
+          reasons: [...reasons, ...globalReasons]
         }));
       });
 
@@ -372,13 +415,14 @@ class UserManager extends React.Component {
     return (
       <UserFilterContext.Provider value={filterContext}>
         <Styled.Container>
-          <FilterSidebar
-            onSearchSubmit={this.onSearchSubmit}
-            onApplyFilters={this.onApplyFilters}
-          />
+          <FilterSidebar onSubmit={this.onSubmit} />
           {collapsed && (
             <Styled.ListContainer>
-              <InfiniteScroll loadCallback={this.loadMoreUsers} isLoading={isLoading}>
+              <InfiniteScroll
+                loadCallback={this.loadMoreUsers}
+                isLoading={isLoading}
+                hasMoreItems={exploreUsers.length < exploreCount}
+              >
                 <FilterInfo
                   filtersApplied={this.hasFilters()}
                   onClickAddAll={this.onAddAllClick}
