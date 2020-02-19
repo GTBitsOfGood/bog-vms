@@ -14,8 +14,10 @@ const Styled = {
     padding: 1rem;
   `,
   Icon: styled(Icon)`
+    user-select: none;
+
     // Correct visual size of icons
-    transform: ${props => props.isRemove ? "scale(0.84)" : "none"};
+    transform: ${props => (props.isRemove ? 'scale(0.84)' : 'none')};
 
     // Hover style
     opacity: 0.7;
@@ -26,7 +28,7 @@ const Styled = {
     }
 
     &:active {
-      transform: ${props => props.isRemove ? "translateY(1px) scale(0.84)" : "translateY(1px)"};
+      transform: ${props => (props.isRemove ? 'translateY(1px) scale(0.84)' : 'translateY(1px)')};
     }
   `
 };
@@ -48,7 +50,7 @@ class UserTable extends React.Component {
       userSelectedForEdit: null
     };
   }
-  
+
   onDisplayEditUserModal = userToEdit => {
     console.log(userToEdit);
     this.setState({

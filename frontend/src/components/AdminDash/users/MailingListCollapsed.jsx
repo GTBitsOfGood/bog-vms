@@ -86,8 +86,12 @@ const MailingListCollapsed = ({
 );
 
 MailingListCollapsed.propTypes = {
-  filters: PropTypes.arrayOf(PropTypes.shape({ key: PropTypes.string, label: PropTypes.string }))
-    .isRequired,
+  filters: PropTypes.arrayOf(
+    PropTypes.shape({
+      key: PropTypes.string,
+      label: PropTypes.node
+    })
+  ).isRequired,
   listSize: PropTypes.number.isRequired,
   onClearClick: PropTypes.func.isRequired,
   onExportClick: PropTypes.func.isRequired,

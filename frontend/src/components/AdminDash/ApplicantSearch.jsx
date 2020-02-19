@@ -152,39 +152,36 @@ class ApplicantSearch extends React.Component {
 
   render() {
     return (
-      <UserFilterContext.Consumer>
-        {({ searchTerms }) => (
-          <Styled.FilterContainer>
-            <Styled.SearchContainer>
-              <Styled.BackButton
-                type="reset"
-                show={this.state.textInput}
-                onClick={this.onClearSearch}
-              >
-                <Icon name="back-arrow" />
-              </Styled.BackButton>
-              <Styled.SearchBox
-                type="text"
-                placeholder={'Search By ' + this.state.placeholder}
-                onChange={this.onSearchChange}
-              />
+      <Styled.FilterContainer>
+        <Styled.SearchContainer>
+          <Styled.BackButton type="reset" show={this.state.textInput} onClick={this.onClearSearch}>
+            <Icon name="back-arrow" />
+          </Styled.BackButton>
+          <Styled.SearchBox
+            type="text"
+            placeholder={'Search By ' + this.state.placeholder}
+            value={this.state.textInput}
+            onChange={this.onSearchChange}
+          />
 
-              <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-                <Styled.DropdownToggle caret />
-                <DropdownMenu>
-                  <DropdownItem header>Search by...</DropdownItem>
-                  {searchTerms.map((term, i) => (
+          <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+            <Styled.DropdownToggle caret />
+            <DropdownMenu>
+              <DropdownItem header>Search by...</DropdownItem>
+              <UserFilterContext.Consumer>
+                {({ searchTerms }) =>
+                  searchTerms.map((term, i) => (
                     <DropdownItem key={i} onClick={this.selectSearchOption}>
                       {term}
                     </DropdownItem>
-                  ))}
-                </DropdownMenu>
-              </ButtonDropdown>
-            </Styled.SearchContainer>
-            <Filters onChange={this.onFiltersChange} onClear={this.onClearFilters} />
-          </Styled.FilterContainer>
-        )}
-      </UserFilterContext.Consumer>
+                  ))
+                }
+              </UserFilterContext.Consumer>
+            </DropdownMenu>
+          </ButtonDropdown>
+        </Styled.SearchContainer>
+        <Filters onChange={this.onFiltersChange} onClear={this.onClearFilters} />
+      </Styled.FilterContainer>
     );
   }
 }

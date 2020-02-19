@@ -141,7 +141,7 @@ const FilterList = ({ filters, clearFilter, vertical = false, className }) => (
 export default FilterList;
 
 FilterList.propTypes = {
-  filters: PropTypes.arrayOf(PropTypes.shape({ key: PropTypes.string, label: PropTypes.string }))
+  filters: PropTypes.arrayOf(PropTypes.shape({ key: PropTypes.string, label: PropTypes.node }))
     .isRequired,
   vertical: PropTypes.bool,
   clearFilter: PropTypes.func

@@ -99,7 +99,6 @@ const filterValueToOperator = {
 //       while a GET is semantically more correct, the url encoding/length restrictions
 //       make POST a better choice
 router.post('/search', (req, res, next) => {
-  console.log(JSON.stringify(req.body));
   const filter = {};
   const $and = [];
   const invalidParam = name =>
@@ -153,43 +152,40 @@ router.post('/search', (req, res, next) => {
   let limitParam = null;
   // limit = 0 means no limit
   if (parsedLimit !== 0) limitParam = parsedLimit || DEFAULT_PAGE_SIZE;
+
+  const baseAggregateStages = [{ $match: filter }, { $sort: { _id: -1 } }];
   const limitStage = { $limit: limitParam };
-
-  const baseAggregateStages = [
-    { $sort: { _id: -1 } },
-    { $match: filter },
-    {
-      $project: {
-        name: { $concat: ['$bio.first_name', ' ', '$bio.last_name'] },
-        email: '$bio.email',
-        role: 1,
-        status: 1
-      }
+  const projectStage = {
+    $project: {
+      name: { $concat: ['$bio.first_name', ' ', '$bio.last_name'] },
+      email: '$bio.email',
+      role: 1,
+      status: 1
     }
-  ];
+  };
 
-  if (req.body.start) {
+  if (start) {
     // If pagination was supplied to the request, then do not load all users to count them
-    filter._id = { $lt: mongoose.Types.ObjectId(req.body.start) };
+    filter._id = { $lt: mongoose.Types.ObjectId(start) };
+    const aggregateStages = [...baseAggregateStages, projectStage];
     // Skip limit if not set
-    const aggregateStages =
-      limitParam == null
-        ? baseAggregateStages
-        : [...baseAggregateStages, limitStage];
+    if (limitParam != null) aggregateStages.push(limitStage);
     UserData.aggregate(aggregateStages)
       .then(users => res.status(200).json({ users }))
       .catch(err => next(err));
   } else {
     // Pagination not supplied, so determine the total count for initial request
     // See https://stackoverflow.com/a/49483919
-    const facet = {
+    const facetStage = {
       $facet: {
-        // Skip limit if not set, use empty match as pipeline without limit
-        users: limitParam == null ? [{ $match: {} }] : [limitStage],
+        // Place the project stage in the users facet if not limiting
+        users: limitParam == null ? [projectStage] : [limitStage],
         count: [{ $count: 'count' }]
       }
     };
-    UserData.aggregate([...baseAggregateStages, facet])
+    // Only include the project stage if not included in the facet
+    if (limitParam != null) baseAggregateStages.push(projectStage);
+    UserData.aggregate([...baseAggregateStages, facetStage])
       .then(result => {
         const [{ users, count: countResult }] = result;
         if (countResult.length === 0) {

@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { fetchUserData } from '../queries';
 import { Button } from 'reactstrap';
 import { Set, OrderedMap } from 'immutable';
+import deepEquals from 'fast-deep-equal';
 import FilterSidebar from './FilterSidebar';
 import FilterInfo from './FilterInfo';
 import InfiniteScroll from 'components/Shared/InfiniteScroll';
@@ -213,11 +214,16 @@ class UserManager extends React.Component {
   fetchUsers(filters, searchTerm, searchValue) {
     this.fetchingNewBatch = true;
     this.setState({ isLoading: true, exploreUsers: [] });
-    fetchUserData({ filters, searchTerm, searchValue, limit: 15 }).then(response => {
-      const { users, count } = response.data;
-      this.setState({ isLoading: false, exploreUsers: users, exploreCount: count });
-      this.fetchingNewBatch = false;
-    });
+    fetchUserData({ filters, searchTerm, searchValue, limit: 15 })
+      .then(response => {
+        const { users, count } = response.data;
+        this.setState({ isLoading: false, exploreUsers: users, exploreCount: count });
+        this.fetchingNewBatch = false;
+      })
+      .catch(err => {
+        console.error(err);
+        this.setState({ isLoading: false });
+      });
   }
 
   // Fetches the next page of users from the API, using the current filters as the basis. Called
@@ -226,16 +232,19 @@ class UserManager extends React.Component {
   fetchMoreUsers(filters, searchTerm, searchValue, paginationId = null) {
     if (this.fetchingNewBatch) return;
     this.setState({ isLoading: true });
-    fetchUserData({ filters, searchTerm, searchValue, start: paginationId, limit: 10 }).then(
-      response => {
+    fetchUserData({ filters, searchTerm, searchValue, start: paginationId, limit: 10 })
+      .then(response => {
         const { users } = response.data;
         if (this.fetchingNewBatch) return;
         this.setState(({ exploreUsers }) => ({
           isLoading: false,
           exploreUsers: exploreUsers.concat(users)
         }));
-      }
-    );
+      })
+      .catch(err => {
+        console.error(err);
+        this.setState({ isLoading: false });
+      });
   }
 
   // Fetches ever user that matches the given search/filter, used when the admin clicks "Add
@@ -276,88 +285,109 @@ class UserManager extends React.Component {
     const exploreSearchValue = isEmpty ? null : searchValue;
     const exploreSearchTerm = isEmpty ? null : searchTerm;
 
-    this.setState({
-      exploreFilters,
-      exploreSearchValue,
-      exploreSearchTerm
-    });
-    this.fetchUsers(exploreFilters, exploreSearchTerm, exploreSearchValue);
+    const {
+      exploreFilters: currentFilters,
+      exploreSearchValue: currentValue,
+      exploreSearchTerm: currentTerm
+    } = this.state;
+
+    // Only fetch a new user batch if the filter set is different
+    if (
+      exploreSearchValue !== currentValue ||
+      exploreSearchTerm !== currentTerm ||
+      !deepEquals(exploreFilters, currentFilters)
+    ) {
+      this.setState({
+        exploreFilters,
+        exploreSearchValue,
+        exploreSearchTerm
+      });
+      this.fetchUsers(exploreFilters, exploreSearchTerm, exploreSearchValue);
+    }
   };
 
   onAddAllClick = () => {
     // Grab current filters into closure
     const { exploreFilters, exploreSearchValue, exploreSearchTerm } = this.state;
     this.setState({ isLoadingAddAll: true });
-    this.fetchAllUsers(exploreFilters, exploreSearchValue, exploreSearchTerm).then(newUsers => {
-      const {
-        stagingUsers,
-        filterContext: { labels }
-      } = this.state;
-      const newUserReasonMap = stagingUsers.asMutable(); // Create as mutable to batch mutations
-      this.setState({ isLoadingAddAll: false });
+    this.fetchAllUsers(exploreFilters, exploreSearchTerm, exploreSearchValue)
+      .then(newUsers => {
+        const {
+          stagingUsers,
+          filterContext: { labels }
+        } = this.state;
+        const newUserReasonMap = stagingUsers.asMutable(); // Create as mutable to batch mutations
+        this.setState({ isLoadingAddAll: false });
 
-      // Add all users to new user reason map
-      newUsers.forEach(user => {
-        if (!newUserReasonMap.has(user._id)) {
-          newUserReasonMap.set(user._id, { user, reasons: [] });
-        }
-      });
-
-      // Add filters to stagingFilters
-      const newFilters = [];
-      // Prepare global list of reasons to batch add at the end
-      const globalReasons = [];
-
-      if (exploreSearchValue != null) {
-        const searchKey = makeSearchKey(exploreSearchTerm, exploreSearchValue);
-        const searchLabel = makeSearchLabel(exploreSearchTerm, exploreSearchValue);
-        newFilters.push({ key: searchKey, label: searchLabel });
-        // Search values must apply to entire returned set, so add as global reason
-        globalReasons.push(searchKey);
-      }
-
-      if (exploreFilters.length > 0) {
-        exploreFilters.forEach(({ key: groupKey, values }) => {
-          const hasMultipleValues = values.length > 1;
-          Object.entries(values).forEach(([entryKey, entryValue]) => {
-            const filterKey = makeFilterKey(groupKey, entryKey, entryValue);
-            const filterLabel = labels[groupKey][entryKey];
-            newFilters.push({ key: filterKey, label: filterLabel });
-            if (hasMultipleValues) {
-              // Single filter values must apply to entire returned set, so add as global reason
-              globalReasons.push(filterKey);
-            } else {
-              // TODO resolve non-disjoint filter reasons per user
-            }
-          });
+        // Add all users to new user reason map
+        newUsers.forEach(user => {
+          if (!newUserReasonMap.has(user._id)) {
+            newUserReasonMap.set(user._id, { user, reasons: [] });
+          }
         });
-      }
 
-      if (exploreSearchValue == null && exploreFilters.length === 0) {
-        // All users were added at once
-        newFilters.push({ key: GLOBAL_FILTER_KEY, label: globalFilterLabel });
-        globalReasons.push(GLOBAL_FILTER_KEY);
-      }
+        // Add filters to stagingFilters
+        const newFilters = [];
+        // Prepare global list of reasons to batch add at the end
+        const globalReasons = [];
 
-      // Add all reasons in global reasons to each new user
-      newUsers.forEach(({ _id }) => {
-        newUserReasonMap.update(_id, ({ user, reasons }) => ({
-          user,
-          reasons: [...reasons, ...globalReasons]
-        }));
+        if (exploreSearchValue != null) {
+          const searchKey = makeSearchKey(exploreSearchTerm, exploreSearchValue);
+          const searchLabel = makeSearchLabel(exploreSearchTerm, exploreSearchValue);
+          newFilters.push({ key: searchKey, label: searchLabel });
+          // Search values must apply to entire returned set, so add as global reason
+          globalReasons.push(searchKey);
+        }
+
+        if (exploreFilters.length > 0) {
+          exploreFilters.forEach(({ key: groupKey, values }) => {
+            const valueEntries = Object.entries(values);
+            const hasMultipleValues = valueEntries.length > 1;
+            console.log(valueEntries);
+            valueEntries.forEach(([entryKey, entryValue]) => {
+              const filterKey = makeFilterKey(groupKey, entryKey, entryValue);
+              const filterLabel = labels[groupKey][entryKey];
+              newFilters.push({ key: filterKey, label: filterLabel });
+              if (hasMultipleValues) {
+                // TODO resolve non-disjoint filter reasons per user
+              } else {
+                // Single filter values must apply to entire returned set, so add as global reason
+                globalReasons.push(filterKey);
+              }
+            });
+          });
+        }
+        console.log(globalReasons);
+
+        if (exploreSearchValue == null && exploreFilters.length === 0) {
+          // All users were added at once
+          newFilters.push({ key: GLOBAL_FILTER_KEY, label: globalFilterLabel });
+          globalReasons.push(GLOBAL_FILTER_KEY);
+        }
+
+        // Add all reasons in global reasons to each new user
+        newUsers.forEach(({ _id }) => {
+          newUserReasonMap.update(_id, ({ user, reasons }) => ({
+            user,
+            reasons: [...reasons, ...globalReasons]
+          }));
+        });
+
+        this.setState(({ stagingFilters }) => {
+          const existingFilterKeys = new Set(stagingFilters.map(({ key }) => key));
+          return {
+            stagingUsers: newUserReasonMap.asImmutable(),
+            stagingFilters: [
+              ...stagingFilters,
+              ...newFilters.filter(({ key }) => !existingFilterKeys.has(key))
+            ]
+          };
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        this.setState({ isLoadingAddAll: false });
       });
-
-      this.setState(({ stagingFilters }) => {
-        const existingFilterKeys = new Set(stagingFilters.map(({ key }) => key));
-        return {
-          stagingUsers: newUserReasonMap.asImmutable(),
-          stagingFilters: [
-            ...stagingFilters,
-            ...newFilters.filter(({ key }) => !existingFilterKeys.has(key))
-          ]
-        };
-      });
-    });
   };
 
   onClearFilter = key => {
