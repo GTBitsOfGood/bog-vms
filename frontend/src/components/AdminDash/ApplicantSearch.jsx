@@ -129,6 +129,7 @@ class ApplicantSearch extends React.Component {
   onClearSearch = () => {
     const { placeholder, filters } = this.state;
     const { onSubmit } = this.props;
+    this.setState({ textInput: '' });
     onSubmit(filters, '', placeholder);
     // Reset debounce state
     this.updateSearchValue.reset();

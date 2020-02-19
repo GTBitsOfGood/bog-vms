@@ -33,6 +33,8 @@ const Styled = {
       padding: 0.95rem 1rem 0.8rem;
       box-shadow: 0 2px 2px 0 ${props => props.theme.shadowLight};
       background-color: ${props => props.theme.grey10} !important;
+      min-width: 12rem;
+      min-height: 3rem;
 
       // Decrease padding on left during loading
       ${props => props.isLoading && `padding-left: 0.7rem;`}
@@ -47,9 +49,9 @@ const Styled = {
     }
   `,
   Loading: styled(Loading)`
-    transform: scale(0.7);
+    transform: scale(0.9);
     width: initial !important;
-    margin: 0 0.5rem 0 0 !important;
+    margin: 0 auto !important;
     opacity: 0.6;
   `
 };
@@ -59,15 +61,19 @@ const FilterInfo = ({ filtersApplied, onClickAddAll, matchedCount, loading }) =>
     <div>
       {filtersApplied ? (
         <>
-          <Styled.Count count={matchedCount} />match your search filters
+          <Styled.Count count={matchedCount} />
+          match your search filters
         </>
       ) : (
         <>No search filters applied.</>
       )}
     </div>
     <Styled.AddButton onClick={onClickAddAll} disabled={loading} isLoading={loading}>
-      {loading && <Styled.Loading />}
-      <Styled.AddButtonContents>Add all to mailing list</Styled.AddButtonContents>
+      {loading ? (
+        <Styled.Loading />
+      ) : (
+        <Styled.AddButtonContents>Add all to mailing list</Styled.AddButtonContents>
+      )}
     </Styled.AddButton>
   </Styled.Outer>
 );

@@ -7,10 +7,12 @@ import { Set, OrderedMap } from 'immutable';
 import deepEquals from 'fast-deep-equal';
 import FilterSidebar from './FilterSidebar';
 import FilterInfo from './FilterInfo';
+import { transparentize } from 'polished';
 import InfiniteScroll from 'components/Shared/InfiniteScroll';
 import MailingListCollapsed from './MailingListCollapsed';
 import MailingListExpanded from './MailingListExpanded';
 import { LeftCaretIcon } from 'components/Shared/Icon';
+import { Loading } from 'components/Shared';
 import { initialValues, labels, searchTerms } from './userFilters';
 import { UserFilterContext } from './context';
 
@@ -24,6 +26,7 @@ const Styled = {
     align-items: center;
   `,
   ListContainer: styled.div`
+    position: relative;
     height: 100%;
     width: 100%;
   `,
@@ -65,6 +68,33 @@ const Styled = {
   `,
   Term: styled.span`
     opacity: 0.7;
+  `,
+  RefreshOverlay: styled.div`
+    // Place overlay over other components to trap pointer events
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    background-color: transparent;
+    transition: background-color 0.2s, opacity 0.2s;
+    pointer-events: none; // Default, do not trap pointer events
+    user-select: none;
+    opacity: 0;
+
+    // Center loading in center
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    ${props =>
+      props.isActive
+        ? `background-color: rgba(255, 255, 255, 0.6);
+           pointer-events: all;
+           opacity: 0.5;`
+        : ''}
   `
 };
 
@@ -134,6 +164,7 @@ class UserManager extends React.Component {
     exploreSearchValue: null,
     exploreSearchTerm: null,
     isLoading: false,
+    isRefreshing: false,
     isLoadingAddAll: false,
     collapsed: true,
     stagingFilters: [],
@@ -150,6 +181,13 @@ class UserManager extends React.Component {
       labels
     }
   };
+
+  // Used to store previous value of whether to show filters when they are
+  // in the process of changing (to keep previous display mode through transition)
+  previousHasFilters = false;
+
+  // Track when a new batch of users is being fetched to take priority over fetchMoreUsers" call
+  fetchingNewBatch = false;
 
   isUserStaged(id) {
     const { stagingUsers } = this.state;
@@ -206,23 +244,21 @@ class UserManager extends React.Component {
     });
   };
 
-  // Track when a new batch of users is being fetched to take priority over fetchMoreUsers" call
-  fetchingNewBatch = false;
-
   // Fetches new batch of users (both initially and when filters/search change), clearing
   // the current grid and taking priority over a "fetchMoreUsers" call
   fetchUsers(filters, searchTerm, searchValue) {
     this.fetchingNewBatch = true;
-    this.setState({ isLoading: true, exploreUsers: [] });
+    console.log(this.state);
+    this.setState({ isRefreshing: true });
     fetchUserData({ filters, searchTerm, searchValue, limit: 15 })
       .then(response => {
         const { users, count } = response.data;
-        this.setState({ isLoading: false, exploreUsers: users, exploreCount: count });
+        this.setState({ isRefreshing: false, exploreUsers: users, exploreCount: count });
         this.fetchingNewBatch = false;
       })
       .catch(err => {
         console.error(err);
-        this.setState({ isLoading: false });
+        this.setState({ isRefreshing: false });
       });
   }
 
@@ -297,6 +333,7 @@ class UserManager extends React.Component {
       exploreSearchTerm !== currentTerm ||
       !deepEquals(exploreFilters, currentFilters)
     ) {
+      this.previousHasFilters = this.hasFilters();
       this.setState({
         exploreFilters,
         exploreSearchValue,
@@ -412,8 +449,11 @@ class UserManager extends React.Component {
   };
 
   hasFilters() {
-    const { exploreFilters, exploreSearchTerm, isLoading } = this.state;
-    return !isLoading && (exploreFilters.length > 0 || exploreSearchTerm != null);
+    const { exploreFilters, exploreSearchTerm, isRefreshing } = this.state;
+    console.log({ isRefreshing, has: this.previousHasFilters });
+    return isRefreshing
+      ? this.previousHasFilters
+      : exploreFilters.length > 0 || exploreSearchTerm != null;
   }
 
   getStagingFilters() {
@@ -437,7 +477,8 @@ class UserManager extends React.Component {
       stagingUsers,
       collapsed,
       isLoadingAddAll,
-      filterContext
+      filterContext,
+      isRefreshing
     } = this.state;
 
     const resolvedStagingFilters = this.getStagingFilters();
@@ -457,6 +498,7 @@ class UserManager extends React.Component {
                   filtersApplied={this.hasFilters()}
                   onClickAddAll={this.onAddAllClick}
                   matchedCount={exploreCount}
+                  disabled={isRefreshing}
                   loading={isLoadingAddAll}
                 />
                 <StagableUserTable
@@ -465,6 +507,9 @@ class UserManager extends React.Component {
                   onUserToggle={this.onToggleUserMailingList}
                 />
               </InfiniteScroll>
+              <Styled.RefreshOverlay isActive={isRefreshing}>
+                <Loading size="16px" />
+              </Styled.RefreshOverlay>
             </Styled.ListContainer>
           )}
           <Styled.MailingListContainer isCollapsed={collapsed}>
