@@ -70,23 +70,29 @@ const searchTermPaths = {
 };
 
 // Construct data structures for search term paths
-const defaultSearchTermPaths = Object.values(searchTermPaths).reduce((paths, entry) => paths.concat(entry), []);
+const defaultSearchTermPaths = Object.values(searchTermPaths).reduce(
+  (paths, entry) => paths.concat(entry),
+  []
+);
 const searchTerms = new Set(Object.keys(searchTermPaths));
 
 // Creates a simple aggregate operator factory that assumes filter group keys and
 // values directly correspond with the field names and values from MongoDB
-const simpleFilterOperatorFactory = groupKey => value => ({ [groupKey]: value });
+const simpleFilterOperatorFactory = groupKey => value => ({
+  [groupKey]: value
+});
 
 // Map of filter group keys to functions that transform values to MongoDB Aggregation
 // pipeline expression clauses.
 // See https://docs.mongodb.com/manual/meta/aggregation-quick-reference/#aggregation-expressions
 const filterValueToOperator = {
   // TODO modify to work with different format
-  date: simpleFilterOperatorFactory("date"),
-  status: simpleFilterOperatorFactory("status"),
-  role: simpleFilterOperatorFactory("role"),
-  skills_interests: simpleFilterOperatorFactory("skills_interests")
-}
+  date: simpleFilterOperatorFactory('date'),
+  status: simpleFilterOperatorFactory('status'),
+  role: simpleFilterOperatorFactory('role'),
+  // TODO modify to work with different format
+  skills_interests: simpleFilterOperatorFactory('skills_interests')
+};
 
 // Added to fulfill requirements of UserManager page
 router.get('/search', (req, res, next) => {
@@ -102,10 +108,12 @@ router.get('/search', (req, res, next) => {
       if (search != null && search.value != null && search.term != null) {
         const { term, value } = search;
         const regexquery = { $regex: new RegExp(value), $options: 'i' };
-        const searchPaths = searchTerms.has(term) ? searchTermPaths[term] : defaultSearchTermPaths;
+        const searchPaths = searchTerms.has(term)
+          ? searchTermPaths[term]
+          : defaultSearchTermPaths;
         // Add passing one of the textual search queries as a required condition for a
         // document to be returned
-        $and.push({ $or: searchPaths.map(path => ({ [path]: regexquery }))});
+        $and.push({ $or: searchPaths.map(path => ({ [path]: regexquery })) });
       } else return invalidParam('search');
     } catch (err) {
       return invalidParam('search');
@@ -122,8 +130,10 @@ router.get('/search', (req, res, next) => {
         Array.isArray(filters)
       ) {
         // Series of steps that must all pass for a document to be returned
-        const filterPipelineStages = filters.map(({ key, values }) => ({ $or: values.map(value => filterValueToOperator[key](value)) }))
-        $and.push(filterPipelineStages);
+        const filterPipelineStages = filters.map(({ key, values }) => ({
+          $or: values.map(value => filterValueToOperator[key](value))
+        }));
+        $and.push(...filterPipelineStages);
       } else return invalidParam('filters');
     } catch (err) {
       return invalidParam('filters');
@@ -151,6 +161,7 @@ router.get('/search', (req, res, next) => {
       }
     }
   ];
+
   if (req.query.start) {
     // If pagination was supplied to the request, then do not load all users to count them
     filter._id = { $lt: mongoose.Types.ObjectId(req.query.start) };
@@ -175,8 +186,13 @@ router.get('/search', (req, res, next) => {
     UserData.aggregate([...baseAggregateStages, facet])
       .then(result => {
         const [{ users, count: countResult }] = result;
+        if (countResult.length === 0) {
+          // Count was 0
+          return res.status(200).json({ users, count: 0 });
+        }
+
         const [{ count }] = countResult;
-        res.status(200).json({ users, count });
+        return res.status(200).json({ users, count });
       })
       .catch(err => next(err));
   }
