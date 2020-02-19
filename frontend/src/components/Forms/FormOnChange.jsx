@@ -8,12 +8,10 @@ const FormOnChange = ({ formik, onChange, raiseInitial }) => {
   useEffect(() => {
     // Skip first onChange
     if (raiseInitial || !firstOnChange.current) {
-      console.log("form on change");
       onChange(values);
     }
-
     if (firstOnChange.current) firstOnChange.current = false;
-  }, [values, onChange]);
+  }, [values, onChange, raiseInitial]);
   return null;
 };
 

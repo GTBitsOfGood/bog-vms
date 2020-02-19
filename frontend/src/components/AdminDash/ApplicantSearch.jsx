@@ -85,7 +85,8 @@ class ApplicantSearch extends React.Component {
     this.state = {
       dropdownOpen: false,
       placeholder: 'All',
-      textInput: ''
+      textInput: '',
+      filters: {}
     };
   }
 
@@ -96,6 +97,11 @@ class ApplicantSearch extends React.Component {
     } else {
       this.updateSearchValue(event.target.value);
     }
+  };
+
+  onFiltersChange = filters => {
+    this.setState({ filters });
+    this.updateFilters(filters);
   };
 
   selectSearchOption = event => {
@@ -122,7 +128,6 @@ class ApplicantSearch extends React.Component {
 
   onClearSearch = () => {
     const { placeholder, filters } = this.state;
-    this.setState({ textInput: '' });
     const { onSubmit } = this.props;
     onSubmit(filters, '', placeholder);
     // Reset debounce state
@@ -176,11 +181,12 @@ class ApplicantSearch extends React.Component {
                 </DropdownMenu>
               </ButtonDropdown>
             </Styled.SearchContainer>
-            <Filters onChange={this.updateFilters} onClear={this.onClearFilters} />
+            <Filters onChange={this.onFiltersChange} onClear={this.onClearFilters} />
           </Styled.FilterContainer>
         )}
       </UserFilterContext.Consumer>
     );
   }
 }
+
 export default ApplicantSearch;

@@ -278,8 +278,8 @@ class UserManager extends React.Component {
 
     this.setState({
       exploreFilters,
-      exploreSearchValue: searchValue,
-      exploreSearchTerm: searchTerm
+      exploreSearchValue,
+      exploreSearchTerm
     });
     this.fetchUsers(exploreFilters, exploreSearchTerm, exploreSearchValue);
   };

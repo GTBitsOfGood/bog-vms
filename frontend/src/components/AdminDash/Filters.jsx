@@ -43,13 +43,16 @@ const Filters = ({ onChange, onClear }) => {
   const handleClear = useCallback(() => {
     isClearing.current = true;
     onClear();
-  });
-  const handleChange = useCallback((...args) => {
-    if (isClearing.current) {
-      // Skip next onChange event
-      isClearing.current = false;
-    } else onChange(...args);
-  });
+  }, [isClearing, onClear]);
+  const handleChange = useCallback(
+    (...args) => {
+      if (isClearing.current) {
+        // Skip next onChange event
+        isClearing.current = false;
+      } else onChange(...args);
+    },
+    [isClearing, onChange]
+  );
   return (
     <Form initialValues={initialValues} onSubmit={noop}>
       <FormOnChange onChange={handleChange} />
