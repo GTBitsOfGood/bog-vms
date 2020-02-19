@@ -62,9 +62,36 @@ router.post('/', USER_DATA_VALIDATOR, (req, res, next) => {
     });
 });
 
+// Contains the paths of search terms to perform textual search on
+const searchTermPaths = {
+  Bio: ['bio.first_name', 'bio.last_name'],
+  Email: ['bio.email'],
+  'Phone Number': ['bio.phone_number']
+};
+
+// Construct data structures for search term paths
+const defaultSearchTermPaths = Object.values(searchTermPaths).reduce((paths, entry) => paths.concat(entry), []);
+const searchTerms = new Set(Object.keys(searchTermPaths));
+
+// Creates a simple aggregate operator factory that assumes filter group keys and
+// values directly correspond with the field names and values from MongoDB
+const simpleFilterOperatorFactory = groupKey => value => ({ [groupKey]: value });
+
+// Map of filter group keys to functions that transform values to MongoDB Aggregation
+// pipeline expression clauses.
+// See https://docs.mongodb.com/manual/meta/aggregation-quick-reference/#aggregation-expressions
+const filterValueToOperator = {
+  // TODO modify to work with different format
+  date: simpleFilterOperatorFactory("date"),
+  status: simpleFilterOperatorFactory("status"),
+  role: simpleFilterOperatorFactory("role"),
+  skills_interests: simpleFilterOperatorFactory("skills_interests")
+}
+
 // Added to fulfill requirements of UserManager page
 router.get('/search', (req, res, next) => {
   const filter = {};
+  const $and = [];
   const invalidParam = name =>
     res.status(400).json({ error: `Malformed request: invalid ${name} param` });
 
@@ -73,13 +100,19 @@ router.get('/search', (req, res, next) => {
     try {
       const search = JSON.parse(req.query.search);
       if (search != null && search.value != null && search.term != null) {
-        // TODO implement text search via Mongoose
+        const { term, value } = search;
+        const regexquery = { $regex: new RegExp(value), $options: 'i' };
+        const searchPaths = searchTerms.has(term) ? searchTermPaths[term] : defaultSearchTermPaths;
+        // Add passing one of the textual search queries as a required condition for a
+        // document to be returned
+        $and.push({ $or: searchPaths.map(path => ({ [path]: regexquery }))});
       } else return invalidParam('search');
     } catch (err) {
       return invalidParam('search');
     }
   }
 
+  // Query param is for boolean filtering: [ { key: "group1", values: { valueB: true } } ]
   if (req.query.filters) {
     try {
       const filters = JSON.parse(req.query.filters);
@@ -88,11 +121,18 @@ router.get('/search', (req, res, next) => {
         typeof filters === 'object' &&
         Array.isArray(filters)
       ) {
-        // TODO implement filter matching via Mongoose
+        // Series of steps that must all pass for a document to be returned
+        const filterPipelineStages = filters.map(({ key, values }) => ({ $or: values.map(value => filterValueToOperator[key](value)) }))
+        $and.push(filterPipelineStages);
       } else return invalidParam('filters');
     } catch (err) {
       return invalidParam('filters');
     }
+  }
+
+  // Attach if any filters are needed
+  if ($and.length > 0) {
+    filter.$and = $and;
   }
 
   const parsedLimit = parseInt(req.query.limit, 10);
