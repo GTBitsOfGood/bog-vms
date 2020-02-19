@@ -8,14 +8,14 @@ export const fetchUserData = ({ filters, searchTerm, searchValue, start, limit }
   if (limit != null) params.limit = limit;
 
   if (filters != null && filters.length > 0) {
-    params.filters = JSON.stringify(filters);
+    params.filters = filters;
   }
 
   if (searchValue !== '' && searchTerm != null) {
-    params.search = JSON.stringify({ value: searchValue, term: searchTerm });
+    params.search = { value: searchValue, term: searchTerm };
   }
 
-  return axios.get('/api/users/search', { params })
+  return axios.post('/api/users/search', params)
 };
 
 export const filterApplicants = filterGroups => {

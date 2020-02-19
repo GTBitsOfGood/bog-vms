@@ -78,8 +78,8 @@ const searchTerms = new Set(Object.keys(searchTermPaths));
 
 // Creates a simple aggregate operator factory that assumes filter group keys and
 // values directly correspond with the field names and values from MongoDB
-const simpleFilterOperatorFactory = groupKey => value => ({
-  [groupKey]: value
+const simpleFilterOperatorFactory = groupKey => (key, _) => ({
+  [groupKey]: key
 });
 
 // Map of filter group keys to functions that transform values to MongoDB Aggregation
@@ -95,17 +95,21 @@ const filterValueToOperator = {
 };
 
 // Added to fulfill requirements of UserManager page
-router.get('/search', (req, res, next) => {
+// Note: the route is a POST to allow query objects to be in the request body.
+//       while a GET is semantically more correct, the url encoding/length restrictions
+//       make POST a better choice
+router.post('/search', (req, res, next) => {
+  console.log(JSON.stringify(req.body));
   const filter = {};
   const $and = [];
   const invalidParam = name =>
     res.status(400).json({ error: `Malformed request: invalid ${name} param` });
+  const { search, filters, limit, start } = req.body;
 
   // Search param is for textual search: { value: '', term: 'All' }
-  if (req.query.search) {
+  if (search) {
     try {
-      const search = JSON.parse(req.query.search);
-      if (search != null && search.value != null && search.term != null) {
+      if (search.value != null && search.term != null) {
         const { term, value } = search;
         const regexquery = { $regex: new RegExp(value), $options: 'i' };
         const searchPaths = searchTerms.has(term)
@@ -120,22 +124,22 @@ router.get('/search', (req, res, next) => {
     }
   }
 
-  // Query param is for boolean filtering: [ { key: "group1", values: { valueB: true } } ]
-  if (req.query.filters) {
+  // Param is for boolean filtering: [ { key: "group1", values: { valueB: true } } ]
+  if (filters) {
     try {
-      const filters = JSON.parse(req.query.filters);
-      if (
-        filters != null &&
-        typeof filters === 'object' &&
-        Array.isArray(filters)
-      ) {
+      if (typeof filters === 'object' && Array.isArray(filters)) {
         // Series of steps that must all pass for a document to be returned
-        const filterPipelineStages = filters.map(({ key, values }) => ({
-          $or: values.map(value => filterValueToOperator[key](value))
-        }));
+        const filterPipelineStages = filters.map(
+          ({ key: groupKey, values }) => ({
+            $or: Object.entries(values).map(([key, value]) =>
+              filterValueToOperator[groupKey](key, value)
+            )
+          })
+        );
         $and.push(...filterPipelineStages);
       } else return invalidParam('filters');
     } catch (err) {
+      console.log(err);
       return invalidParam('filters');
     }
   }
@@ -145,10 +149,12 @@ router.get('/search', (req, res, next) => {
     filter.$and = $and;
   }
 
-  const parsedLimit = parseInt(req.query.limit, 10);
-  let limit = null;
+  const parsedLimit = parseInt(limit, 10);
+  let limitParam = null;
   // limit = 0 means no limit
-  if (parsedLimit !== 0) limit = parsedLimit || DEFAULT_PAGE_SIZE;
+  if (parsedLimit !== 0) limitParam = parsedLimit || DEFAULT_PAGE_SIZE;
+  const limitStage = { $limit: limitParam };
+
   const baseAggregateStages = [
     { $sort: { _id: -1 } },
     { $match: filter },
@@ -162,14 +168,14 @@ router.get('/search', (req, res, next) => {
     }
   ];
 
-  if (req.query.start) {
+  if (req.body.start) {
     // If pagination was supplied to the request, then do not load all users to count them
-    filter._id = { $lt: mongoose.Types.ObjectId(req.query.start) };
+    filter._id = { $lt: mongoose.Types.ObjectId(req.body.start) };
     // Skip limit if not set
     const aggregateStages =
-      limit == null
+      limitParam == null
         ? baseAggregateStages
-        : [...baseAggregateStages, { $limit: limit }];
+        : [...baseAggregateStages, limitStage];
     UserData.aggregate(aggregateStages)
       .then(users => res.status(200).json({ users }))
       .catch(err => next(err));
@@ -179,7 +185,7 @@ router.get('/search', (req, res, next) => {
     const facet = {
       $facet: {
         // Skip limit if not set, use empty match as pipeline without limit
-        users: limit == null ? [{ $match: {} }] : [{ $limit: limit }],
+        users: limitParam == null ? [{ $match: {} }] : [limitStage],
         count: [{ $count: 'count' }]
       }
     };
