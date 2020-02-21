@@ -37,6 +37,13 @@ const cardContainer = styled.div `
     height: 100%;
 `;
 
+const eventDetailsButton = styled.button `
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    border: none;
+`;
+
 const imgPlaceholder = styled.img `
     width: 100%;
     background: #efa0a0; /*placeholder color if no image is found */
@@ -52,4 +59,4 @@ const cardText = styled.div `
     background: #f8f8f8;
 `;
 
-export { cardGrid, Card, cardContainer, cardText, imgPlaceholder};
+export { cardGrid, Card, cardContainer, cardText, eventDetailsButton, imgPlaceholder};

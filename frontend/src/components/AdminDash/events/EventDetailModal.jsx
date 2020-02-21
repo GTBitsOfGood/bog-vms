@@ -31,11 +31,16 @@ const Styled = {
     `
 };
 
-function EventDetailModal({open, event}) {
+function EventDetailModal({open, toggle, event}) {
+    if (!event) {
+        // If no event found, render nothing
+        return <span></span>
+    }
     const eventDate = new Date(event.date);
     const dateDisplayOptions = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
     return (
-        <Modal isOpen={open} backdrop="static">
+        <Modal isOpen={open} toggle={toggle} backdrop="static">
+            <ModalHeader toggle={toggle}></ModalHeader>
             <ModalBody>
                 <Styled.EventHeader>
                     <Styled.EventInfoHeader>
@@ -43,7 +48,7 @@ function EventDetailModal({open, event}) {
                         <h4>{eventDate.toLocaleDateString(undefined, dateDisplayOptions)}</h4>
                     </Styled.EventInfoHeader>
                 </Styled.EventHeader>
-                
+
             </ModalBody>
             <Styled.Button></Styled.Button>
         </Modal>

@@ -32,6 +32,7 @@ function EventCardGrid(props) {
                         event = {event}
                         imgUrl = {"https://image.shutterstock.com/image-photo/beautiful-water-drop-on-dandelion-260nw-789676552.jpg"}
                         onDeleteClicked = {props.onDeleteClicked}
+                        onDetailClicked = {props.onDetailClicked}
                     />
                 ))}
         </Card.cardGrid>

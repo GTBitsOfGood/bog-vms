@@ -7,6 +7,7 @@ import { fetchEvents } from 'components/AdminDash/queries';
 import EventCreateModal from './EventCreateModal';
 import EventEditModal from './EventEditModal';
 import EventDeleteModal from './EventDeleteModal';
+import EventDetailModal from './EventDetailModal';
 import * as Table from '../shared/tableStyles';
 import EventCardGrid from './EventCardGrid';
 
@@ -63,16 +64,16 @@ const EventManager = () => {
     onRefresh();
   }, []);
 
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDetailModal, setshowDetailModal] = useState(false);
   const [currEvent, setCurrEvent] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const onEditClicked = event => {
-    setShowEditModal(true);
+  const onDetailClicked = event => {
+    setshowDetailModal(true);
     setCurrEvent(event);
   };
-  const toggleEditModal = () => {
-    setShowEditModal(prev => !prev);
+  const toggleDetailModal = () => {
+    setshowDetailModal(prev => !prev);
     onRefresh();
   };
   const onDeleteClicked = event => {
@@ -102,6 +103,7 @@ const EventManager = () => {
         events={events}
         loading={loading}
         onDeleteClicked={onDeleteClicked}
+        onDetailClicked={onDetailClicked}
       />
 
      {/* <EventTable
@@ -113,8 +115,8 @@ const EventManager = () => {
         {' '}
       </EventTable>*/}
       <EventCreateModal open={showCreateModal} toggle={toggleCreateModal} />
-      <EventEditModal open={showEditModal} toggle={toggleEditModal} event={currEvent} />
       <EventDeleteModal open={showDeleteModal} toggle={toggleDeleteModal} event={currEvent} />
+      <EventDetailModal open={showDetailModal} toggle={toggleDetailModal} event={currEvent} />
     </Styled.Container>
   );
 };

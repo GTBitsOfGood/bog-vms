@@ -14,14 +14,16 @@ const Styled = {
     `
 };
 
-function EventCard({event, imgUrl, onDeleteClicked}) {
+function EventCard({event, imgUrl, onDeleteClicked, onDetailClicked}) {
     const eventDate = new Date(event.date);
     return <Card.Card>
         <Card.cardContainer>
             <Styled.Button onClick={() => onDeleteClicked(event)} close aria-label="Delete Event">
                 <Icon name="delete" color="grey9" />
             </Styled.Button>
-            <Card.imgPlaceholder src = {imgUrl} />
+            <Card.eventDetailsButton onClick={() => onDetailClicked(event)}>
+                <Card.imgPlaceholder src = {imgUrl}/>
+            </Card.eventDetailsButton>
             <Card.cardText>
                 <h4>{event.name}</h4>
                 <p>{eventDate.toLocaleDateString()}</p>
