@@ -12,14 +12,11 @@ const Styled = {
   Container: styled.div`
     height: 100%;
     width: 100%;
-    padding: 2rem 0
+    padding: 2rem 3rem
     background-color: ${props => props.theme.greyBg};
     display: flex;
     flex-direction: column;
     align-items: stretch;
-  `,
-  Top: styled.div`
-    padding: 0 3rem;
   `,
   Title: styled.h1`
     font-size: 28px;
@@ -41,7 +38,9 @@ const Styled = {
     flex-shrink: 1;
     overflow: auto;
     background: ${props =>
-      props.isEmpty ? transparentize(0.5, props.theme.grey10) : 'transparent'};
+      props.isEmpty ? transparentize(0.6, props.theme.grey8) : 'transparent'};
+    border-radius: ${props => (props.isEmpty ? '1rem' : '0')};
+    box-shadow: ${props => (props.isEmpty ? `inset 0 0 10px ${props.theme.shadow}` : 'none')};
     margin: 1rem 0;
     padding: 0 1.5rem;
   `,
@@ -52,7 +51,6 @@ const Styled = {
     margin: 5rem auto;
   `,
   ButtonSection: styled.div`
-    padding: 0 2rem 0;
     margin-top: 1rem;
     margin-bottom: 0.5rem;
     display: flex;
@@ -95,14 +93,12 @@ const MailingListExpanded = ({
   const isEmpty = listSize === 0;
   return (
     <Styled.Container>
-      <Styled.Top>
-        <Styled.Title>Mailing List</Styled.Title>
-        <Styled.Text>
-          Currently, you have <Styled.Count count={listSize} /> on your mailing list with
-          {filters.length > 0 ? ' the filters:' : ' no filters.'}
-        </Styled.Text>
-        <Styled.FilterList filters={filters} clearFilter={onClearFilter} />
-      </Styled.Top>
+      <Styled.Title>Mailing List</Styled.Title>
+      <Styled.Text>
+        Currently, you have <Styled.Count count={listSize} /> on your mailing list with
+        {filters.length > 0 ? ' the filters:' : ' no filters.'}
+      </Styled.Text>
+      <Styled.FilterList filters={filters} clearFilter={onClearFilter} />
       <Styled.UserGrid isEmpty={isEmpty}>
         <UserTable onUserToggle={onUserToggle} users={usersSeq.toArray()} />
         {isEmpty && <Styled.EmptyDisplay />}
