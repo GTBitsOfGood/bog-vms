@@ -2,10 +2,10 @@ import { statuses } from '../applicantInfoHelpers';
 
 export const initialValues = {
   date: {
-    label: 'Date Range',
+    label: 'Date Added',
     values: {
-      past_6_months: false,
       past_month: false,
+      past_6_months: false,
       from_current_year: false,
       from_one_year_ago: false,
       from_two_years_ago: false,

@@ -77,7 +77,8 @@ const Filters = ({ onChange, onClear }) => {
   );
 };
 
-export default Filters;
+// Memoize expensive form building
+export default React.memo(Filters);
 
 Filters.propTypes = {
   onChange: PropTypes.func,

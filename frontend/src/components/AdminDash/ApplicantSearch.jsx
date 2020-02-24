@@ -85,10 +85,13 @@ class ApplicantSearch extends React.Component {
     this.state = {
       dropdownOpen: false,
       placeholder: 'All',
-      textInput: '',
-      filters: {}
+      textInput: ''
     };
   }
+
+  // Filters doesn't need to be in state because it's not used during render;
+  // exlcluding it prevents additional render of Formik
+  filters = null
 
   onSearchChange = event => {
     this.setState({ textInput: event.target.value });
@@ -100,7 +103,7 @@ class ApplicantSearch extends React.Component {
   };
 
   onFiltersChange = filters => {
-    this.setState({ filters });
+    this.filters = filters;
     this.updateFilters(filters);
   };
 
@@ -109,13 +112,15 @@ class ApplicantSearch extends React.Component {
       dropdownOpen: !this.state.dropdownOpen,
       placeholder: event.target.innerText
     });
-    const { textInput, filters } = this.state;
+    const filters = this.filters;
+    const { textInput } = this.state;
     const { onSubmit } = this.props;
     onSubmit(filters, textInput, event.target.innerText);
   };
 
   updateSearchValue = debounce(value => {
-    const { filters, placeholder } = this.state;
+    const filters = this.filters;
+    const { placeholder } = this.state;
     const { onSubmit } = this.props;
     onSubmit(filters, value, placeholder);
   }, SEARCH_DEBOUNCE_TIMEOUT);
@@ -127,7 +132,8 @@ class ApplicantSearch extends React.Component {
   }, FILTERS_DEBOUNCE_TIMEOUT);
 
   onClearSearch = () => {
-    const { placeholder, filters } = this.state;
+    const filters = this.filters;
+    const { placeholder } = this.state;
     const { onSubmit } = this.props;
     this.setState({ textInput: '' });
     onSubmit(filters, '', placeholder);
@@ -138,6 +144,7 @@ class ApplicantSearch extends React.Component {
   onClearFilters = () => {
     const { placeholder } = this.state;
     const { onSubmit } = this.props;
+    this.filters = null;
     this.setState({ textInput: '' });
     onSubmit(null, '', placeholder);
     // Reset debounce state

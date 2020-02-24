@@ -4,6 +4,7 @@ const router = express.Router();
 const { check, oneOf, validationResult } = require('express-validator/check');
 const { matchedData } = require('express-validator/filter');
 const mongoose = require('mongoose');
+const _ = require('lodash');
 
 // Local Imports
 const { SendEmailError, EmailInUseError } = require('../util/errors');
@@ -69,29 +70,77 @@ const searchTermPaths = {
   'Phone Number': ['bio.phone_number']
 };
 
-// Construct data structures for search term paths
 const defaultSearchTermPaths = Object.values(searchTermPaths).reduce(
   (paths, entry) => paths.concat(entry),
   []
 );
-const searchTerms = new Set(Object.keys(searchTermPaths));
 
 // Creates a simple aggregate operator factory that assumes filter group keys and
 // values directly correspond with the field names and values from MongoDB
-const simpleFilterOperatorFactory = groupKey => (key, _) => ({
-  [groupKey]: key
+const simpleFilterOperatorFactory = groupKey => (key, _value) => ({
+  [groupKey]: typeof key === 'object' ? String(key) : key
 });
+
+const monthsAgo = months => {
+  const date = new Date();
+  date.setMonth(date.getMonth() - months);
+  return date;
+};
+
+const beginningOfYear = offset => {
+  const date = new Date();
+  const year = date.getFullYear();
+  return new Date(year - offset, 0, 1);
+};
+
+const dateFilterToDateFactory = {
+  // past 1 month ago
+  past_month: () => [{ $gte: monthsAgo(1) }],
+  // past six months ago
+  past_6_months: () => [{ $gte: monthsAgo(6) }],
+  // past beginning of current year
+  from_current_year: () => [{ $gte: beginningOfYear(0) }],
+  // from beginning of previous year to beginning of current year
+  from_one_year_ago: () => [
+    { $gte: beginningOfYear(1) },
+    { $lt: beginningOfYear(0) }
+  ],
+  // from beginning of 2nd previous year to beginning of previous year
+  from_two_years_ago: () => [
+    { $gte: beginningOfYear(2) },
+    { $lt: beginningOfYear(1) }
+  ],
+  // older than beginning of 2nd previous year
+  older: () => [{ $lt: beginningOfYear(2) }]
+};
+
+const dateFilterOperator = (key, _value) => {
+  const dateFilters =
+    key in dateFilterToDateFactory
+      ? dateFilterToDateFactory[key]()
+      : dateFilterToDateFactory.from_current_year();
+  return dateFilters.length === 1
+    ? { createdAt: dateFilters[0] }
+    : { $and: dateFilters.map(expression => ({ createdAt: expression })) };
+};
 
 // Map of filter group keys to functions that transform values to MongoDB Aggregation
 // pipeline expression clauses.
 // See https://docs.mongodb.com/manual/meta/aggregation-quick-reference/#aggregation-expressions
 const filterValueToOperator = {
-  // TODO modify to work with different format
-  date: simpleFilterOperatorFactory('date'),
+  date: dateFilterOperator,
   status: simpleFilterOperatorFactory('status'),
   role: simpleFilterOperatorFactory('role'),
-  // TODO modify to work with different format
   skills_interests: simpleFilterOperatorFactory('skills_interests')
+};
+
+// Used to create dynamic keys to use as facet keys for ambiguous filter bins
+const makeBinFacetKey = (groupKey, valueKey) => `bin%%${groupKey}##${valueKey}`;
+const facetKeyRegex = /^bin%%(.*?)##(.*?)$/;
+const parseBinFacetKey = key => {
+  const result = facetKeyRegex.exec(key);
+  if (result) return [result[1], result[2]];
+  else return ['', ''];
 };
 
 // Added to fulfill requirements of UserManager page
@@ -99,7 +148,7 @@ const filterValueToOperator = {
 //       while a GET is semantically more correct, the url encoding/length restrictions
 //       make POST a better choice
 router.post('/search', (req, res, next) => {
-  const filter = {};
+  const match = {};
   const $and = [];
   const invalidParam = name =>
     res.status(400).json({ error: `Malformed request: invalid ${name} param` });
@@ -111,9 +160,10 @@ router.post('/search', (req, res, next) => {
       if (search.value != null && search.term != null) {
         const { term, value } = search;
         const regexquery = { $regex: new RegExp(value), $options: 'i' };
-        const searchPaths = searchTerms.has(term)
-          ? searchTermPaths[term]
-          : defaultSearchTermPaths;
+        const searchPaths =
+          term in searchTermPaths
+            ? searchTermPaths[term]
+            : defaultSearchTermPaths;
         // Add passing one of the textual search queries as a required condition for a
         // document to be returned
         $and.push({ $or: searchPaths.map(path => ({ [path]: regexquery })) });
@@ -123,29 +173,37 @@ router.post('/search', (req, res, next) => {
     }
   }
 
-  // Param is for boolean filtering: [ { key: "group1", values: { valueB: true } } ]
+  // Stores parsed filters:
+  // [ { group: "group1", values: { valueB: true }, match: { $or: [ { group1: "valueB" } ] } } ]
+  let filterObjects = null;
+  // Param is for (boolean) filtering: [ { key: "group1", values: { valueB: true } } ]
   if (filters) {
     try {
       if (typeof filters === 'object' && Array.isArray(filters)) {
         // Series of steps that must all pass for a document to be returned
-        const filterPipelineStages = filters.map(
-          ({ key: groupKey, values }) => ({
-            $or: Object.entries(values).map(([key, value]) =>
-              filterValueToOperator[groupKey](key, value)
-            )
-          })
-        );
-        $and.push(...filterPipelineStages);
+        filterObjects = filters.map(({ key: groupKey, values }) => {
+          const valueEntries = Object.entries(values);
+          return {
+            group: groupKey,
+            valueEntries,
+            match: {
+              $or: valueEntries.map(([key, value]) =>
+                filterValueToOperator[groupKey](key, value)
+              )
+            }
+          };
+        });
+        $and.push(...filterObjects.map(({ match }) => match));
       } else return invalidParam('filters');
     } catch (err) {
-      console.log(err);
+      console.error(err);
       return invalidParam('filters');
     }
   }
 
   // Attach if any filters are needed
   if ($and.length > 0) {
-    filter.$and = $and;
+    match.$and = $and;
   }
 
   const parsedLimit = parseInt(limit, 10);
@@ -153,20 +211,21 @@ router.post('/search', (req, res, next) => {
   // limit = 0 means no limit
   if (parsedLimit !== 0) limitParam = parsedLimit || DEFAULT_PAGE_SIZE;
 
-  const baseAggregateStages = [{ $match: filter }, { $sort: { _id: -1 } }];
+  const baseAggregateStages = [{ $match: match }, { $sort: { _id: -1 } }];
   const limitStage = { $limit: limitParam };
   const projectStage = {
     $project: {
       name: { $concat: ['$bio.first_name', ' ', '$bio.last_name'] },
       email: '$bio.email',
       role: 1,
-      status: 1
+      status: 1,
+      createdAt: 1
     }
   };
 
   if (start) {
     // If pagination was supplied to the request, then do not load all users to count them
-    filter._id = { $lt: mongoose.Types.ObjectId(start) };
+    match._id = { $lt: mongoose.Types.ObjectId(start) };
     const aggregateStages = [...baseAggregateStages, projectStage];
     // Skip limit if not set
     if (limitParam != null) aggregateStages.push(limitStage);
@@ -178,23 +237,68 @@ router.post('/search', (req, res, next) => {
     // See https://stackoverflow.com/a/49483919
     const facetStage = {
       $facet: {
-        // Place the project stage in the users facet if not limiting
-        users: limitParam == null ? [projectStage] : [limitStage],
+        users: limitParam == null ? [projectStage] : [projectStage, limitStage],
         count: [{ $count: 'count' }]
       }
     };
-    // Only include the project stage if not included in the facet
-    if (limitParam != null) baseAggregateStages.push(projectStage);
+
+    if (limitParam == null) {
+      // No limit supplied, so all users are desired.
+
+      // Determine if there are any ambiguous filters that need bins made to distinguish
+      // where objects matched. Defined as filters with more than one option selected
+      let ambiguousFilterObjects = [];
+      if (filterObjects && filterObjects.length > 0) {
+        ambiguousFilterObjects = filterObjects.reduce((accum, filterObject) => {
+          if (filterObject.valueEntries.length <= 1) return accum;
+          accum.push(filterObject);
+          return accum;
+        }, []);
+      }
+
+      if (ambiguousFilterObjects.length > 0) {
+        // Bin facets to collate all filter results that match ambiguous filters
+        const binFacets = {};
+        ambiguousFilterObjects.forEach(({ group, valueEntries, match }) => {
+          _.zip(valueEntries, match.$or).forEach(([[valueKey], filter]) => {
+            binFacets[makeBinFacetKey(group, valueKey)] = [
+              { $match: filter },
+              { $project: { _id: 1 } }
+            ];
+          });
+        });
+        Object.assign(facetStage.$facet, binFacets);
+      }
+    }
+
     UserData.aggregate([...baseAggregateStages, facetStage])
       .then(result => {
-        const [{ users, count: countResult }] = result;
+        const [{ users, count: countResult, ...rest }] = result;
+        let data;
+
+        // Count result object gets truncated if count is 0
         if (countResult.length === 0) {
-          // Count was 0
-          return res.status(200).json({ users, count: 0 });
+          data = { users, count: 0 };
+        } else {
+          const [{ count }] = countResult;
+          data = { users, count };
         }
 
-        const [{ count }] = countResult;
-        return res.status(200).json({ users, count });
+        // Add in the bin results if no limit supplied
+        if (limitParam == null) {
+          const facets = Object.entries(rest);
+          // Objects of shape: { bins: { group1: { accepted: [ id1, id2 ] } } }
+          const bins = {};
+          facets.forEach(([facetKey, documents]) => {
+            const ids = documents.map(({ _id }) => _id);
+            const [group, valueKey] = parseBinFacetKey(facetKey);
+            if (!bins[group]) bins[group] = {};
+            bins[group][valueKey] = ids;
+          });
+          data.bins = bins;
+        }
+
+        return res.status(200).json(data);
       })
       .catch(err => next(err));
   }

@@ -81,6 +81,7 @@ class AdminDash extends Component {
     const { applicants } = this.state;
     const lastPaginationId = applicants.length ? applicants[applicants.length - 1]._id : 0;
 
+    // TODO make this work with filtering/searching
     fetchMoreApplicants(lastPaginationId).then(res =>
       this.setState({
         applicants: [...this.state.applicants, ...res.data.users],
@@ -88,6 +89,7 @@ class AdminDash extends Component {
       })
     );
   };
+
   onUpdateApplicantStatus = (applicantEmail, updatedStatus) => {
     this.setState({
       applicants: this.state.applicants.map(applicant => {
@@ -105,22 +107,15 @@ class AdminDash extends Component {
     });
   };
 
-  onSearchSubmit = (textInput, type) => {
-    searchApplicants(textInput, type).then(response =>
-      this.setState({
-        applicants: response.data.users
-      })
-    );
-  };
-
-  onApplyFilters = filters => {
+  onSearchSubmit = (filters, textInput, type) => {
+    // TODO combine searchApplicants and filterApplicants
     filterApplicants(filters).then(response =>
       this.setState({
         applicants: response.data.users
       })
     );
   };
-  
+
   render() {
     const { isLoading, applicants, selectedApplicantIndex, filterContext } = this.state;
     return (
@@ -133,10 +128,7 @@ class AdminDash extends Component {
                 selectApplicantCallback={this.onSelectApplicant}
                 selectedIndex={selectedApplicantIndex}
               >
-                <ApplicantSearch
-                  searchSubmitCallback={this.onSearchSubmit}
-                  applyFiltersCallback={this.onApplyFilters}
-                />
+                <ApplicantSearch onSubmit={this.onSearchSubmit} />
                 <Styled.SecondaryOptions>
                   <Button onClick={this.onRefreshApplicants}>
                     <Icon color="grey3" name="refresh" />

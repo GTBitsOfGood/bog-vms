@@ -7,7 +7,6 @@ import { Set, OrderedMap } from 'immutable';
 import deepEquals from 'fast-deep-equal';
 import FilterSidebar from './FilterSidebar';
 import FilterInfo from './FilterInfo';
-import { transparentize } from 'polished';
 import InfiniteScroll from 'components/Shared/InfiniteScroll';
 import MailingListCollapsed from './MailingListCollapsed';
 import MailingListExpanded from './MailingListExpanded';
@@ -196,6 +195,7 @@ class UserManager extends React.Component {
 
   componentDidMount() {
     const { exploreFilters, exploreSearchTerm, exploreSearchValue } = this.state;
+    this.setState({ isRefreshing: true });
     this.fetchUsers(exploreFilters, exploreSearchTerm, exploreSearchValue);
   }
 
@@ -248,8 +248,6 @@ class UserManager extends React.Component {
   // the current grid and taking priority over a "fetchMoreUsers" call
   fetchUsers(filters, searchTerm, searchValue) {
     this.fetchingNewBatch = true;
-    console.log(this.state);
-    this.setState({ isRefreshing: true });
     fetchUserData({ filters, searchTerm, searchValue, limit: 15 })
       .then(response => {
         const { users, count } = response.data;
@@ -287,7 +285,7 @@ class UserManager extends React.Component {
   // all to mailing list.sp"
   fetchAllUsers(filters, searchTerm, searchValue) {
     return fetchUserData({ filters, searchTerm, searchValue, limit: 0 }).then(
-      response => response.data.users
+      ({ data: { users, bins } }) => ({ users, bins })
     );
   }
 
@@ -337,7 +335,8 @@ class UserManager extends React.Component {
       this.setState({
         exploreFilters,
         exploreSearchValue,
-        exploreSearchTerm
+        exploreSearchTerm,
+        isRefreshing: true
       });
       this.fetchUsers(exploreFilters, exploreSearchTerm, exploreSearchValue);
     }
@@ -348,7 +347,7 @@ class UserManager extends React.Component {
     const { exploreFilters, exploreSearchValue, exploreSearchTerm } = this.state;
     this.setState({ isLoadingAddAll: true });
     this.fetchAllUsers(exploreFilters, exploreSearchTerm, exploreSearchValue)
-      .then(newUsers => {
+      .then(({ users: newUsers, bins }) => {
         const {
           stagingUsers,
           filterContext: { labels }
@@ -380,13 +379,25 @@ class UserManager extends React.Component {
           exploreFilters.forEach(({ key: groupKey, values }) => {
             const valueEntries = Object.entries(values);
             const hasMultipleValues = valueEntries.length > 1;
-            console.log(valueEntries);
             valueEntries.forEach(([entryKey, entryValue]) => {
               const filterKey = makeFilterKey(groupKey, entryKey, entryValue);
               const filterLabel = labels[groupKey][entryKey];
               newFilters.push({ key: filterKey, label: filterLabel });
               if (hasMultipleValues) {
-                // TODO resolve non-disjoint filter reasons per user
+                if (bins && bins[groupKey] && bins[groupKey][entryKey]) {
+                  const matchedIds = bins[groupKey][entryKey];
+                  matchedIds.forEach(id => {
+                    newUserReasonMap.update(id, ({ user, reasons }) => ({
+                      user,
+                      reasons: [...reasons, filterKey]
+                    }));
+                  });
+                } else {
+                  console.warn(
+                    'Ambiguous filter did not have binned result; assuming all values are global'
+                  );
+                  globalReasons.push(filterKey);
+                }
               } else {
                 // Single filter values must apply to entire returned set, so add as global reason
                 globalReasons.push(filterKey);
@@ -394,7 +405,6 @@ class UserManager extends React.Component {
             });
           });
         }
-        console.log(globalReasons);
 
         if (exploreSearchValue == null && exploreFilters.length === 0) {
           // All users were added at once
@@ -450,7 +460,6 @@ class UserManager extends React.Component {
 
   hasFilters() {
     const { exploreFilters, exploreSearchTerm, isRefreshing } = this.state;
-    console.log({ isRefreshing, has: this.previousHasFilters });
     return isRefreshing
       ? this.previousHasFilters
       : exploreFilters.length > 0 || exploreSearchTerm != null;
