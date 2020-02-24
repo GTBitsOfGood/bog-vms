@@ -114,21 +114,23 @@ const dateFilterToDateFactory = {
   older: () => [{ $lt: beginningOfYear(2) }]
 };
 
-const dateFilterOperator = (key, _value) => {
+const dateFilterOperator = groupKey => (key, _value) => {
+  // Fallback to current year if key is invalid
   const dateFilters =
     key in dateFilterToDateFactory
       ? dateFilterToDateFactory[key]()
       : dateFilterToDateFactory.from_current_year();
+  // If array of length > 1, move into $and clause
   return dateFilters.length === 1
-    ? { createdAt: dateFilters[0] }
-    : { $and: dateFilters.map(expression => ({ createdAt: expression })) };
+    ? { [groupKey]: dateFilters[0] }
+    : { $and: dateFilters.map(expression => ({ [groupKey]: expression })) };
 };
 
 // Map of filter group keys to functions that transform values to MongoDB Aggregation
 // pipeline expression clauses.
 // See https://docs.mongodb.com/manual/meta/aggregation-quick-reference/#aggregation-expressions
 const filterValueToOperator = {
-  date: dateFilterOperator,
+  date: dateFilterOperator('createdAt'),
   status: simpleFilterOperatorFactory('status'),
   role: simpleFilterOperatorFactory('role'),
   skills_interests: simpleFilterOperatorFactory('skills_interests')
@@ -173,14 +175,14 @@ router.post('/search', (req, res, next) => {
     }
   }
 
-  // Stores parsed filters:
-  // [ { group: "group1", values: { valueB: true }, match: { $or: [ { group1: "valueB" } ] } } ]
   let filterObjects = null;
   // Param is for (boolean) filtering: [ { key: "group1", values: { valueB: true } } ]
   if (filters) {
     try {
       if (typeof filters === 'object' && Array.isArray(filters)) {
-        // Series of steps that must all pass for a document to be returned
+        // Stores parsed filters:
+        // [ { group: "group1", valueEntries: { ["valueB:", true ], match: { $or: [ { group1: "valueB" } ] } } ]
+        // Useful for later analysis of potentially ambiguous filters
         filterObjects = filters.map(({ key: groupKey, values }) => {
           const valueEntries = Object.entries(values);
           return {
@@ -213,6 +215,7 @@ router.post('/search', (req, res, next) => {
 
   const baseAggregateStages = [{ $match: match }, { $sort: { _id: -1 } }];
   const limitStage = { $limit: limitParam };
+  // Maps the documents to give special shape, creates combined first/last name field
   const projectStage = {
     $project: {
       name: { $concat: ['$bio.first_name', ' ', '$bio.last_name'] },
@@ -287,7 +290,7 @@ router.post('/search', (req, res, next) => {
         // Add in the bin results if no limit supplied
         if (limitParam == null) {
           const facets = Object.entries(rest);
-          // Objects of shape: { bins: { group1: { accepted: [ id1, id2 ] } } }
+          // Output objects are of shape: { bins: { group1: { accepted: [ id1, id2 ] } } }
           const bins = {};
           facets.forEach(([facetKey, documents]) => {
             const ids = documents.map(({ _id }) => _id);
