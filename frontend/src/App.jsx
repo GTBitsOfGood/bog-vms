@@ -2,9 +2,20 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
+import { login, getCurrentUser } from './queries';
 
 import { Header, Authenticated, Splash } from './components';
 import { StyleProvider, RequestProvider } from './providers';
+
+// Spinner
+import { css } from "@emotion/core";
+import { ClipLoader } from "react-spinners";
+
+const override = css`
+  display: block;
+  margin: 0 auto;
+  border-color: red;
+`;
 
 const Styled = {
   Container: styled.div`
@@ -20,9 +31,53 @@ const Styled = {
 };
 
 class App extends Component {
-  state = { isAuthenticated: true, user: { role: 'admin' }, token: '' };
 
-  fakeAuth = _ => this.setState({ user: { role: null } });
+  constructor(props) {
+    super(props);
+    this.state = { isAuthenticated: false, user: null }
+    // comment this in if you want user to be logged in by default
+    // this.state = { isAuthenticated: true, user: { role: 'admin' }, token: '' };
+  }
+
+  componentWillMount() {
+    this.getUser();
+  }
+
+  fakeAuth = () => {
+    this.setState({ isAuthenticated: true, user: { role: 'admin' }, token: '' });
+  }
+
+  loginAuth = (user, pass) => {
+    login(user, pass)
+      .then(res => {
+        console.log("login response", res.data);
+        if (res.status == 200) {
+          this.setState({ isAuthenticated: true, user: { role: 'admin' }, token: '' });
+        }
+      })
+      .catch(err => console.log('Error with login: ', err))
+  }
+
+  getUser = () => getCurrentUser()
+    .then(response => {
+      if (response.data.user) {
+        console.log('Get User: There is a user saved in the server session')
+        this.setState({
+          isAuthenticated: true,
+          user: { role: 'admin' },
+          hasLoaded: true
+        })
+      } else {
+        console.log('Get user: no user');
+        this.setState({
+          loggedIn: false,
+          user: null,
+          hasLoaded: true
+        })
+      }
+    })
+    .catch(e => console.log('Error retrieving current user: ', e));
+
 
   logout = e => {
     e.preventDefault();
@@ -30,27 +85,42 @@ class App extends Component {
     axios.get('/auth/logout');
     this.props.history.push('/');
   };
+
   auth = user => {
     this.setState({ isAuthenticated: true, user });
   };
 
   render() {
-    const { isAuthenticated, user } = this.state;
+    const { isAuthenticated, user, hasLoaded } = this.state;
+    console.log(this.state.hasLoaded)
     return (
-      <StyleProvider>
-        <RequestProvider>
-          <Styled.Container>
-            <Header
-              onLogout={this.logout}
-              loggedIn={isAuthenticated}
-              role={user ? user.role : null}
+      <div id="wrapper">
+        {
+          this.state.hasLoaded ?
+            <StyleProvider>
+              <RequestProvider>
+                <Styled.Container>
+                  <Header
+                    onLogout={this.logout}
+                    loggedIn={isAuthenticated}
+                    role={user ? user.role : null}
+                  />
+
+                  <Styled.Content>
+                    {user ? <Authenticated user={user} /> : <Splash onAuth={this.loginAuth} />}
+                  </Styled.Content>
+                </Styled.Container>
+              </RequestProvider>
+            </StyleProvider>
+            :
+            <ClipLoader
+              css={css}
+              size={200}
+              color={"#f79a0d"}
+              loading={true}
             />
-            <Styled.Content>
-              {user ? <Authenticated user={user} /> : <Splash onAuth={this.fakeAuth} />}
-            </Styled.Content>
-          </Styled.Container>
-        </RequestProvider>
-      </StyleProvider>
+        }
+      </div>
     );
   }
 }

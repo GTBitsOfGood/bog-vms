@@ -12,6 +12,17 @@ const { USER_DATA_VALIDATOR } = require('../util/validators');
 const DEFAULT_PAGE_SIZE = 10;
 //events
 
+// check if the user is logged in
+router.get('/current', (req, res, next) => {
+  console.log('===== user!!======')
+  console.log(req.user)
+  if (req.user) {
+      res.json({ user: req.user })
+  } else {
+      res.json({ user: null })
+  }
+});
+
 router.post('/', USER_DATA_VALIDATOR, (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

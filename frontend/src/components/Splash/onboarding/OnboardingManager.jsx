@@ -48,8 +48,10 @@ const Styled = {
   `,
 };
 
-const OnboardingManager = () => {
+const OnboardingManager = (props) => {
   const [loading] = useState(true);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   function googleResponse(response) {
     const tokenBlob = new Blob([JSON.stringify({ access_token: response.accessToken }, null, 2)], {
@@ -69,6 +71,7 @@ const OnboardingManager = () => {
   function loginFailed() {
     alert('Something went wrong. Please try again');
   }
+
   return (
     <Styled.Container>
       <Styled.ContainerTest style={{ marginTop: '2rem', width: '100%' }}>
@@ -78,15 +81,15 @@ const OnboardingManager = () => {
         <legend>Login</legend>
         <Form style={{ width: '100%' }}>
           <FormGroup style={{ border: 'none' }}>
-            <Input type="email" name="email" id="exampleEmail" placeholder="Email" />
+            <Input type="email" name="email" id="exampleEmail" placeholder="Email" onChange={e => setUsername(e.target.value)}/>
           </FormGroup>
           <FormGroup>
-            <Input type="password" name="password" id="examplePassword" placeholder="Password" />
+            <Input type="password" name="password" id="examplePassword" placeholder="Password" onChange={e => setPassword(e.target.value)}/>
           </FormGroup>
           <Styled.ButtonContainer style={{}}>
-            <Styled.Button style={{ color: 'white', backgroundColor: 'black' }}>
-              <a href="/">Login </a>
-              {/*Loggin*/}
+            <Styled.Button type="button" style={{ color: '#f79a0d', backgroundColor: 'black' }} onClick={() => props.onAuth(username, password)}>
+              Login
+              {/* <a href="/">Login </a> */}
             </Styled.Button>
             <Styled.Button style={{ color: 'gray', marginLeft: '1rem' }}>
               Forgot Password?
