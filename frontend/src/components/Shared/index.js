@@ -7,3 +7,5 @@ export { default as OptionsSelected } from './OptionsSelected';
 export { default as Icon } from './Icon';
 export { default as Collapse } from './Collapse';
 export { default as ClearButton } from './ClearButton';
+export { default as Button } from './Button';
+export { default as Container } from './Container';

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { Icon } from 'components/Shared';
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import { Icon, ClearButton, Container } from 'components/Shared';
 import image from '../../../images/onboardingArt.png';
-import logo from '../../../images/bog_logo.png';
+// import logo from '../../../images/bog_logo.png';
 import Footer from '../Footer';
 
 const Styled = {
@@ -43,8 +43,8 @@ const Styled = {
   ButtonContainer: styled.div`
     display: flex;
     justify-content: center;
-    align-items: center
-    flex-direction: row
+    align-items: center;
+    flex-direction: row;
   `
 };
 
@@ -71,10 +71,10 @@ const OnboardingManager = () => {
   }
   return (
     <Styled.Container>
-      <Styled.ContainerTest style={{ marginTop: '2rem', width: '100%' }}>
-        <Styled.ImgContainer style={{ marginBottom: '10rem' }}>
+      <Styled.ContainerTest style={{ marginTop: '2rem', width: '100%', justifyContent: 'center' }}>
+        {/* <Styled.ImgContainer style={{ marginBottom: '10rem' }}>
           <img style={{ width: '240px', height: '42px' }} alt="bogLogo" src={logo} />
-        </Styled.ImgContainer>
+        </Styled.ImgContainer> */}
         <legend>Login</legend>
         <Form style={{ width: '100%' }}>
           <FormGroup style={{ border: 'none' }}>
@@ -83,7 +83,7 @@ const OnboardingManager = () => {
           <FormGroup>
             <Input type="password" name="password" id="examplePassword" placeholder="Password" />
           </FormGroup>
-          <Styled.ButtonContainer style={{}}>
+          <Styled.ButtonContainer style={{ flexDirection:'row' }}>
             <Styled.Button style={{ color: 'white', backgroundColor: 'black' }}>
               <a href="/">Login </a>
               {/*Loggin*/}
