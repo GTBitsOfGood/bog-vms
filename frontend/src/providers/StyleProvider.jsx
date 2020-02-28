@@ -40,6 +40,10 @@ const theme = {
     warning: '#eff214',
     primary: '#f79a0d',
     danger: '#ff6261'
+  },
+  submit: {
+    back: 'hsl(0, 0%, 30%)',
+    text: 'rgb(255,255,255)',
   }
 };
 

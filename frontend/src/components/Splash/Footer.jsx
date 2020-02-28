@@ -2,6 +2,7 @@ import React, {Component } from 'react';
 import { Redirect } from "react-router-dom";
 import { GoogleLogin } from 'react-google-login';
 
+
 class Footer extends Component {
 
   constructor(props) {
