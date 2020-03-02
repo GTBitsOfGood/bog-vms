@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Route, Redirect, Switch } from 'react-router-dom';
 import ApplicantViewer from './ApplicantViewer';
 import UserManager from './users/UserManager';
-import Settings from './users/Settings';
+import Settings from './Settings/Settings';
 import EventManager from './events/EventManager';
 
 const Container = styled.div`
@@ -13,7 +13,12 @@ const Container = styled.div`
 `;
 
 class AdminDash extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
   render() {
+    console.log(this.props.user);
     return (
       <Container>
         <Switch>

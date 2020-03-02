@@ -64,7 +64,7 @@ class App extends Component {
         console.log('Get User: There is a user saved in the server session')
         this.setState({
           isAuthenticated: true,
-          user: { role: 'admin' },
+          user: { role: 'admin', username: response.data.user.username },
           hasLoaded: true
         })
       } else {
@@ -92,7 +92,6 @@ class App extends Component {
 
   render() {
     const { isAuthenticated, user, hasLoaded } = this.state;
-    console.log(this.state.hasLoaded)
     return (
       <div id="wrapper">
         {
