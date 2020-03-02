@@ -8,9 +8,9 @@ const Styled = {
     background: black;
   `,
     Container: styled.div`
-    width: 90vw;
+    width: 75vw;
     background: white;
-    padding: 1rem 2.5rem;
+    padding: 1.5rem 0rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -21,8 +21,8 @@ const Styled = {
     HorizontalContainer: styled.div`
     display: flex;
     flex-direction: row;
-    margin-left: 8rem;
-    margin-right: 8rem;
+    margin-left: 6rem;
+    margin-right: 6rem;
     justify-content: stretch;
   `,
     FormColumn: styled.div`
@@ -57,7 +57,7 @@ const EditProfile = () => {
 
     return (
         <Styled.Container>
-            <Styled.HorizontalContainer style={{ "width": "100%", "paddingLeft": "8rem" }}>
+            <Styled.HorizontalContainer style={{ "width": "100%", "paddingLeft": "6rem" }}>
                 <legend>Edit Profile</legend>
             </Styled.HorizontalContainer>
             <Form style={{ "width": "100%" }}>
