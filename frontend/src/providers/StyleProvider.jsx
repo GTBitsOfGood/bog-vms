@@ -41,9 +41,17 @@ const theme = {
     primary: '#f79a0d',
     danger: '#ff6261'
   },
-  submit: {
+  button: {
     back: 'hsl(0, 0%, 30%)',
-    text: 'rgb(255,255,255)',
+    text: 'hsl(0, 0%, 100%)',
+  },
+  reset: {
+    back: 'hsl(0, 0%, 100%)',
+    text: 'hsl(0, 0%, 75%)',
+  },
+  submit: {
+    back: '#f79a0d',
+    text: '#FFFFFF'
   }
 };
 

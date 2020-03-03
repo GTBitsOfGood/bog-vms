@@ -1,14 +1,16 @@
 import React, { Component, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import { Form, FormGroup, Label, FormText } from 'reactstrap';
+import { Button, Input } from 'components/Shared';
+
 
 import onboarding2 from '../../../images/onboarding_update2.svg';
 const Styled = {
   Container: styled.div`
     width: 100%;
     height: 100%;
-    background: ${props => props.theme.grey9};
+    background: #FFFFFF;
     padding-top: 1rem;
     display: flex;
     flex-direction: column;
@@ -54,9 +56,11 @@ const Onboarding2 = () => {
   return (
     <Styled.Container>
       <Styled.HorizontalContainer style={{ margin: '1rem' }}>
-        <Styled.BackButton>
-          <Link to="/onboarding1"> Back </Link>
-        </Styled.BackButton>
+        <Link to="/onboarding1"> 
+          <Button type='reset'>  
+            〈 Back 
+          </Button>
+        </Link>
       </Styled.HorizontalContainer>
       <Styled.HorizontalContainer style={{ textAlign: 'center' }}>
         <legend> Let's set up your organization.</legend>
@@ -68,14 +72,14 @@ const Onboarding2 = () => {
         <Styled.HorizontalContainer style={{ marginLeft: '5rem', marginRight: '5rem' }}>
           <Styled.FormField style={{ marginRight: '50px', marginTop: '80px' }}>
             <legend> Organization Information</legend>
-            <Input type="text" name="compName" id="companyName" placeholder="Company Name" />
+            <Input name="compName" id="companyName" placeholder="Company Name" />
           </Styled.FormField>
           <Styled.FormField style={{ border: 'dotted', borderRadius: '25px', padding: '50px' }}>
             <Styled.HorizontalContainer style={{ marginBottom: '1rem' }}>
               <Label for="exampleFile">Upload your company logo</Label>
             </Styled.HorizontalContainer>
             <Styled.HorizontalContainer style={{ marginBottom: '1rem' }}>
-              <Input type="file" name="file" id="exampleFile" />
+              <input type="file" name="file" id="exampleFile" />
             </Styled.HorizontalContainer>
             <Styled.HorizontalContainer
               style={{ justifyContent: 'center', marginLeft: 'none', marginRight: 'none' }}
@@ -89,9 +93,11 @@ const Onboarding2 = () => {
         <Styled.HorizontalContainer
           style={{ marginTop: '5rem', marginBottom: '1rem', justifyContent: 'flex-end' }}
         >
-          <Styled.Button>
-            <Link to="/onboarding3"> Next </Link>
-          </Styled.Button>
+          <Link to="/onboarding3">
+            <Button type='submit'>
+              Next
+            </Button>
+          </Link>
         </Styled.HorizontalContainer>
       </Form>
     </Styled.Container>

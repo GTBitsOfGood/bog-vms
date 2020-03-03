@@ -1,16 +1,17 @@
 import React, { Component, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import { Form, FormGroup, Label, FormText } from 'reactstrap';
+import { Button, Input, Select } from 'components/Shared';
 
 import onboarding1 from '../../../images/onboarding_update1.svg';
-import OnboardingManager from './OnboardingManager';
+// import OnboardingManager from './OnboardingManager';
 // import {Route} from "react-router-dom";
 const Styled = {
   Container: styled.div`
     width: 100%;
     height: 100%;
-    background: ${props => props.theme.grey9};
+    background: #FFFFFF;
     padding-top: 1rem;
     display: flex;
     flex-direction: column;
@@ -30,14 +31,6 @@ const Styled = {
     margin-top: 3rem;
     margin-bottom: 3rem;
   `,
-  Button: styled(Button)`
-    border: none;
-    background: black;
-  `,
-  BackButton: styled(Button)`
-    margin-left: 3rem;
-    border: none;
-  `,
   ButtonContainer: styled.div`
     display: flex;
     justify-content: center;
@@ -52,13 +45,16 @@ const Styled = {
 };
 
 const Onboarding1 = () => {
+
   const [loading] = useState(true);
   return (
     <Styled.Container>
       <Styled.HorizontalContainer style={{ margin: '1rem' }}>
-        <Styled.BackButton>
-          <Link to="/"> Back </Link>
-        </Styled.BackButton>
+        <Link to="/">
+          <Button type='reset' style={{ marginLeft: '3rem', flex: '0'}}>
+            〈 Back 
+          </Button>
+        </Link>
       </Styled.HorizontalContainer>
       <Styled.HorizontalContainer style={{ textAlign: 'center' }}>
         <legend> Hi, let's get your account set up.</legend>
@@ -86,19 +82,21 @@ const Onboarding1 = () => {
             <Input type="text" name="lname" id="lastName" placeholder="Last Name" />
           </Styled.FormField>
           <Styled.FormField>
-            <Input type="select" name="select" id="roleSelect">
+            <Select name="select" id="roleSelect">
               <option>Role1</option>
               <option>Role2</option>
               <option>Role3</option>
-            </Input>
+            </Select>
           </Styled.FormField>
         </Styled.HorizontalContainer>
         <Styled.HorizontalContainer
-          style={{ marginTop: '5rem', marginBottom: '1rem', justifyContent: 'flex-end' }}
+          style={{ marginTop: '2rem', marginBottom: '1rem', justifyContent: 'flex-end' }}
         >
-          <Styled.Button>
-            <Link to="/onboarding2"> Next </Link>
-          </Styled.Button>
+          <Link to="/onboarding2">
+            <Button type='submit'>
+              Next
+            </Button>
+          </Link>
         </Styled.HorizontalContainer>
       </Form>
     </Styled.Container>

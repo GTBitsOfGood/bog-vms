@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Icon } from 'components/Shared';
-import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import { Icon, Button } from 'components/Shared';
+import { Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 
 import image from '../../../images/onboardingArt.png';
 import logo from '../../../images/bog_logo.png';
@@ -34,9 +34,6 @@ const Styled = {
     justify-content: space-between;
     margin-bottom: 1rem;
   `,
-  Button: styled(Button)`
-    border: none;
-  `,
   ButtonContainer: styled.div`
     display: flex;
     justify-content: center;
@@ -63,9 +60,9 @@ const AdminLogin = () => {
             <Input type="password" name="password" id="examplePassword" placeholder="Password" />
           </FormGroup>
           <Styled.ButtonContainer style={{ justifyContent: "space-around" }}>
-            <Styled.Button style={{ color: "white", backgroundColor: "black"}}>
+            <Button style={{ color: "white", backgroundColor: "black"}}>
                 Login
-            </Styled.Button>
+            </Button>
             <Styled.Button style={{ color: "gray" }}>
               Forgot Password?
             </Styled.Button>

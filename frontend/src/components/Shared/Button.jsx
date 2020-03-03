@@ -8,9 +8,13 @@ const defaultColors = {
 };
 
 const ButtonBase = styled.button`
+  flex: 1;
   background: ${props => (props.theme[props.type] || defaultColors).back};
   color: ${props => (props.theme[props.type] || defaultColors).text};
   border-radius: 0.5rem;
+  border: none;
+  padding: .70rem 5.75rem;
+  font-size: 120%;
 `;
 
 const Button = ({ children, type, ...props }) => (
@@ -25,6 +29,6 @@ const Button = ({ children, type, ...props }) => (
 export default withTheme(Button);
 
 Button.propTypes = {
-  children: PropTypes.object,
+  children: PropTypes.string,
   type: PropTypes.string
 };

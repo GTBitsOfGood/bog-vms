@@ -1,14 +1,20 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import { Form, FormGroup, Label, FormText } from 'reactstrap';
+import { Button, Input, Select} from 'components/Shared';
+import onboarding4 from '../../../images/onboarding_update3.svg';
 
-import onboarding3 from '../../../images/onboarding_update3.svg';
 const Styled = {
+  Color: styled(Button)`
+    margin: 1rem;
+    padding: 2rem;
+    background: ${props => props.color}
+  `,
   Container: styled.div`
     width: 100%;
     height: 100%;
-    background: ${props => props.theme.grey9};
+    background: #FFFFFF;
     padding-top: 1rem;
     display: flex;
     flex-direction: column;
@@ -16,24 +22,24 @@ const Styled = {
   `,
   HorizontalContainer: styled.div`
     display: flex;
+    flex: 0 1;
     flex-direction: row;
-    margin-left: 8rem;
-    margin-right: 8rem;
-    justify-content: stretch;
+    margin: 3rem;
   `,
   ImgContainer: styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 3rem;
-    margin-bottom: 3rem;
+    margin: 3rem;
+  `,
+  TxtContainer: styled.div`
+    display: flex;
+    align-content: center;
   `,
   Button: styled(Button)`
-    border: none;
-    background: black;
+    background: gray;
   `,
   BackButton: styled(Button)`
-    margin-left: 3rem;
     border: none;
   `,
   ButtonContainer: styled.div`
@@ -41,68 +47,57 @@ const Styled = {
     justify-content: center;
     align-items: center;
     flex-direction: row;
-  `,
-  FormField: styled(FormGroup)`
-    border: none;
-    justfiy-content: stretch;
-    flex: 1;
   `
 };
 
 const Onboarding4 = () => {
   const [loading] = useState(true);
+
+  let colors = ['#FFD528', '#F68C4A', '#847BD7', '#CE1E4D', '#F1625E'];
+
   return (
     <Styled.Container>
       <Styled.HorizontalContainer style={{ margin: '1rem' }}>
-        <Styled.BackButton>
-          <Link to="/onboarding3"> Back </Link>
-        </Styled.BackButton>
+        <Link to="/onboarding3"> 
+          <Button type='reset'>  
+            〈 Back 
+          </Button>
+        </Link>
       </Styled.HorizontalContainer>
-      <Styled.HorizontalContainer style={{ textAlign: 'center' }}>
-        <legend> Let's add some volunteers.</legend>
-      </Styled.HorizontalContainer>
+      <Styled.TxtContainer style={{ textAlign: 'center' }}>
+        <legend> How do you want this app to look? </legend>
+      </Styled.TxtContainer>
       <Styled.ImgContainer>
-        <img style={{ width: '900px', height: '87px' }} alt="onboard" src={onboarding3} />
+        <img style={{ width: '900px', height: '87px' }} alt="onboard" src={onboarding4} />
       </Styled.ImgContainer>
-      <Styled.HorizontalContainer style={{ marginLeft: '5rem', marginRight: '5rem' }}>
-        <Styled.Container style={{ flex: '1', marginTop: '50px' }}>
-          <legend>Setting up your volunteer database. </legend>
-          <Styled.HorizontalContainer style={{ marginLeft: 'none', marginRight: 'none' }}>
-            <FormText style={{ color: 'muted', textAlign: 'center' }}>
-              (1) Download this template
-            </FormText>
-          </Styled.HorizontalContainer>
-          <Styled.HorizontalContainer style={{ marginLeft: 'none', marginRight: 'none' }}>
-            <FormText style={{ color: 'muted', textAlign: 'center' }}>
-              (2) Transfer volunteer data over
-            </FormText>
-          </Styled.HorizontalContainer>
-          <Styled.HorizontalContainer style={{ marginLeft: 'none', marginRight: 'none' }}>
-            <FormText style={{ color: 'muted', textAlign: 'center' }}>
-              (3) Upload new spreadsheet
-            </FormText>
-          </Styled.HorizontalContainer>
-        </Styled.Container>
-        <Styled.FormField style={{ border: 'dotted', borderRadius: '25px', padding: '50px' }}>
-          <Styled.HorizontalContainer style={{ marginBottom: '1rem' }}>
-            <Label for="exampleFile">Upload CSV or Spreadsheet</Label>
-          </Styled.HorizontalContainer>
-          <Styled.HorizontalContainer style={{ marginBottom: '1rem' }}>
-            <Input type="file" name="file" id="exampleFile" />
-          </Styled.HorizontalContainer>
-          <Styled.HorizontalContainer
-            style={{ justifyContent: 'center', marginLeft: 'none', marginRight: 'none' }}
-          >
-            <FormText style={{ color: 'muted', textAlign: 'center' }}>
-              Drag a file here or browse for a file to upload
-            </FormText>
-          </Styled.HorizontalContainer>
-        </Styled.FormField>
+      <Styled.HorizontalContainer style={{ justifyContent: 'space-around' }}>
+        <FormGroup className='col-md-4'>
+          <h4>Type of Mode</h4>
+          <Select type="select" name="selectMulti" id="exampleSelectMulti">
+            <option>Dark</option>
+            <option>Light</option>
+          </Select>
+        </FormGroup>
+        <div className='col-md-4'>
+          <h4>Color Theme</h4>
+          {colors.map(color => (
+            <Styled.Color color={color} />
+          ))}
+        </div>
       </Styled.HorizontalContainer>
-      <Styled.HorizontalContainer style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-        <Styled.Button>
-          <Link to="/">Finish</Link>
-        </Styled.Button>
+      <Styled.HorizontalContainer
+        style={{
+          flexDirection: 'row',
+          marginTop: '5rem',
+          marginBottom: '1rem',
+          justifyContent: 'flex-end'
+        }}
+      >
+        <Link to="/">
+          <Button type='submit'>
+            Finish
+          </Button>
+        </Link>
       </Styled.HorizontalContainer>
     </Styled.Container>
   );
