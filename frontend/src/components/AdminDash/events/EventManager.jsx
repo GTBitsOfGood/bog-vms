@@ -135,6 +135,7 @@ const EventManager = () => {
         events = {events.filter(pastDate)}
         loading={loading}
         onDetailClicked={onDetailClicked}
+        onDeleteClicked = {onDeleteClicked}
       />
 
       <EventCardGrid
