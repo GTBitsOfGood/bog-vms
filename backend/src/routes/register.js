@@ -74,6 +74,7 @@ router.post(
             zip_code: newUserData.bio.zip_code,
             phone_number: newUserData.bio.phone_number
           },
+          skills_interets: newUserData.skill_interests,
           role: 'volunteer',
           status: 'new',
           login: generatePasswordLogin(newUserData.password)
