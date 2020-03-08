@@ -32,7 +32,9 @@ const userDataSchema = new mongoose.Schema(
     employment: {
       industry: { type: String },
       occupation: { type: [String] }
-    }
+    },
+    // Tagged union on 'type' property
+    login: { type: Object }
   },
   {
     timestamps: true

@@ -1,11 +1,18 @@
+// node imports
+const crypto = require('crypto');
+
 // npm imports
 const passport = require('passport');
-const GoogleTokenStrategy = require('passport-google-token').Strategy;
-var LocalStrategy = require('passport-local').Strategy;
+const LocalStrategy = require('passport-local').Strategy;
+const mongoose = require('mongoose');
 
 // Local imports
-const UserCreds = require('./models/userCreds');
 const UserData = require('./models/userData');
+
+// Password hash config
+const PASSWORD_HASH_ITERATIONS = 1000;
+const PASSWORD_HASH_LENGTH = 64;
+const PASSWORD_HASH_DIGEST = 'sha512';
 
 /**
  * Initializes passport and authentication-related endpoints for the entire express application.
@@ -14,101 +21,67 @@ function initAuth(app) {
   // Configure the local strategy for use by Passport.
   //
   // The local strategy require a `verify` function which receives the credentials
-  // (`username` and `password`) submitted by the user.  The function must verify
-  // that the password is correct and then invoke `cb` with a user object, which
+  // (`email` and `password`) submitted by the user.  The function must verify
+  // that the password is correct and then invoke `done` with a user object, which
   // will be set at `req.user` in route handlers after authentication.
-  passport.use(new LocalStrategy(
-    function (username, password, cb) {
-      findByUsername(username, function (err, user) {
-        if (err) { return cb(err); }
-        if (!user) { return cb(null, false); }
-        if (user.password != password) { return cb(null, false); }
-        return cb(null, user);
+  passport.use(
+    new LocalStrategy(function(email, password, done) {
+      findUserByEmail(email, function(err, user) {
+        if (err) {
+          return done(err);
+        }
+        if (!user || !user.login) {
+          return done(null, false);
+        }
+        // perform standard valiation on user login
+        if (user.login.type === 'password') {
+          // use pre-generated salt from login info (stored in db)
+          const { salt, passwordHash } = user.login;
+          if (salt == null || passwordHash == null) return done(null, false);
+          const hash = crypto
+            .pbkdf2Sync(
+              password,
+              salt,
+              PASSWORD_HASH_ITERATIONS,
+              PASSWORD_HASH_LENGTH,
+              PASSWORD_HASH_DIGEST
+            )
+            .toString(`hex`);
+          if (hash !== passwordHash) return done(null, false);
+        }
+        return done(null, user);
       });
-    }
-  ));
+    })
+  );
 
-  // this is a mock function
-  // TODO: replace with function to retrieve user from mongo
-  function findByUsername(username, callback) {
-    callback(null, { username: 'admin', password: 'admin' });
+  function findUserByEmail(email, callback) {
+    UserData.findOne({ 'bio.email': email }, callback);
+  }
+
+  function findUserById(id, callback) {
+    UserData.findOne({ _id: mongoose.Types.ObjectId(id) }, callback);
   }
 
   // Configure Passport authenticated session persistence.
-  passport.serializeUser(function (user, cb) {
-    cb(null, user);
+  passport.serializeUser(function(user, done) {
+    done(null, user._id);
   });
 
-  passport.deserializeUser(function (user, cb) {
-    cb(null, user);
+  passport.deserializeUser(function(id, done) {
+    findUserById(id, (err, user) => done(err, user));
   });
-
-  // this is a mock function
-  // TODO: replace with function to retrieve user from mongo
-  function findUserById(id, callback) {
-    callback(null, { username: 'admin', password: 'admin' });
-  }
 
   // Middleware to use passport
   app.use(passport.initialize());
   app.use(passport.session());
 
-  // // For saving user creds in cookie
-  // passport.serializeUser(({ id }, done) => done(null, id));
-
-  // // For retrieving user creds object from cookie
-  // passport.deserializeUser((id, done) => UserData.findById(id, done));
-
-  // // Google Auth config via passport
-  // passport.use(
-  //   new GoogleTokenStrategy(
-  //     {
-  //       clientID: process.env.GOOGLE_CLIENT_ID,
-  //       clientSecret: process.env.GOOGLE_CLIENT_SECRET
-  //     },
-  //     (accessToken, refreshToken, profile, done) => {
-  //       UserCreds.findOrCreate(
-  //         accessToken,
-  //         refreshToken,
-  //         profile,
-  //         (err, userCred) => {
-  //           if (err) return done(err, null);
-  //           UserData.findById(userCred.userDataId, (err2, user) => {
-  //             return done(err2, user);
-  //           });
-  //         }
-  //       );
-  //     }
-  //   )
-  // );
-
-  // app.post(
-  //   '/auth/google',
-  //   passport.authenticate('google-token', { session: true }),
-  //   (req, res) => {
-  //     if (!req.user) {
-  //       return res.status(401).json({
-  //         error: 'User Not Authenticated'
-  //       });
-  //     }
-  //     return res.status(200).send(JSON.stringify(req.user));
-  //   }
-  // );
-
   // Login Route
-  app.post('/auth/login', (req, res, next) => {
-    console.log("/auth/login called, req body: ")
-    console.log(req.body)
-    next();
-  },
-    passport.authenticate('local'),
-    (req, res) => {
-      console.log("logged in", req.user);
-      var userInfo = {
-        username: req.user.username,
-      };
-      res.send(userInfo);
+  app.post('/auth/login', passport.authenticate('local'), (req, res) => {
+    console.log('logged in', req.user);
+    res.send({
+      email: req.user.bio.email
     });
+  });
 
   // Logout Route
   app.get('/auth/logout', (req, res, next) => {
@@ -124,20 +97,42 @@ function initAuth(app) {
   });
 }
 
+// Generates login object used upon user registration
+// Object of form:
+/* {
+  type: "password",
+  salt: "74f32a364a90a4d4",
+  passwordHash: "4f1a2096023495b6ff4cdf87..."
+} */
+function generatePasswordLogin(password) {
+  const salt = crypto.randomBytes(16).toString('hex');
+  const passwordHash = crypto
+    .pbkdf2Sync(
+      password,
+      salt,
+      PASSWORD_HASH_ITERATIONS,
+      PASSWORD_HASH_LENGTH,
+      PASSWORD_HASH_DIGEST
+    )
+    .toString(`hex`);
+  console.log({ password, salt, passwordHash });
+  return { type: 'password', salt, passwordHash };
+}
+
 module.exports = {
   initAuth,
+  generatePasswordLogin,
   /**
    * Express middleware to check if current user is authenticated.
    */
   isAuthenticated: (req, res, next) => {
-    if (process.env.NODE_ENV === 'development') {
-      return next();
-    }
-    // return next();
+    // if (process.env.NODE_ENV === 'development') {
+    //   return next();
+    // }
     return req.user
       ? next()
-      : res.status(401).json({
-        error: 'User not authenticated (must sign in)'
-      });
+      : res.status(403).json({
+          error: 'User not authenticated (must sign in)'
+        });
   }
 };
