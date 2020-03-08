@@ -1,9 +1,9 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import * as Card from '../shared/cardStyles';
 import { Icon } from 'components/Shared';
 import styled from 'styled-components';
 import { Button } from 'reactstrap';
-import { Link } from 'react-router-dom';
 
 const Styled = {
     Button: styled(Button)`
@@ -22,7 +22,12 @@ function EventCard({event, imgUrl, onDeleteClicked, onDetailClicked}) {
             <Styled.Button onClick={() => onDeleteClicked(event)} close aria-label="Delete Event">
                 <Icon name="delete" color="grey9" />
             </Styled.Button>
-            <Link to={`/events/${event._id}`}>
+            <Link to={{
+                pathname: `/events/${event._id}`,
+                state: {
+                    event: event
+                }
+            }}>
                 <Card.imgPlaceholder src={imgUrl}/>
             </Link>
             <Card.cardText>

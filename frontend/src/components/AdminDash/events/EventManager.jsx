@@ -8,7 +8,7 @@ import { fetchEvents } from 'components/AdminDash/queries';
 import EventCreateModal from './EventCreateModal';
 import EventEditModal from './EventEditModal';
 import EventDeleteModal from './EventDeleteModal';
-import EventDetailModal from './EventDetailModal';
+import EventDetails from './EventDetails';
 import * as Table from '../shared/tableStyles';
 import EventCardGrid from './EventCardGrid';
 
@@ -40,17 +40,8 @@ const EventPageManager = () => {
   return(
     <Switch>
       <Route exact path='/events' component={EventManager} />
-      <Route path='/events/:eventid' component={EventDetailsPage} />
+      <Route path='/events/:eventid' component={EventDetails} />
     </Switch>
-  );
-}
-
-function EventDetailsPage(props) {
-  return(
-    <div>
-      <h1>Event Details</h1>
-      <h2>There's nothing here right now. Go away.</h2>
-    </div>
   );
 }
 
@@ -136,7 +127,6 @@ const EventManager = () => {
       </EventTable>*/}
       <EventCreateModal open={showCreateModal} toggle={toggleCreateModal} />
       <EventDeleteModal open={showDeleteModal} toggle={toggleDeleteModal} event={currEvent} />
-      <EventDetailModal open={showDetailModal} toggle={toggleDetailModal} event={currEvent} />
     </Styled.Container>
   );
 };

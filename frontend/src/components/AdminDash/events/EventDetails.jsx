@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import * as SForm from '../shared/formStyles';
@@ -14,10 +15,6 @@ const Styled = {
         background: none;
         border: none;
         opacity: 1.0;
-    `,
-
-    Modal: styled(Modal) `
-        width: 100%;
     `,
 
     FlexHeader: styled.div`
@@ -83,10 +80,17 @@ function returnTimeFromNowString(date) {
     return `${Math.floor(timeDifference.getTime() / oneYearMs)} years from now`;
 }
 
-function EventDetailModal({open, toggle, event}) {
+function EventDetails(props) {
+    const event = props.event || props.location.state.event;
+
     if (!event) {
         // If no event found, render nothing
-        return <span></span>
+        return(
+            <div>
+                <h1>No details found for this event</h1>
+                <Link to='/events'>Back</Link>
+            </div>
+        );
     }
 
     const eventDate = new Date(event.date);
@@ -94,34 +98,34 @@ function EventDetailModal({open, toggle, event}) {
     const timeDisplayOptions = {timeStyle: 'short'}
 
     return (
-        <Modal isOpen={open} toggle={toggle} backdrop="static">
-            <ModalHeader toggle={toggle}>
-                <Styled.FlexHeader>
-                    <Styled.EventInfoHeader>
-                        <IconHeading
-                            headerText={event.name}
-                            subHeaderText={eventDate.toLocaleDateString(undefined, dateDisplayOptions)}/>
-                        <IconHeading
-                            iconName="refresh"
-                            headerText={eventDate.toLocaleTimeString(undefined, timeDisplayOptions) + ' to ???'}
-                            subHeaderText={returnTimeFromNowString(eventDate)}/>
-                        <IconHeading
-                            iconName="delete"
-                            headerText={event.location}
-                            subHeaderText="??? Street"/>
-                    </Styled.EventInfoHeader>
-                </Styled.FlexHeader>
-            </ModalHeader>
-            <ModalBody>
-            <h3>Details</h3>
-            <p>
-            {event.description}
-            </p>
-            </ModalBody>
-        </Modal>
+        // TODO: Style ALL of this
+        <div>
+            <Link to='/events'>
+                <Icon color="grey" name="left-chevron" /> Back
+            </Link>
+            <Styled.FlexHeader>
+                <Styled.EventInfoHeader>
+                    <IconHeading
+                        headerText={event.name}
+                        subHeaderText={eventDate.toLocaleDateString(undefined, dateDisplayOptions)}/>
+                    <IconHeading
+                        iconName="refresh"
+                        headerText={eventDate.toLocaleTimeString(undefined, timeDisplayOptions) + ' to ???'}
+                        subHeaderText={returnTimeFromNowString(eventDate)}/>
+                    <IconHeading
+                        iconName="delete"
+                        headerText={event.location}
+                        subHeaderText="??? Street"/>
+                </Styled.EventInfoHeader>
+            </Styled.FlexHeader>
+            <div>
+                <h3>Details</h3>
+                <p>{event.description}</p>
+            </div>
+        </div>
     );
 
 }
 
 
-  export default EventDetailModal;
+export default EventDetails;
