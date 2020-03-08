@@ -7,10 +7,6 @@ import { login, getCurrentUser } from './queries';
 import { Header, Authenticated, Splash } from './components';
 import { StyleProvider, RequestProvider } from './providers';
 
-// Spinner
-import { css } from "@emotion/core";
-import { ClipLoader } from "react-spinners";
-
 const override = css`
   display: block;
   margin: 0 auto;
@@ -94,8 +90,6 @@ class App extends Component {
     const { isAuthenticated, user, hasLoaded } = this.state;
     return (
       <div id="wrapper">
-        {
-          this.state.hasLoaded ?
             <StyleProvider>
               <RequestProvider>
                 <Styled.Container>
@@ -111,14 +105,6 @@ class App extends Component {
                 </Styled.Container>
               </RequestProvider>
             </StyleProvider>
-            :
-            <ClipLoader
-              css={css}
-              size={200}
-              color={"#f79a0d"}
-              loading={true}
-            />
-        }
       </div>
     );
   }

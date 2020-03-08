@@ -24,9 +24,9 @@ const Splash = (props) => {
       <Switch>
         <Route exact path="/" render={(props) => <OnboardingManager {...props} onAuth={onAuth}/>} />
         <Route exact path="/onboarding" component={AdminOnboarding} />
-        {/* <Route exact path="/onboarding2" component={AdminOnboarding2} />
+        <Route exact path="/onboarding2" component={AdminOnboarding2} />
         <Route exact path="/onboarding3" component={AdminOnboarding3} />
-        <Route exact path="/onboarding4" component={AdminOnboarding4} /> */}
+        <Route exact path="/onboarding4" component={AdminOnboarding4} />
         <Route exact path="/onboarding5" component={VolunteerOnboarding5} />
         <Route render={() => <Redirect to="/" />} />
       </Switch>

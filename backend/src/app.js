@@ -22,7 +22,8 @@ mongoose.connect(
     if (err) throw err;
     console.log('Conected to MongoDB');
   }
-);
+)
+.catch(err => console.log('Error connecting to db. ' + err));
 mongoose.Promise = global.Promise;
 
 // Setup morgan logging
