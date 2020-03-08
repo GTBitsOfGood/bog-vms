@@ -7,12 +7,6 @@ import { login, getCurrentUser } from './queries';
 import { Header, Authenticated, Splash } from './components';
 import { StyleProvider, RequestProvider } from './providers';
 
-const override = css`
-  display: block;
-  margin: 0 auto;
-  border-color: red;
-`;
-
 const Styled = {
   Container: styled.div`
     height: 100vh;
