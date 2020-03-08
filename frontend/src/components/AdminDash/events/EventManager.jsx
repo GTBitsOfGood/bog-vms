@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Route, Redirect, Switch } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button } from 'reactstrap';
 import { Icon } from 'components/Shared';
@@ -33,6 +34,25 @@ const Styled = {
     border: none;
   `
 };
+
+// TODO: Possibly move this into a separate file?
+const EventPageManager = () => {
+  return(
+    <Switch>
+      <Route exact path='/events' component={EventManager} />
+      <Route path='/events/:eventid' component={EventDetailsPage} />
+    </Switch>
+  );
+}
+
+function EventDetailsPage(props) {
+  return(
+    <div>
+      <h1>Event Details</h1>
+      <h2>There's nothing here right now. Go away.</h2>
+    </div>
+  );
+}
 
 const EventManager = () => {
   const [loading, setLoading] = useState(true);
@@ -121,4 +141,4 @@ const EventManager = () => {
   );
 };
 
-export default EventManager;
+export {EventManager, EventPageManager};
