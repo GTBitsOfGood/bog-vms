@@ -60,11 +60,20 @@ router.post(
           error: `Email '${newUserData.bio.email}' is already in use`
         });
       } else {
-        // Finalize user registration
-        const { password, ...userData } = newUserData;
+        // Finalize user registration (pick fields to pass through)
         // Note: this doesn't have all fields such as skills_interests with defaults
         const user = new UserData({
-          ...userData,
+          bio: {
+            first_name: newUserData.bio.first_name,
+            last_name: newUserData.bio.last_name,
+            email: newUserData.bio.email,
+            date_of_birth: newUserData.bio.date_of_birth,
+            street_adress: newUserData.bio.street_adress,
+            city: newUserData.bio.city,
+            state: newUserData.bio.city,
+            zip_code: newUserData.bio.zip_code,
+            phone_number: newUserData.bio.phone_number
+          },
           role: 'volunteer',
           status: 'new',
           login: generatePasswordLogin(newUserData.password)
