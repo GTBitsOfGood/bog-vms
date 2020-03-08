@@ -96,6 +96,38 @@ const EventManager = () => {
     onRefresh();
   };
 
+  const compareDates = (event1, event2) => {
+    const date1 = new Date(event1.date);
+    const date2 = new Date(event2.date);
+
+    if(date1 == date2) {
+      return 0;
+    }
+
+    if(date1 > date2){
+      return 1;
+    }
+
+    return -1;
+    
+  }
+
+  const pastDate = (event) => {
+    const todayDate = Date.now()
+    const dateCompare = new Date(event.date)
+
+    return dateCompare < todayDate
+  }
+
+  const currentDate = (event) => {
+    const todayDate = Date.now()
+    const dateCompare = new Date(event.date)
+
+    return dateCompare >= todayDate
+  }
+
+
+ 
   return (
     <Styled.Container>
       <Styled.HeaderContainer>
@@ -110,21 +142,30 @@ const EventManager = () => {
       </Styled.HeaderContainer>
 
       <EventCardGrid
-        title="All Events"
-        events={events}
+        title="Past Events"
+        events = {events.filter(pastDate)}
+        loading={loading}
+        onDetailClicked={onDetailClicked}
+        onDeleteClicked = {onDeleteClicked}
+      />
+
+      <EventCardGrid
+        title="Current Events"
+        events={events.filter(currentDate)}
         loading={loading}
         onDeleteClicked={onDeleteClicked}
         onDetailClicked={onDetailClicked}
       />
 
-     {/* <EventTable
-        events={events}
+      <EventCardGrid
+        title="All Events"
+        events={events.sort(compareDates)}
         loading={loading}
-        onEditClicked={onEditClicked}
         onDeleteClicked={onDeleteClicked}
-      >
-        {' '}
-      </EventTable>*/}
+        onDetailClicked={onDetailClicked}
+      />
+
+  
       <EventCreateModal open={showCreateModal} toggle={toggleCreateModal} />
       <EventDeleteModal open={showDeleteModal} toggle={toggleDeleteModal} event={currEvent} />
     </Styled.Container>
