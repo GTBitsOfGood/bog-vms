@@ -52,6 +52,10 @@ const EditProfile = () => {
         newPassword2: '',
         firstName: 'Admin',
         lastName: 'Admin',
+        birthday: '',
+        address: '123 techwood drive',
+        skills: 'what skills?',
+        status: 'applied',
         accountType: 'volunteer'
     });
 
@@ -83,12 +87,47 @@ const EditProfile = () => {
                         </Styled.FormField>
                     </Styled.FormColumn>
                     <Styled.FormColumn style={{ "width": "100%" }}>
-                        <label>Account Type</label>
+                        <label for="birthday">Birthday</label>
                         <Styled.FormField>
+                            <Input type="date" name="birthday" id="birthday" placeholder="Birthday" defaultValue={form.birthday} onChange={(e) => form.birthday = e.target.value} />
+                        </Styled.FormField>
+                    </Styled.FormColumn>
+                </Styled.HorizontalContainer>
+                <Styled.HorizontalContainer style={{ justifyContent: 'stretch', marginTop: '1rem' }}>
+                    <Styled.FormColumn style={{ "width": "100%" }}>
+                        <label>Account Type</label>
+                        <Styled.FormField style={{ marginRight: '50px' }}>
                             <Input type="select" name="select" id="roleSelect" defaultValue={form.accountType} onChange={(e) => form.accountType = e.target.value}>
                                 <option value="volunteer">Volunteer</option>
-                                <option value="other">Other</option>
+                                <option value="admin">Admin</option>
+                                <option value="employee">Employee</option>
                             </Input>
+                        </Styled.FormField>
+                    </Styled.FormColumn>
+                    <Styled.FormColumn style={{ "width": "100%" }}>
+                        <label>Status</label>
+                        <Styled.FormField>
+                            <Input type="select" name="select" id="statusSelect" defaultValue={form.status} onChange={(e) => form.status = e.target.value}>
+                                <option value="applied">Applied</option>
+                                <option value="accepted">Accepted</option>
+                                <option value="denied">Denied</option>
+                            </Input>
+                        </Styled.FormField>
+                    </Styled.FormColumn>
+                </Styled.HorizontalContainer>
+                <Styled.HorizontalContainer style={{ justifyContent: 'stretch', marginTop: '1rem' }}>
+                    <Styled.FormColumn style={{ "width": "100%" }}>
+                        <label for="address">Address</label>
+                        <Styled.FormField>
+                            <Input type="text" name="address" id="address" placeholder="address" defaultValue={form.address} onChange={(e) => form.address = e.target.value} />
+                        </Styled.FormField>
+                    </Styled.FormColumn>
+                </Styled.HorizontalContainer>
+                <Styled.HorizontalContainer style={{ justifyContent: 'stretch', marginTop: '1rem' }}>
+                    <Styled.FormColumn style={{ "width": "100%" }}>
+                        <label for="skills">Skills/Interests</label>
+                        <Styled.FormField>
+                            <Input type="text" name="skills" id="skills" placeholder="skills" defaultValue={form.skills} onChange={(e) => form.skills = e.target.value} />
                         </Styled.FormField>
                     </Styled.FormColumn>
                 </Styled.HorizontalContainer>
