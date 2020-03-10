@@ -84,21 +84,26 @@ class App extends Component {
     const { isAuthenticated, user, hasLoaded } = this.state;
     return (
       <div id="wrapper">
-            <StyleProvider>
-              <RequestProvider>
-                <Styled.Container>
-                  <Header
-                    onLogout={this.logout}
-                    loggedIn={isAuthenticated}
-                    role={user ? user.role : null}
-                  />
+        {hasLoaded ?
+          <StyleProvider>
+            <RequestProvider>
+              <Styled.Container>
+                <Header
+                  onLogout={this.logout}
+                  loggedIn={isAuthenticated}
+                  role={user ? user.role : null}
+                />
 
-                  <Styled.Content>
-                    {user ? <Authenticated user={user} /> : <Splash onAuth={this.loginAuth} />}
-                  </Styled.Content>
-                </Styled.Container>
-              </RequestProvider>
-            </StyleProvider>
+                <Styled.Content>
+                  {user ? <Authenticated user={user} /> : <Splash onAuth={this.loginAuth} />}
+                </Styled.Content>
+              </Styled.Container>
+            </RequestProvider>
+          </StyleProvider>
+          :
+          <div />
+        }
+
       </div>
     );
   }

@@ -233,6 +233,7 @@ class Header extends Component {
                     </Styled.Toggle>
                     <DropdownMenu style={{ width: '100%' }}>
                       {/* <DropdownItem>My Profile</DropdownItem> */}
+                      <DropdownItem onClick={() => this.props.history.push('/settings')}>Settings</DropdownItem>
                       <DropdownItem onClick={onLogout}> Logout</DropdownItem>
                     </DropdownMenu>
                   </Styled.Dropdown>
