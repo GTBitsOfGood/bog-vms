@@ -55,6 +55,7 @@ const Styled = {
   Navbar: styled(Navbar)`
     background-color: #ffffff;
     min-height: 6rem;
+    border-bottom: 1px solid ${props => props.theme.grey8};
   `,
   NavItem: styled(NavItem)`
     margin-left: 0.3rem;

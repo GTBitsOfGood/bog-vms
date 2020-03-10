@@ -1,16 +1,17 @@
 import React, { Component, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import { Form, FormGroup, Label, FormText } from 'reactstrap';
+import { Button, Input, Select } from 'components/Shared';
 
 import onboarding1 from '../../../images/onboarding_update1.svg';
-import OnboardingManager from './OnboardingManager';
+// import OnboardingManager from './OnboardingManager';
 // import {Route} from "react-router-dom";
 const Styled = {
   Container: styled.div`
     width: 100%;
     height: 100%;
-    background: ${props => props.theme.grey9};
+    background: #FFFFFF;
     padding-top: 1rem;
     display: flex;
     flex-direction: column;
@@ -29,14 +30,6 @@ const Styled = {
     align-items: center;
     margin-top: 3rem;
     margin-bottom: 3rem;
-  `,
-  Button: styled(Button)`
-    border: none;
-    background: black;
-  `,
-  BackButton: styled(Button)`
-    margin-left: 3rem;
-    border: none;
   `,
   ButtonContainer: styled.div`
     display: flex;
@@ -65,9 +58,11 @@ const VolunteerOnboarding1 = () => {
   return (
     <Styled.Container>
       <Styled.HorizontalContainer style={{ margin: '1rem' }}>
-        <Styled.BackButton>
-          <Link to="/"> Back </Link>
-        </Styled.BackButton>
+        <Link to="/">
+          <Button type='reset' style={{ marginLeft: '3rem', flex: '0'}}>
+            〈 Back 
+          </Button>
+        </Link>
       </Styled.HorizontalContainer>
       <Styled.HorizontalContainer style={{ textAlign: 'center' }}>
         <legend> Hi, let's get your account set up.</legend>
@@ -100,7 +95,7 @@ const VolunteerOnboarding1 = () => {
           </Styled.FormField>
         </Styled.HorizontalContainer>
         <Styled.HorizontalContainer
-          style={{ marginTop: '5rem', marginBottom: '1rem', justifyContent: 'flex-end' }}
+          style={{ marginTop: '2rem', marginBottom: '1rem', justifyContent: 'flex-end' }}
         >
           <Styled.Button type="submit" onClick={() => {
             alert(JSON.stringify(form));

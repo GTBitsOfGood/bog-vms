@@ -1,17 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { Icon } from 'components/Shared';
-import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import { Form, FormGroup, FormText } from 'reactstrap';
+import { Button, Input } from 'components/Shared';
 import image from '../../../images/onboardingArt.png';
 import logo from '../../../images/bog_logo.png';
 import GoogleAuthBtn from '../GoogleAuthBtn';
 
+
 const Styled = {
+  FormTitle: styled.legend`
+    font-size: 250%;
+    color: ${props => props.theme.grey3};
+  `,
+  Input: styled.input`
+    width: 100%;
+    margin: 1.5rem 0rem;
+    padding: .5rem 0rem;
+  `,
   Container: styled.div`
     width: 100%;
     height: 100%;
-    background: ${props => props.theme.grey9};
+    background: #FFFFFF;
     padding-top: 1rem;
     display: flex;
     flex-direction: row;
@@ -34,11 +44,6 @@ const Styled = {
     display: flex;
     justify-content: space-between;
     margin-bottom: 1rem;
-  `,
-  Button: styled(Button)`
-    border: none;
-    flex: 1;
-    margin-top: 2rem;
   `,
   ButtonContainer: styled.div`
     display: flex;
@@ -74,11 +79,8 @@ const OnboardingManager = (props) => {
 
   return (
     <Styled.Container>
-      <Styled.ContainerTest style={{ marginTop: '2rem', width: '100%' }}>
-        <Styled.ImgContainer style={{ marginBottom: '10rem' }}>
-          <img style={{ width: '240px', height: '42px' }} alt="bogLogo" src={logo} />
-        </Styled.ImgContainer>
-        <legend>Login</legend>
+      <Styled.ContainerTest style={{ marginTop: '2rem', width: '100%', justifyContent: 'center' }}>
+        <Styled.FormTitle>Login</Styled.FormTitle>
         <Form style={{ width: '100%' }}>
           <FormGroup style={{ border: 'none' }}>
             <Input type="email" name="email" id="exampleEmail" placeholder="Email" onChange={e => setUsername(e.target.value)}/>
@@ -109,6 +111,7 @@ const OnboardingManager = (props) => {
           </FormText>
         </Form>
       </Styled.ContainerTest>
+
       <Styled.ContainerTest>
         <Styled.ImgContainer>
           <img style={{ width: '50vw', height: '100vh' }} alt="onboardingImage" src={image} />
@@ -117,4 +120,5 @@ const OnboardingManager = (props) => {
     </Styled.Container>
   );
 };
+
 export default OnboardingManager;

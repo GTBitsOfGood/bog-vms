@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 const Styled = {
-  Container: styled.p`
+  Container: styled.div`
     width: 100%;
     display: flex;
     justify-content: center;
@@ -33,8 +33,8 @@ const Styled = {
   `
 };
 
-const LoadingIcon = ({ size }) => (
-  <Styled.Container size={size}>
+const LoadingIcon = ({ size, className }) => (
+  <Styled.Container size={size} className={className}>
     <Styled.Bubble />
     <Styled.Bubble anim-delay="0.1s" />
     <Styled.Bubble anim-delay="0.2s" />
@@ -44,5 +44,6 @@ const LoadingIcon = ({ size }) => (
 export default LoadingIcon;
 
 LoadingIcon.propTypes = {
+  className: PropTypes.string,
   size: PropTypes.string
 };

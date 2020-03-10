@@ -14,11 +14,16 @@
   "dependencies": {
     "axios": "^0.18.1",
     "bootstrap": "^4.3.1",
+    "fast-deep-equal": "^3.1.1",
     "formik": "1.5.8",
     "history": "^4.7.2",
-    "immutability-helper": "^3.0.1",
+    "immutable": "^4.0.0-rc.12",
     "node-sass": "^4.11.0",
+<<<<<<< HEAD
     "passport-local": "^1.0.0",
+=======
+    "polished": "^3.4.4",
+>>>>>>> 37118189bacb2960180a0a139b4851afee279f37
     "prop-types": "^15.6.2",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",

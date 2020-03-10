@@ -12,6 +12,12 @@ const Styled = {
   `
 };
 
-const Container = ({ children }) => <Styled.Container>{children}</Styled.Container>;
+const Container = ({ children, ...props }) => (
+  <Styled.Container
+    {...props}
+  >
+    {children}
+  </Styled.Container>
+);
 
 export default Container;

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
+import { transparentize } from "polished";
 
 const Container = styled.div`
-  background: white;
   width: 100%;
   max-width: 80rem;
   border-radius: 0.5rem;
@@ -21,8 +21,7 @@ const Table = styled.table`
   }
 `;
 const Row = styled.tr`
-  ${props => props.evenIndex && 'background: #FFFFFF'};
-  border-bottom: 2px solid #f0f0f0;
+  border-top: 2px solid ${props => transparentize(0.9, props.theme.grey3)};
 `;
 const LoadingBody = styled.div`
   height: 39rem;
