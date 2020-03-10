@@ -4,7 +4,6 @@ const crypto = require('crypto');
 // npm imports
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const mongoose = require('mongoose');
 
 // Local imports
 const UserData = require('./models/userData');
@@ -59,7 +58,7 @@ function initAuth(app) {
   }
 
   function findUserById(id, callback) {
-    UserData.findOne({ _id: mongoose.Types.ObjectId(id) }, callback);
+    UserData.findOne({ _id: id }, callback);
   }
 
   // Configure Passport authenticated session persistence.
