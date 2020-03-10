@@ -4,7 +4,7 @@ import { Route, Redirect, Switch } from 'react-router-dom';
 import ApplicantViewer from './ApplicantViewer';
 import UserManager from './users/UserManager';
 import Settings from './Settings/Settings';
-import EventManager from './events/EventManager';
+import {EventManager, EventPageManager } from './events/EventManager';
 
 const Container = styled.div`
   background: white;
@@ -25,7 +25,7 @@ class AdminDash extends React.Component {
           <Route exact path="/" component={ApplicantViewer} />
           <Route exact path="/settings" component={Settings} />
           <Route exact path="/user-manager" component={UserManager} />
-          <Route exact path="/events" component={EventManager} />
+          <Route path="/events" component={EventPageManager} />
           <Route render={() => <Redirect to="/" />} />
         </Switch>
       </Container>
