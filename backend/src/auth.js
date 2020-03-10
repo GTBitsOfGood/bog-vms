@@ -13,6 +13,8 @@ const PASSWORD_HASH_ITERATIONS = 1000;
 const PASSWORD_HASH_LENGTH = 64;
 const PASSWORD_HASH_DIGEST = 'sha512';
 
+const authDisabled = process.env.NODE_ENV === 'development';
+
 /**
  * Initializes passport and authentication-related endpoints for the entire express application.
  */
@@ -125,10 +127,7 @@ module.exports = {
    * Express middleware to check if current user is authenticated.
    */
   isAuthenticated: (req, res, next) => {
-    if (process.env.NODE_ENV === 'development') {
-      return next();
-    }
-    // return next();
+    if (authDisabled) return next();
     return req.user
       ? next()
       : res.status(403).json({
