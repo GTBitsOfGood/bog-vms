@@ -51,8 +51,17 @@ const Styled = {
   `
 };
 
-const Onboarding1 = () => {
+const VolunteerOnboarding1 = () => {
+
   const [loading] = useState(true);
+  const [form] = useState({
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    accountType: 'volunteer'
+  })
+
   return (
     <Styled.Container>
       <Styled.HorizontalContainer style={{ margin: '1rem' }}>
@@ -63,41 +72,41 @@ const Onboarding1 = () => {
       <Styled.HorizontalContainer style={{ textAlign: 'center' }}>
         <legend> Hi, let's get your account set up.</legend>
       </Styled.HorizontalContainer>
-      <Styled.ImgContainer>
-        <img style={{ width: '900px', height: '87px' }} alt="onboard" src={onboarding1} />
-      </Styled.ImgContainer>
+
       <Styled.HorizontalContainer style={{ marginTop: '3rem' }}>
         <legend>Account Information</legend>
       </Styled.HorizontalContainer>
       <Form>
         <Styled.HorizontalContainer style={{ justifyContent: 'stretch', marginTop: '2rem' }}>
           <Styled.FormField style={{ marginRight: '50px' }}>
-            <Input type="email" name="email" id="exampleEmail" placeholder="Email" />
+            <Input type="email" name="email" id="exampleEmail" placeholder="Email" onChange={(e)=> form.email = e.target.value} required />
           </Styled.FormField>
           <Styled.FormField>
-            <Input type="password" name="password" id="examplePassword" placeholder="Password" />
+            <Input type="password" name="password" id="examplePassword" placeholder="Password" onChange={(e)=> form.password = e.target.value} required />
           </Styled.FormField>
         </Styled.HorizontalContainer>
         <Styled.HorizontalContainer style={{ justifyContent: 'stretch', marginTop: '1rem' }}>
           <Styled.FormField style={{ marginRight: '50px' }}>
-            <Input type="text" name="fname" id="firstName" placeholder="First Name" />
+            <Input type="text" name="fname" id="firstName" placeholder="First Name" onChange={(e)=> form.firstName = e.target.value} required />
           </Styled.FormField>
           <Styled.FormField style={{ marginRight: '50px' }}>
-            <Input type="text" name="lname" id="lastName" placeholder="Last Name" />
+            <Input type="text" name="lname" id="lastName" placeholder="Last Name" onChange={(e)=> form.lastName = e.target.value} required />
           </Styled.FormField>
           <Styled.FormField>
-            <Input type="select" name="select" id="roleSelect">
-              <option>Role1</option>
-              <option>Role2</option>
-              <option>Role3</option>
+            <Input type="select" name="select" id="roleSelect" value={form.accountType} onChange={(e)=> form.accountType = e.target.value} required >
+              <option value="volunteer">Volunteer</option>
+              <option value="other">Other</option>
             </Input>
           </Styled.FormField>
         </Styled.HorizontalContainer>
         <Styled.HorizontalContainer
           style={{ marginTop: '5rem', marginBottom: '1rem', justifyContent: 'flex-end' }}
         >
-          <Styled.Button>
-            <Link to="/onboarding2"> Next </Link>
+          <Styled.Button type="submit" onClick={() => {
+            alert(JSON.stringify(form));
+          }}>
+            <span style={{color: '#f79a0d'}}>Submit</span>
+            {/* <Link to="/"> Submit </Link> */}
           </Styled.Button>
         </Styled.HorizontalContainer>
       </Form>
@@ -105,4 +114,9 @@ const Onboarding1 = () => {
   );
 };
 
-export default Onboarding1;
+export default VolunteerOnboarding1;
+
+
+//<Styled.ImgContainer>
+//<img style={{ width: '900px', height: '87px' }} alt="onboard" src={onboarding1} />
+//</Styled.ImgContainer>

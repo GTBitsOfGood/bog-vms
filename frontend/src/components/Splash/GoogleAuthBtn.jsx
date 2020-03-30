@@ -2,7 +2,7 @@ import React, {Component } from 'react';
 import { Redirect } from "react-router-dom";
 import { GoogleLogin } from 'react-google-login';
 
-class Footer extends Component {
+class GoogleAuthBtn extends Component {
 
     state = {
         flag: false
@@ -35,7 +35,7 @@ class Footer extends Component {
         // fetch('/auth/google', options).then(r => {
         //     r.json().then(user => this.renderRedirect() && console.log(this));
         // });
-        fetch('/auth/google', options).then(console.log);
+        fetch('/auth/google', options).then((res) => console.log(res));
     };
 
 
@@ -44,7 +44,7 @@ class Footer extends Component {
 
   render() {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '2em' }}>
         <GoogleLogin
           clientId="664357147813-mcoqj5m0cc3en7hfdgl9botpie9k4qvm.apps.googleusercontent.com"
           buttonText="Sign in with Google"
@@ -58,5 +58,5 @@ class Footer extends Component {
   }
 }
 
-export default Footer;
+export default GoogleAuthBtn;
 

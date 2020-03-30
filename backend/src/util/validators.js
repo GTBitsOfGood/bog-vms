@@ -209,6 +209,54 @@ const CREATE_EVENT_VALIDATOR = [
   // })
 ];
 
+const USER_REGISTRATION_STEP_1_VALIDATOR = [
+  check('bio.email')
+    .exists()
+    .isEmail()
+    .trim(),
+  check('password')
+    .exists()
+    .isLength({ min: 8, max: undefined })
+];
+
+const USER_REGISTRATION_FINISH_VALIDATOR = [
+  ...USER_REGISTRATION_STEP_1_VALIDATOR,
+  check('bio.first_name')
+    .isAlpha()
+    .trim()
+    .escape(),
+  check('bio.last_name')
+    .isAlpha()
+    .trim()
+    .escape(),
+  check('bio.date_of_birth')
+    .exists()
+    .isISO8601(),
+  check('bio.street_address')
+    .isAscii()
+    .trim()
+    .escape(),
+  check('bio.city')
+    .isAscii()
+    .trim()
+    .escape(),
+  check('bio.state')
+    .isAlpha()
+    .trim()
+    .escape()
+    .isAlpha(),
+  check('bio.zip_code')
+    .isAscii()
+    .trim()
+    .escape()
+    .isNumeric({ no_symbols: true })
+    .isLength({ min: 5, max: 5 }),
+  check('bio.phone_number')
+    .isAscii()
+    .trim()
+    .escape()
+];
+
 const OBJECT_ID_REGEX = new RegExp('^[0-9a-fA-F]{24}$');
 
 const isValidObjectID = id => OBJECT_ID_REGEX.test(id);
@@ -216,5 +264,7 @@ const isValidObjectID = id => OBJECT_ID_REGEX.test(id);
 module.exports = {
   USER_DATA_VALIDATOR,
   CREATE_EVENT_VALIDATOR,
+  USER_REGISTRATION_STEP_1_VALIDATOR,
+  USER_REGISTRATION_FINISH_VALIDATOR,
   isValidObjectID
 };

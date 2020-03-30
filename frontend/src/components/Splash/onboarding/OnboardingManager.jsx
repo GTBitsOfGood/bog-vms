@@ -5,7 +5,7 @@ import { Icon } from 'components/Shared';
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 import image from '../../../images/onboardingArt.png';
 import logo from '../../../images/bog_logo.png';
-import Footer from '../Footer';
+import GoogleAuthBtn from '../GoogleAuthBtn';
 
 const Styled = {
   Container: styled.div`
@@ -45,11 +45,13 @@ const Styled = {
     justify-content: center;
     align-items: center
     flex-direction: row
-  `
+  `,
 };
 
-const OnboardingManager = () => {
+const OnboardingManager = (props) => {
   const [loading] = useState(true);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   function googleResponse(response) {
     const tokenBlob = new Blob([JSON.stringify({ access_token: response.accessToken }, null, 2)], {
@@ -69,6 +71,7 @@ const OnboardingManager = () => {
   function loginFailed() {
     alert('Something went wrong. Please try again');
   }
+
   return (
     <Styled.Container>
       <Styled.ContainerTest style={{ marginTop: '2rem', width: '100%' }}>
@@ -78,29 +81,37 @@ const OnboardingManager = () => {
         <legend>Login</legend>
         <Form style={{ width: '100%' }}>
           <FormGroup style={{ border: 'none' }}>
-            <Input type="email" name="email" id="exampleEmail" placeholder="Email" />
+            <Input type="email" name="email" id="exampleEmail" placeholder="Email" onChange={e => setUsername(e.target.value)}/>
           </FormGroup>
           <FormGroup>
-            <Input type="password" name="password" id="examplePassword" placeholder="Password" />
+            <Input type="password" name="password" id="examplePassword" placeholder="Password" onChange={e => setPassword(e.target.value)}/>
           </FormGroup>
           <Styled.ButtonContainer style={{}}>
-            <Styled.Button style={{ color: 'white', backgroundColor: 'black' }}>
-              <a href="/">Login </a>
-              {/*Loggin*/}
+            <Styled.Button type="button" style={{ color: '#f79a0d', backgroundColor: 'black' }} onClick={() => props.onAuth(username, password)}>
+              Login
+              {/* <a href="/">Login </a> */}
             </Styled.Button>
             <Styled.Button style={{ color: 'gray', marginLeft: '1rem' }}>
               Forgot Password?
             </Styled.Button>
           </Styled.ButtonContainer>
-          <FormText style={{ marginTop: '5rem' }}>
-            Don't have an account? Let's <Link to="/onboarding1">set it up</Link>.
+          <div style={{ width: '100%', height: '20px', borderBottom: '1px solid black', textAlign: 'center', marginTop: '2em', marginBottom: '2em', }}>
+            <span style={{ backgroundColor: '#F3F5F6', padding: '0 10px' }}>
+              OR
+            </span>
+          </div>
+          <GoogleAuthBtn />
+          <FormText style={{ marginTop: '3rem' }}>
+            Need to create a volunteer account? Let's <Link to="/onboarding5">do it</Link>.
+          </FormText>
+          <FormText style={{ marginTop: '0rem' }}>
+            Want to register your nonprofit? Let's <Link to="/onboarding">set it up</Link>.
           </FormText>
         </Form>
-        <Footer />
       </Styled.ContainerTest>
       <Styled.ContainerTest>
         <Styled.ImgContainer>
-          <img style={{ width: '720px', height: '783px' }} alt="onboardingImage" src={image} />
+          <img style={{ width: '50vw', height: '100vh' }} alt="onboardingImage" src={image} />
         </Styled.ImgContainer>
       </Styled.ContainerTest>
     </Styled.Container>
