@@ -17,6 +17,7 @@
     "formik": "1.5.8",
     "history": "^4.7.2",
     "immutability-helper": "^3.0.1",
+    "moment": "^2.24.0",
     "node-sass": "^4.11.0",
     "passport-local": "^1.0.0",
     "polished": "^3.5.1",
