@@ -10,9 +10,26 @@ import Icon from 'components/Shared/Icon';
 
 const Styled = {
   Container: styled.div`
-    background: white;
     width: 100%;
     padding: 1rem;
+  `,
+  Icon: styled(Icon)`
+    user-select: none;
+
+    // Correct visual size of icons
+    transform: ${props => (props.isRemove ? 'scale(0.84)' : 'none')};
+
+    // Hover style
+    opacity: 0.7;
+    transition: 0.25s opacity ease;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &:active {
+      transform: ${props => (props.isRemove ? 'translateY(1px) scale(0.84)' : 'translateY(1px)')};
+    }
   `
 };
 
@@ -33,6 +50,7 @@ class UserTable extends React.Component {
       userSelectedForEdit: null
     };
   }
+
   onDisplayEditUserModal = userToEdit => {
     console.log(userToEdit);
     this.setState({
@@ -48,6 +66,7 @@ class UserTable extends React.Component {
       userSelectedForEdit: null
     });
   };
+
   render() {
     const { users, loading, onUserToggle } = this.props;
     return (
@@ -63,9 +82,10 @@ class UserTable extends React.Component {
               users.map((user, index) => (
                 <Table.Row key={index} evenIndex={index % 2 === 0}>
                   <td style={{ padding: '0.5rem' }}>
-                    <Icon
+                    <Styled.Icon
+                      isRemove={user.inMailingList}
                       name={user.inMailingList ? 'remove' : 'add'}
-                      color="grey"
+                      color="grey3"
                       size="2.5rem"
                       onClick={onUserToggle(index)}
                       style={{ cursor: 'pointer' }}
@@ -137,9 +157,6 @@ class UserTable extends React.Component {
             <Button color="primary" onClick={this.onModalClose}>
               Submit
             </Button>
-            {/* <Button color="primary" type="submit">
-                Submit
-              </Button> */}
           </ModalFooter>
         </Modal>
       </Styled.Container>
@@ -152,6 +169,5 @@ export default UserTable;
 UserTable.propTypes = {
   users: PropTypes.array.isRequired,
   loading: PropTypes.bool,
-  editUserCallback: PropTypes.func.isRequired,
   onUserToggle: PropTypes.func.isRequired
 };

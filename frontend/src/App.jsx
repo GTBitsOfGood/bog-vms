@@ -16,7 +16,7 @@ const Styled = {
   `,
   Content: styled.main`
     flex: 1;
-    height: 100%;
+    overflow: hidden;
   `
 };
 

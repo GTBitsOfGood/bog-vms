@@ -11,7 +11,7 @@ const Styled = {
     height: inherit;
   `,
   Bottom: styled.div`
-    height: 100px;
+    height: ${props => (props.hasMoreItems ? '100px' : '0')};
   `
 };
 
@@ -21,9 +21,10 @@ class InfiniteScroll extends React.Component {
     this.containerRef = React.createRef();
     this.state = { displayTimeout: false };
   }
+
   scrollCallback = ({ scrollHeight, clientHeight, scrollTop }) => {
     if (scrollHeight - clientHeight - scrollTop <= 0) {
-      if (!this.state.displayTimeout) {
+      if (!this.state.displayTimeout && this.props.hasMoreItems) {
         this.props.loadCallback();
         this.setState(
           {
@@ -33,7 +34,6 @@ class InfiniteScroll extends React.Component {
             setTimeout(() => {
               if (this.containerRef.current) {
                 let currScrollTop = this.containerRef.current.scrollTop;
-                console.log(scrollHeight - clientHeight - currScrollTop);
                 if (scrollHeight - clientHeight - currScrollTop <= 0) {
                   this.containerRef.current.scrollTop = scrollHeight - clientHeight - 100;
                 }
@@ -47,18 +47,22 @@ class InfiniteScroll extends React.Component {
       }
     }
   };
+
   componentDidMount = () => {
     this.scrollCallback(this.containerRef.current);
     this.containerRef.current.addEventListener('scroll', event =>
       this.scrollCallback(event.target)
     );
   };
+
   render() {
-    const { children, isLoading } = this.props;
+    const { children, isLoading, hasMoreItems } = this.props;
     return (
       <Styled.Container ref={this.containerRef}>
         {children}
-        <Styled.Bottom>{(isLoading || this.state.displayTimeout) && <Loading />}</Styled.Bottom>
+        <Styled.Bottom hasMoreItems={hasMoreItems}>
+          {(isLoading || this.state.displayTimeout) && <Loading />}
+        </Styled.Bottom>
       </Styled.Container>
     );
   }
@@ -66,7 +70,12 @@ class InfiniteScroll extends React.Component {
 
 InfiniteScroll.propTypes = {
   loadCallback: PropTypes.func.isRequired,
-  isLoading: PropTypes.bool
+  isLoading: PropTypes.bool,
+  hasMoreItems: PropTypes.bool
+};
+
+InfiniteScroll.defaultProps = {
+  hasMoreItems: true
 };
 
 export default InfiniteScroll;

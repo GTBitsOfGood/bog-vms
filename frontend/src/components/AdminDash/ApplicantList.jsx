@@ -4,7 +4,7 @@ import StatusBadge from './StatusBadge';
 import styled from 'styled-components';
 
 const List = styled.div`
-  padding-top: 2rem;
+  padding-top: 1.5rem;
   max-width: 20em;
   margin: 0 1rem;
 `;

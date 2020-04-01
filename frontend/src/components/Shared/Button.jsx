@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { withTheme } from 'styled-components';
 import PropTypes from 'prop-types';
 
 const defaultColors = {
@@ -7,19 +7,28 @@ const defaultColors = {
   text: 'hsl(0, 0%, 10%)'
 };
 
-const Styled = {
-  Button: styled.button`
-    background: ${props => (props.theme[props.type] || defaultColors).back};
-    color: ${props => (props.theme[props.type] || defaultColors).text};
-    border-radius: 2em;
-  `
-};
+const ButtonBase = styled.button`
+  flex: 1;
+  background: ${props => (props.theme[props.type] || defaultColors).back};
+  color: ${props => (props.theme[props.type] || defaultColors).text};
+  border-radius: 0.5rem;
+  border: none;
+  padding: .70rem 5.75rem;
+  font-size: 120%;
+`;
 
-const Button = ({ children, type }) => <Styled.Button type={type}>{children}</Styled.Button>;
+const Button = ({ children, type, ...props }) => (
+  <ButtonBase 
+    {...props}
+    type={type}
+  >
+    {children}
+  </ButtonBase>
+);
 
-export default Button;
+export default withTheme(Button);
 
 Button.propTypes = {
-  children: PropTypes.object,
+  children: PropTypes.string,
   type: PropTypes.string
 };

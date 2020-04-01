@@ -1,8 +1,26 @@
 import axios from 'axios';
 
+// Added to fulfill requirements of UserManager page
+export const fetchUserData = ({ filters, searchTerm, searchValue, start, limit }) => {
+  const params = {};
+
+  if (start != null) params.start = start;
+  if (limit != null) params.limit = limit;
+
+  if (filters != null && filters.length > 0) {
+    params.filters = filters;
+  }
+
+  if (searchValue !== '' && searchTerm != null) {
+    params.search = { value: searchValue, term: searchTerm };
+  }
+
+  return axios.post('/api/users/search', params)
+};
+
 export const filterApplicants = filterGroups => {
   let filtersToApply = {};
-  const query = Object.entries(filterGroups).reduce((queryString, [group, { values }]) => {
+  const query = Object.entries(filterGroups || {}).reduce((queryString, [group, { values }]) => {
     Object.entries(values).forEach(([filter, filterValue]) => {
       if (filterValue) {
         console.log(filterValue);
