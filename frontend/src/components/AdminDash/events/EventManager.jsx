@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Route, Redirect, Switch } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button } from 'reactstrap';
 import { Icon } from 'components/Shared';
@@ -7,7 +8,9 @@ import { fetchEvents } from 'components/AdminDash/queries';
 import EventCreateModal from './EventCreateModal';
 import EventEditModal from './EventEditModal';
 import EventDeleteModal from './EventDeleteModal';
+import EventDetails from './EventDetails';
 import * as Table from '../shared/tableStyles';
+import EventCardGrid from './EventCardGrid';
 
 const Styled = {
   Container: styled.div`
@@ -18,6 +21,7 @@ const Styled = {
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow-y: auto;
   `,
   HeaderContainer: styled.div`
     width: 100%;
@@ -30,6 +34,16 @@ const Styled = {
     border: none;
   `
 };
+
+// TODO: Possibly move this into a separate file?
+const EventPageManager = () => {
+  return(
+    <Switch>
+      <Route exact path='/events' component={EventManager} />
+      <Route path='/events/:eventid' component={EventDetails} />
+    </Switch>
+  );
+}
 
 const EventManager = () => {
   const [loading, setLoading] = useState(true);
@@ -61,16 +75,16 @@ const EventManager = () => {
     onRefresh();
   }, []);
 
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDetailModal, setshowDetailModal] = useState(false);
   const [currEvent, setCurrEvent] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const onEditClicked = event => {
-    setShowEditModal(true);
+  const onDetailClicked = event => {
+    setshowDetailModal(true);
     setCurrEvent(event);
   };
-  const toggleEditModal = () => {
-    setShowEditModal(prev => !prev);
+  const toggleDetailModal = () => {
+    setshowDetailModal(prev => !prev);
     onRefresh();
   };
   const onDeleteClicked = event => {
@@ -82,6 +96,38 @@ const EventManager = () => {
     onRefresh();
   };
 
+  const compareDates = (event1, event2) => {
+    const date1 = new Date(event1.date);
+    const date2 = new Date(event2.date);
+
+    if(date1 == date2) {
+      return 0;
+    }
+
+    if(date1 > date2){
+      return 1;
+    }
+
+    return -1;
+    
+  }
+
+  const pastDate = (event) => {
+    const todayDate = Date.now()
+    const dateCompare = new Date(event.date)
+
+    return dateCompare < todayDate
+  }
+
+  const currentDate = (event) => {
+    const todayDate = Date.now()
+    const dateCompare = new Date(event.date)
+
+    return dateCompare >= todayDate
+  }
+
+
+ 
   return (
     <Styled.Container>
       <Styled.HeaderContainer>
@@ -94,19 +140,36 @@ const EventManager = () => {
           <span> Refresh</span>
         </Styled.Button>
       </Styled.HeaderContainer>
-      <EventTable
-        events={events}
+
+      <EventCardGrid
+        title="Past Events"
+        events = {events.filter(pastDate)}
         loading={loading}
-        onEditClicked={onEditClicked}
+        onDetailClicked={onDetailClicked}
+        onDeleteClicked = {onDeleteClicked}
+      />
+
+      <EventCardGrid
+        title="Current Events"
+        events={events.filter(currentDate)}
+        loading={loading}
         onDeleteClicked={onDeleteClicked}
-      >
-        {' '}
-      </EventTable>
+        onDetailClicked={onDetailClicked}
+      />
+
+      <EventCardGrid
+        title="All Events"
+        events={events.sort(compareDates)}
+        loading={loading}
+        onDeleteClicked={onDeleteClicked}
+        onDetailClicked={onDetailClicked}
+      />
+
+  
       <EventCreateModal open={showCreateModal} toggle={toggleCreateModal} />
-      <EventEditModal open={showEditModal} toggle={toggleEditModal} event={currEvent} />
       <EventDeleteModal open={showDeleteModal} toggle={toggleDeleteModal} event={currEvent} />
     </Styled.Container>
   );
 };
 
-export default EventManager;
+export {EventManager, EventPageManager};

@@ -8,5 +8,8 @@
     "url": "git+https://github.com/gtbitsOfGood/bog-vms.git"
   },
   "license": "MIT",
-  "homepage": "https://github.com/gtbitsOfGood/bog-vms#readme"
+  "homepage": "https://github.com/gtbitsOfGood/bog-vms#readme",
+  "dependencies": {
+    "moment": "^2.24.0"
+  }
 }
