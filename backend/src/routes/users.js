@@ -10,8 +10,18 @@ const _ = require('lodash');
 const { SendEmailError, EmailInUseError } = require('../util/errors');
 const UserData = require('../models/userData');
 const { USER_DATA_VALIDATOR } = require('../util/validators');
+const { cleanUser } = require('../util/transformers');
+
 const DEFAULT_PAGE_SIZE = 10;
-//events
+
+// check if the user is logged in
+router.get('/current', (req, res) => {
+  if (req.user) {
+    res.json({ user: cleanUser(req.user.toObject()) });
+  } else {
+    res.json({ user: null });
+  }
+});
 
 router.post('/', USER_DATA_VALIDATOR, (req, res, next) => {
   const errors = validationResult(req);
@@ -613,7 +623,7 @@ router
             .status(404)
             .json({ errors: `No User found with id: ${req.params.id}` });
         }
-        res.status(200).json({ user });
+        res.status(200).json({ user: cleanUser(user) });
       })
       .catch(err => next(err));
   })
