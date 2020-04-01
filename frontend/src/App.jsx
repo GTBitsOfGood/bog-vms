@@ -16,7 +16,6 @@ const Styled = {
   `,
   Content: styled.main`
     flex: 1;
-    overflow: hidden;
   `
 };
 
