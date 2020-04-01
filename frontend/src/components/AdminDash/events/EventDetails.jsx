@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import { eventValidator } from './eventHelpers';
 import { createEvent } from '../queries';
 import { Icon } from 'components/Shared';
+import moment from 'moment';
 
 const Styled = {
     Button: styled(Button)`
@@ -44,41 +45,41 @@ function IconHeading({iconName, headerText, subHeaderText}) {
     );
 }
 
-// TODO: Probably already exists elsewhere, so import this instead?
-function returnTimeFromNowString(date) {
-    // NOTE: Does NOT take leap years, seconds, variable month lengths, etc.
-    // into account
-    // Also, note that this rounds DOWN, so 1 month and 13 days from now
-    // will be returned as "1 months from now"
-    const timeDifference = new Date(date - Date.now());
+// // TODO: Probably already exists elsewhere, so import this instead?
+// function returnTimeFromNowString(date) {
+//     // NOTE: Does NOT take leap years, seconds, variable month lengths, etc.
+//     // into account
+//     // Also, note that this rounds DOWN, so 1 month and 13 days from now
+//     // will be returned as "1 months from now"
+//     const timeDifference = new Date(date - Date.now());
 
-    if (timeDifference.getTime() < 0) {
-        return "This already started!";
-    }
-    const oneMinMs = 60 * 1000;
-    const oneHourMs = 60 * oneMinMs;
-    if (timeDifference.getTime() < oneHourMs) {
-        return `${Math.floor(timeDifference.getTime() / oneMinMs)} minutes from now`;
-    }
-    const oneDayMs = oneHourMs * 24;
-    if (timeDifference.getTime() < oneDayMs) {
-        return `${Math.floor(timeDifference.getTime() / oneHourMs)} hours from now`;
-    }
-    const oneWeekMs = oneDayMs * 7;
-    if (timeDifference.getTime() < oneWeekMs) {
-        return `${Math.floor(timeDifference.getTime() / oneDayMs)} days from now`;
-    }
-    const oneMonthMs = oneWeekMs * 4;
-    if (timeDifference.getTime() < oneMonthMs) {
-        return `${Math.floor(timeDifference.getTime() / oneWeekMs)} weeks from now`;
-    }
-    const oneYearMs = oneMonthMs * 12;
-    if (timeDifference.getTime() < oneYearMs) {
-        return `${Math.floor(timeDifference.getTime() / oneMonthMs)} months from now`;
-    }
+//     if (timeDifference.getTime() < 0) {
+//         return "This already started!";
+//     }
+//     const oneMinMs = 60 * 1000;
+//     const oneHourMs = 60 * oneMinMs;
+//     if (timeDifference.getTime() < oneHourMs) {
+//         return `${Math.floor(timeDifference.getTime() / oneMinMs)} minutes from now`;
+//     }
+//     const oneDayMs = oneHourMs * 24;
+//     if (timeDifference.getTime() < oneDayMs) {
+//         return `${Math.floor(timeDifference.getTime() / oneHourMs)} hours from now`;
+//     }
+//     const oneWeekMs = oneDayMs * 7;
+//     if (timeDifference.getTime() < oneWeekMs) {
+//         return `${Math.floor(timeDifference.getTime() / oneDayMs)} days from now`;
+//     }
+//     const oneMonthMs = oneWeekMs * 4;
+//     if (timeDifference.getTime() < oneMonthMs) {
+//         return `${Math.floor(timeDifference.getTime() / oneWeekMs)} weeks from now`;
+//     }
+//     const oneYearMs = oneMonthMs * 12;
+//     if (timeDifference.getTime() < oneYearMs) {
+//         return `${Math.floor(timeDifference.getTime() / oneMonthMs)} months from now`;
+//     }
 
-    return `${Math.floor(timeDifference.getTime() / oneYearMs)} years from now`;
-}
+//     return `${Math.floor(timeDifference.getTime() / oneYearMs)} years from now`;
+// }
 
 function EventDetails(props) {
     const event = props.event || props.location.state.event;
@@ -111,7 +112,8 @@ function EventDetails(props) {
                     <IconHeading
                         iconName="refresh"
                         headerText={eventDate.toLocaleTimeString(undefined, timeDisplayOptions) + ' to ???'}
-                        subHeaderText={returnTimeFromNowString(eventDate)}/>
+                        // subHeaderText={returnTimeFromNowString(eventDate)}/>
+                        subHeaderText = {moment(eventDate, "YYYYMMDD").fromNow()}/>
                     <IconHeading
                         iconName="delete"
                         headerText={event.location}
