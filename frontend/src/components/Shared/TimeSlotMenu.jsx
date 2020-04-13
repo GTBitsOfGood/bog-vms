@@ -12,11 +12,22 @@ import styled from 'styled-components';
 // TODO: Replace colors w/ theme colors (i.e. not hardcoded values)
 const Styled = {
     TimeSlotsContainer: styled.div `
-        padding: 1em 0.5em;
+        display: flex;
+        padding: 0.5em;
         background: white;
         color: black;
         border: solid 1px #c4c4c4;
         border-radius: 2px;
+
+        & > div + div {
+            border-left: 1px solid black;
+        }
+    `,
+
+    TimeSlotsGroup: styled.div `
+        display: flex;
+        flex-direction: column;
+        padding: 0.5em 0;
     `,
 
     TimeSlot: styled.div `
@@ -26,6 +37,7 @@ const Styled = {
         padding: 0.5em;
         min-width: 12em;
     `
+
 };
 
 /**
@@ -70,12 +82,12 @@ function TimeSlotMenu({startDateTime, endDateTime, selectedTimes}) {
     const timeslotElements = [];
     for (let i = 0; i < slotTimes.length - 1; i++) {
         // TODO: Actually handle input to/from checkboxes
+        // TODO: Use styled checkboxes
         const startTime = slotTimes[i];
         const endTime = slotTimes[i+1];
         // TODO: Pre-check selected times
         const timeslotText = `${startTime.format('LT')} - ${endTime.format('LT')}`;
         const timeslotName = `${startTime.format('LT')}-${endTime.format('LT')}`;
-        console.log(`${timeslotText}`);
         timeslotElements.push (
             <Styled.TimeSlot key={i}>
                 <input type="checkbox" name={timeslotName}/>
@@ -84,9 +96,21 @@ function TimeSlotMenu({startDateTime, endDateTime, selectedTimes}) {
         );
     }
 
+    // Split the timeslots into groups of 5
+    const timeslotGroupElements = [];
+    const slotGroupSize = 5;
+    for (let i = 0; i < timeslotElements.length; i += slotGroupSize) {
+        const newTimeSlots = timeslotElements.filter((element, index) => index >= i && index < i + slotGroupSize);
+        timeslotGroupElements.push (
+            <Styled.TimeSlotsGroup>
+                {newTimeSlots}
+            </Styled.TimeSlotsGroup>
+        );
+    }
+
     return (
         <Styled.TimeSlotsContainer>
-            {timeslotElements}
+            {timeslotGroupElements}
         </Styled.TimeSlotsContainer>
     );
 }
