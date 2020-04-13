@@ -8,8 +8,15 @@ import { Button } from 'reactstrap';
 import { Icon } from 'components/Shared';
 import moment from 'moment';
 import styled from 'styled-components';
+import { useState } from 'react';
 
 // TODO: Replace colors w/ theme colors (i.e. not hardcoded values)
+// TODO: Implement changes to signed-up times when they're selected
+// TODO: Implement done (i.e. submission) functionality
+// TODO: Implement undo functionality
+// TODO: Only show undo if there are changes made
+// TODO: Figure out format for submitting selected times
+
 const Styled = {
     TimeSlotsContainer: styled.div `
         display: flex;
@@ -19,15 +26,27 @@ const Styled = {
         border: solid 1px #c4c4c4;
         border-radius: 2px;
 
+        /*Add borders to separate timeslot groups after the 1st one*/
         & > div + div {
             border-left: 1px solid black;
+        }
+
+        /*TODO: Avoid hardcoding this? */
+        @media (max-width: 768px) {
+            flex-direction: column;
+
+            & > div + div {
+                border-left: none;
+                border-top: 1px solid black;
+            }
         }
     `,
 
     TimeSlotsGroup: styled.div `
         display: flex;
         flex-direction: column;
-        padding: 0.5em 0;
+        margin 0.5em 0;
+        padding: 0 1em;
     `,
 
     TimeSlot: styled.div `
@@ -58,11 +77,6 @@ function roundTimeUpToHalfHour(dateTime) {
     return roundedTime;
 }
 
-// TODO: Implement changes to signed-up times when they're selected
-// TODO: Implement done (i.e. submission) functionality
-// TODO: Implement undo functionality
-// TODO: Only show undo if there are changes made
-
 /**
  * Given a start/ending time, generates all the half-hour interval times between
  * them (and the 30 min interval before/after to contain the start/end times)
@@ -85,21 +99,22 @@ function createTimeSlotTimes(startTime, endTime) {
  * Takes an array of available times and generates the HTML elements to select
  * each time slot interval
  */
-function createTimeSlotElements(timeSlotTimes, selectedTimes) {
+function createTimeSlotElements(timeSlotTimes, selectedTimes, handleChange) {
     const timeSlotElements = [];
     for (let i = 0; i < timeSlotTimes.length - 1; i++) {
-        // TODO: Actually handle input to/from checkboxes
-        // TODO: Use styled checkboxes
         const startTime = timeSlotTimes[i];
         const endTime = timeSlotTimes[i+1];
-        // TODO: Pre-check selected times
-        const timeSlotText = `${startTime.format('LT')} - ${endTime.format('LT')}`;
-        const timeSlotName = `${startTime.format('LT')}-${endTime.format('LT')}`;
+
+        const isChecked = (startTime.toISOString() in selectedTimes
+            && selectedTimes[startTime.toISOString()]);
+
         timeSlotElements.push (
-            <Styled.TimeSlot key={i}>
-                <input type="checkbox" name={timeSlotName}/>
-                <label htmlFor={timeSlotName}>{timeSlotText}</label>
-            </Styled.TimeSlot>
+            <TimeSlot
+                startTime={startTime}
+                endTime={endTime}
+                isChecked={isChecked}
+                handleChange={handleChange}
+            />
         );
     }
 
@@ -111,9 +126,8 @@ function createTimeSlotElements(timeSlotTimes, selectedTimes) {
  */
 function groupTimeSlots(timeSlotElements, groupSize) {
     const timeSlotGroupElements = [];
-    const slotGroupSize = 5;
-    for (let i = 0; i < timeSlotElements.length; i += slotGroupSize) {
-        const newTimeSlots = timeSlotElements.filter((element, index) => index >= i && index < i + slotGroupSize);
+    for (let i = 0; i < timeSlotElements.length; i += groupSize) {
+        const newTimeSlots = timeSlotElements.filter((element, index) => index >= i && index < i + groupSize);
         timeSlotGroupElements.push (
             <Styled.TimeSlotsGroup>
                 {newTimeSlots}
@@ -124,19 +138,48 @@ function groupTimeSlots(timeSlotElements, groupSize) {
     return timeSlotGroupElements;
 }
 
+// TODO: Consider making this its own component?
+function TimeSlot({startTime, endTime, isChecked, handleChange}) {
+    // TODO: Actually handle input to/from checkboxes
+    // TODO: Use styled checkboxes
+    // TODO: Pre-check selected times
+    startTime = moment(startTime);
+    endTime = moment(endTime);
+    const timeSlotText = `${startTime.format('LT')} - ${endTime.format('LT')}`;
+    const timeSlotName = `${startTime.toISOString()}`;
 
-// NOTE: Signed up times should contain the STARTING time of each integer we're
-// already signed up for
-function TimeSlotMenu({startDateTime, endDateTime, selectedTimes}) {
-    // Copy sign-up times so we can revert/undo changes to them if necessary
-    const oldSelectedTimes = (selectedTimes) ? [...selectedTimes] : [];
+    return (
+        <Styled.TimeSlot>
+            <input type="checkbox" name={timeSlotName} checked={isChecked} onChange={handleChange}/>
+            <label htmlFor={timeSlotName}>{timeSlotText}</label>
+        </Styled.TimeSlot>
+    );
+}
+
+
+// TODO: Assumes selectedTimes should contain the STARTING time of each slot
+// already signed up for, stored as an ISO string or JS date
+function TimeSlotMenu({startDateTime, endDateTime, selectedTimes=[]}) {
+    // Map each time and set it to be checked by default
+    selectedTimes = selectedTimes.reduce(
+        (object, time) => object[moment(time).toISOString()] = true, {}
+    );
+    // Copy selected times in case we have to revert
+    const oldSelectedTimes = {...selectedTimes};
+
+    const [checkedTimes, setCheckedTimes] = useState(selectedTimes);
+    const handleCheckbox = (event) => {
+        const checkboxName = event.target.name;
+        const isChecked = event.target.checked;
+        setCheckedTimes({ ...checkedTimes, [checkboxName] : isChecked });
+    };
 
     // Generate times for timeSlot intervals
     const timeSlotTimes = createTimeSlotTimes(startDateTime, endDateTime);
-    const timeSlotElements = createTimeSlotElements(timeSlotTimes, selectedTimes);
+    const timeSlotElements = createTimeSlotElements(timeSlotTimes, checkedTimes, handleCheckbox);
 
     // Split the timeSlots into groups of 5
-    const timeSlotGroupElements = groupTimeSlots(timeSlotElements);
+    const timeSlotGroupElements = groupTimeSlots(timeSlotElements, 5);
 
     return (
         <Styled.TimeSlotsContainer>
