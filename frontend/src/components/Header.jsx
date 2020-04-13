@@ -85,18 +85,6 @@ const Styled = {
     align-items: center;
     margin-left: 2rem;
     margin-right: auto;
-
-    :before {
-      content: '';
-      width: ${props => pageSwitchWidth(props.currPathName)};
-      height: 2.2rem;
-      position: absolute;
-      border-radius: 0.5rem;
-      left: ${props => pageSwitchLeft(props.currPathName)};
-      background: white;
-      z-index: 0;
-      transition: all 0.3s;
-    }
   `,
   PageLink: styled(Link)`
     margin-left: 2rem;

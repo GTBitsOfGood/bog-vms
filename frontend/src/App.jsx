@@ -32,7 +32,7 @@ class App extends Component {
     this.getUser();
 
     // test volunteer view
-    this.setState({volunteer: true});
+    this.setState({volunteer: false});
   }
 
   fakeAuth = () => {
