@@ -36,6 +36,10 @@ const Styled = {
         justify-content: space-between;
         padding: 0.5em;
         min-width: 12em;
+
+        & label {
+            margin: 0;
+        }
     `
 
 };
