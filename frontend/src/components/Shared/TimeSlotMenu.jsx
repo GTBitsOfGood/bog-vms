@@ -11,20 +11,22 @@ import styled from 'styled-components';
 import { useState } from 'react';
 
 // TODO: Replace colors w/ theme colors (i.e. not hardcoded values)
-// TODO: Implement changes to signed-up times when they're selected
-// TODO: Implement done (i.e. submission) functionality
-// TODO: Implement undo functionality
 // TODO: Only show undo if there are changes made
-// TODO: Figure out format for submitting selected times
+// TODO: Find better format for submitting selected times
 
 const Styled = {
-    TimeSlotsContainer: styled.div `
+    TimeSlotMenuContainer: styled.div `
         display: flex;
+        flex-direction: column;
         padding: 0.5em;
         background: white;
         color: black;
         border: solid 1px #c4c4c4;
         border-radius: 2px;
+    `,
+
+    TimeSlotsContainer: styled.div `
+        display: flex;
 
         /*Add borders to separate timeslot groups after the 1st one*/
         & > div + div {
@@ -59,6 +61,10 @@ const Styled = {
         & label {
             margin: 0;
         }
+    `,
+
+    ButtonContainer: styled.div `
+        display: flex;
     `
 
 };
@@ -138,6 +144,20 @@ function groupTimeSlots(timeSlotElements, groupSize) {
     return timeSlotGroupElements;
 }
 
+/**
+ * Given the selectedTimes object, returns an array of ISO strings with the
+ * currently selected times
+ */
+function getSelectedTimes(selectedTimes) {
+    const timesArray = []
+    Object.entries(selectedTimes).forEach(([time, isChecked]) => {
+        if (isChecked) {
+            timesArray.push(time);
+        }
+    });
+    return timesArray;
+}
+
 // TODO: Consider making this its own component?
 function TimeSlot({startTime, endTime, isChecked, handleChange}) {
     // TODO: Actually handle input to/from checkboxes
@@ -159,20 +179,26 @@ function TimeSlot({startTime, endTime, isChecked, handleChange}) {
 
 // TODO: Assumes selectedTimes should contain the STARTING time of each slot
 // already signed up for, stored as an ISO string or JS date
-function TimeSlotMenu({startDateTime, endDateTime, selectedTimes=[]}) {
+// NOTE: onSubmit should be a callback function taking 1 argument: an array of
+// ISO strings saying what times have been selected
+function TimeSlotMenu({startDateTime, endDateTime, onSubmit, selectedTimes=[]}) {
     // Map each time and set it to be checked by default
     selectedTimes = selectedTimes.reduce(
         (object, time) => object[moment(time).toISOString()] = true, {}
     );
-    // Copy selected times in case we have to revert
     const oldSelectedTimes = {...selectedTimes};
 
+    // Set up state for checkboxes
     const [checkedTimes, setCheckedTimes] = useState(selectedTimes);
+    const [hasChangedTime, setChangedTime] = useState(false);
     const handleCheckbox = (event) => {
         const checkboxName = event.target.name;
         const isChecked = event.target.checked;
         setCheckedTimes({ ...checkedTimes, [checkboxName] : isChecked });
+        setChangedTime(true);
     };
+
+    console.log(hasChangedTime);
 
     // Generate times for timeSlot intervals
     const timeSlotTimes = createTimeSlotTimes(startDateTime, endDateTime);
@@ -181,10 +207,30 @@ function TimeSlotMenu({startDateTime, endDateTime, selectedTimes=[]}) {
     // Split the timeSlots into groups of 5
     const timeSlotGroupElements = groupTimeSlots(timeSlotElements, 5);
 
+    // TODO: Use properly styled buttons
     return (
-        <Styled.TimeSlotsContainer>
-            {timeSlotGroupElements}
-        </Styled.TimeSlotsContainer>
+        <Styled.TimeSlotMenuContainer>
+            <Styled.TimeSlotsContainer>
+                {timeSlotGroupElements}
+            </Styled.TimeSlotsContainer>
+            <Styled.ButtonContainer>
+                <Button
+                    onClick={() => {
+                        onSubmit(getSelectedTimes(checkedTimes));
+                    }}
+                    disabled={!hasChangedTime}>
+                    Done
+                </Button>
+                <Button
+                    onClick={() => {
+                        setCheckedTimes(oldSelectedTimes);
+                        setChangedTime(false);
+                    }}
+                    disabled={!hasChangedTime}>
+                    Undo
+                </Button>
+            </Styled.ButtonContainer>
+        </Styled.TimeSlotMenuContainer>
     );
 }
 
