@@ -30,6 +30,9 @@ class App extends Component {
 
   componentWillMount() {
     this.getUser();
+
+    // test volunteer view
+    this.setState({volunteer: true});
   }
 
   fakeAuth = () => {
@@ -80,7 +83,7 @@ class App extends Component {
   };
 
   render() {
-    const { isAuthenticated, user, hasLoaded } = this.state;
+    const { isAuthenticated, user, hasLoaded, volunteer } = this.state;
     return (
       <div id="wrapper">
         {hasLoaded ?
@@ -91,6 +94,7 @@ class App extends Component {
                   onLogout={this.logout}
                   loggedIn={isAuthenticated}
                   role={user ? user.role : null}
+                  volunteer={volunteer}
                 />
 
                 <Styled.Content>

@@ -18,75 +18,64 @@ const Styled = {
         opacity: 1.0;
     `,
 
-    FlexHeader: styled.div`
-        display: flex;
+    Container: styled.div`
+        background: #f6f6f6;
+        margin-bottom: 2rem;
+        padding: 2rem;
         width: 100%;
+        height: 100%;
     `,
 
-    EventInfoHeader: styled.div`
+    EventContainer: styled.div`
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 2em;
+        padding: 2em;
+        background: white;
+        border-radius: 0.4rem;
+    `,
+
+    FlexColumn: styled.div`
+        display: flex;
+        flex-direction: column;
+        margin-right: 1em;
+    `,
+
+    FlexRow: styled.div`
+        display: flex;
+        margin-bottom: 1em;
     `,
 
     h5: styled.h5`
         color: #969696
+    `,
+
+    h6: styled.h6`
+        color: #969696
     `
 };
 
-function IconHeading({iconName, headerText, subHeaderText}) {
+function IconHeading({ iconName, headerText, subHeaderText }) {
     return (
-        <Styled.FlexHeader>
+        <Styled.FlexRow>
             {iconName &&
                 <Icon color="grey3" name={iconName} />
             }
             <div>
-                <h3>{headerText}</h3>
-                <Styled.h5>{subHeaderText}</Styled.h5>
+                <h4>{headerText}</h4>
+                <Styled.h6>{subHeaderText}</Styled.h6>
             </div>
-        </Styled.FlexHeader>
+        </Styled.FlexRow>
     );
 }
-
-// // TODO: Probably already exists elsewhere, so import this instead?
-// function returnTimeFromNowString(date) {
-//     // NOTE: Does NOT take leap years, seconds, variable month lengths, etc.
-//     // into account
-//     // Also, note that this rounds DOWN, so 1 month and 13 days from now
-//     // will be returned as "1 months from now"
-//     const timeDifference = new Date(date - Date.now());
-
-//     if (timeDifference.getTime() < 0) {
-//         return "This already started!";
-//     }
-//     const oneMinMs = 60 * 1000;
-//     const oneHourMs = 60 * oneMinMs;
-//     if (timeDifference.getTime() < oneHourMs) {
-//         return `${Math.floor(timeDifference.getTime() / oneMinMs)} minutes from now`;
-//     }
-//     const oneDayMs = oneHourMs * 24;
-//     if (timeDifference.getTime() < oneDayMs) {
-//         return `${Math.floor(timeDifference.getTime() / oneHourMs)} hours from now`;
-//     }
-//     const oneWeekMs = oneDayMs * 7;
-//     if (timeDifference.getTime() < oneWeekMs) {
-//         return `${Math.floor(timeDifference.getTime() / oneDayMs)} days from now`;
-//     }
-//     const oneMonthMs = oneWeekMs * 4;
-//     if (timeDifference.getTime() < oneMonthMs) {
-//         return `${Math.floor(timeDifference.getTime() / oneWeekMs)} weeks from now`;
-//     }
-//     const oneYearMs = oneMonthMs * 12;
-//     if (timeDifference.getTime() < oneYearMs) {
-//         return `${Math.floor(timeDifference.getTime() / oneMonthMs)} months from now`;
-//     }
-
-//     return `${Math.floor(timeDifference.getTime() / oneYearMs)} years from now`;
-// }
 
 function EventDetails(props) {
     const event = props.event || props.location.state.event;
 
     if (!event) {
         // If no event found, render nothing
-        return(
+        return (
             <div>
                 <h1>No details found for this event</h1>
                 <Link to='/events'>Back</Link>
@@ -95,36 +84,50 @@ function EventDetails(props) {
     }
 
     const eventDate = new Date(event.date);
-    const dateDisplayOptions = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
-    const timeDisplayOptions = {timeStyle: 'short'}
+    const dateDisplayOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const timeDisplayOptions = { timeStyle: 'short' }
 
     return (
         // TODO: Style ALL of this
-        <div>
-            <Link to='/events'>
-                <Icon color="grey" name="left-chevron" /> Back
-            </Link>
-            <Styled.FlexHeader>
-                <Styled.EventInfoHeader>
-                    <IconHeading
-                        headerText={event.name}
-                        subHeaderText={eventDate.toLocaleDateString(undefined, dateDisplayOptions)}/>
-                    <IconHeading
-                        iconName="refresh"
-                        headerText={eventDate.toLocaleTimeString(undefined, timeDisplayOptions) + ' to ???'}
-                        // subHeaderText={returnTimeFromNowString(eventDate)}/>
-                        subHeaderText = {moment(eventDate, "YYYYMMDD").fromNow()}/>
-                    <IconHeading
-                        iconName="delete"
-                        headerText={event.location}
-                        subHeaderText="??? Street"/>
-                </Styled.EventInfoHeader>
-            </Styled.FlexHeader>
+        <Styled.Container>
+            <Styled.EventContainer>
+                <Styled.FlexColumn>
+                    <Link to='/events'>
+                        <Icon color="grey" name="left-chevron" /> Back
+                    </Link>
+
+                    <Styled.FlexRow>
+                        <Styled.FlexColumn>
+                            <Styled.FlexRow>
+                                <Styled.FlexColumn>
+                                    {/* <div>Date here</div> */}
+                                    <h3>{event.name}</h3>
+                                    <Styled.h5>{eventDate.toLocaleDateString(undefined, dateDisplayOptions)}</Styled.h5>
+                                </Styled.FlexColumn>
+                            </Styled.FlexRow>
+                            <IconHeading
+                                iconName="date"
+                                headerText={eventDate.toLocaleTimeString(undefined, timeDisplayOptions) + ' to ???'}
+                                // subHeaderText={returnTimeFromNowString(eventDate)}/>
+                                subHeaderText={moment(eventDate, "YYYYMMDD").fromNow()} />
+                            <IconHeading
+                                iconName="location"
+                                headerText={event.location}
+                                subHeaderText="??? Street" />
+                            <Styled.FlexRow>
+                                <Button>Save</Button>
+                                <Button>Sign Up</Button>
+                            </Styled.FlexRow>
+                        </Styled.FlexColumn>
+                        <div>Image here</div>
+                    </Styled.FlexRow>
+                </Styled.FlexColumn>
+            </Styled.EventContainer>
             <div>
                 <h3>Details</h3>
                 <p>{event.description}</p>
             </div>
-        </div>
+        </Styled.Container>
     );
 
 }
