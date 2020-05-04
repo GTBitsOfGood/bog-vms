@@ -13,6 +13,7 @@ import { useState } from 'react';
 
 // TODO: Replace colors w/ theme colors (i.e. not hardcoded values)
 // TODO: Only show undo if there are changes made
+// TODO: Implement tabs for multiple days
 // TODO: Find better format ISO array for submitting selected times
 
 const Styled = {
@@ -66,11 +67,32 @@ const Styled = {
     `,
 
     ButtonContainer: styled.div `
+        padding: 0.5em 1em;
         display: flex;
     `,
 
+    Button: styled(Button) `
+        margin: 5px;
+        padding: 0.5em 1em;
+        width: 5em;
+        color: white;
+        background: #f68c4a;
+        border-radius: 10px;
+
+        &.btn.disabled {
+            opacity: 1.0;
+        }
+
+        &.btn-secondary.disabled {
+            color: #565656;
+            background: #c4c4c4;
+        }
+    `,
+
     Checkbox: styled(Checkbox)`
-        /*TODO: Add custom styling for this checkbox later, if needed*/
+        .form-check {
+            padding-left: 0;
+        }
     `
 
 };
@@ -229,16 +251,16 @@ function TimeSlotMenu({startDateTime, endDateTime, onSubmit, selectedTimes=[]}) 
                 </Styled.TimeSlotsContainer>
 
                 <Styled.ButtonContainer>
-                    <Button
+                    <Styled.Button
                         disabled={!hasSelectionChanged}
                         type="submit">
                         Done
-                    </Button>
-                    <Button
+                    </Styled.Button>
+                    <Styled.Button
                         disabled={!hasSelectionChanged}
                         type="reset">
                         Undo
-                    </Button>
+                    </Styled.Button>
                 </Styled.ButtonContainer>
             </Styled.TimeSlotMenuContainer>
         </Form>
