@@ -85,18 +85,6 @@ const Styled = {
     align-items: center;
     margin-left: 2rem;
     margin-right: auto;
-
-    :before {
-      content: '';
-      width: ${props => pageSwitchWidth(props.currPathName)};
-      height: 2.2rem;
-      position: absolute;
-      border-radius: 0.5rem;
-      left: ${props => pageSwitchLeft(props.currPathName)};
-      background: white;
-      z-index: 0;
-      transition: all 0.3s;
-    }
   `,
   PageLink: styled(Link)`
     margin-left: 2rem;
@@ -179,7 +167,7 @@ class Header extends Component {
   currPageMatches = page => this.props.location.pathname === page;
 
   render() {
-    const { onLogout, loggedIn, location, role } = this.props;
+    const { onLogout, loggedIn, location, role, volunteer} = this.props;
     if (!loggedIn) {
       return null;
     }
@@ -197,16 +185,18 @@ class Header extends Component {
               {loggedIn ? (
                 <Styled.FlexContainer className="navbar-nav">
                   <Styled.PageSwitch currPathName={location.pathname}>
-                    <Styled.PageLink to="/" selected={this.currPageMatches('/')}>
-                      Applicant Viewer
-                    </Styled.PageLink>
-                    {role === 'admin' && (
-                      <Styled.PageLink
-                        to="/user-manager"
-                        selected={this.currPageMatches('/user-manager')}
-                      >
-                        Mailing List
+                    {role === 'admin' && !volunteer && (
+                      <div>
+                        <Styled.PageLink to="/" selected={this.currPageMatches('/')}>
+                          Applicant Viewer
+                        </Styled.PageLink>
+                        <Styled.PageLink
+                          to="/user-manager"
+                          selected={this.currPageMatches('/user-manager')}
+                        >
+                          Mailing List
                       </Styled.PageLink>
+                      </div>
                     )}
                     <Styled.PageLink to="/events" selected={this.currPageMatches('/events')}>
                       Events
@@ -224,7 +214,7 @@ class Header extends Component {
                           </Styled.ImgContainer>
                           <Styled.TxtContainer>
                             <p style={{ margin: '0px' }}>James Wang</p>
-                            <p style={{ margin: '0px' }}>Admin</p>
+                            <p style={{ margin: '0px' }}>{volunteer ? 'Volunteer' : 'Admin'}</p>
                           </Styled.TxtContainer>
                           <Styled.ImgContainer style={{ paddingRight: '0px' }}>
                             <Icon name="dropdown-arrow" size="1.5rem" />
@@ -240,8 +230,8 @@ class Header extends Component {
                   </Styled.Dropdown>
                 </Styled.FlexContainer>
               ) : (
-                <Nav navbar></Nav>
-              )}
+                  <Nav navbar></Nav>
+                )}
             </Collapse>
           </Container>
         </Styled.Navbar>

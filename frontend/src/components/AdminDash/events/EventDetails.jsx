@@ -1,92 +1,104 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMapMarkerAlt, faClock } from '@fortawesome/free-solid-svg-icons';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import * as SForm from '../shared/formStyles';
 import PropTypes from 'prop-types';
 import { eventValidator } from './eventHelpers';
 import { createEvent } from '../queries';
 import { Icon } from 'components/Shared';
+import image from '../../../images/volunteering.jpg';
 import moment from 'moment';
 
 const Styled = {
-    Button: styled(Button)`
-        position: absolute;
-        align-self: flex-end;
-        background: none;
-        border: none;
-        opacity: 1.0;
+    SaveButton: styled(Button)`
+        border-style: solid;
+        border-color: #969696;
+        border-width: 1.5px 0 1.5px 1.5px;
+        border-radius: 0px;
+        padding: 0.5em 2em 0.5em 2em;
     `,
 
-    FlexHeader: styled.div`
-        display: flex;
+    SignUpButton: styled(Button)`
+        background: #f79a0d;
+        border: 1.5px solid #969696;
+        border-radius: 0px;
+        color: white;
+        padding: 0.5em 2em 0.5em 2em;
+    `,
+
+    Container: styled.div`
+        background: #f6f6f6;
+        margin-bottom: 2rem;
+        padding: 2rem;
         width: 100%;
+        height: 100%;
     `,
 
-    EventInfoHeader: styled.div`
+    EventContainer: styled.div`
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 2em;
+        padding: 2em;
+        background: white;
+        border-radius: 0.4rem;
+    `,
+
+    FlexColumn: styled.div`
+        display: flex;
+        flex-direction: column;
+        margin-right: 3em;
+    `,
+
+    FlexRow: styled.div`
+        display: flex;
+        margin-bottom: 1.5em;
     `,
 
     h5: styled.h5`
-        color: #969696
+        color: #969696;
+    `,
+
+    h6: styled.h6`
+        color: #969696;
+    `,
+
+    imgContainer: styled.div`
+        max-width: 350px;
+        max-height: 300px;
+        border-radius: 10px;
+        overflow: hidden;
+    `,
+
+    details: styled.div`
+        text-align: left;
     `
 };
 
-function IconHeading({iconName, headerText, subHeaderText}) {
+function IconHeading({ iconName, headerText, subHeaderText }) {
     return (
-        <Styled.FlexHeader>
+        <Styled.FlexRow>
             {iconName &&
-                <Icon color="grey3" name={iconName} />
+                <FontAwesomeIcon icon={iconName} size="lg" color="#969696" />
             }
-            <div>
-                <h3>{headerText}</h3>
-                <Styled.h5>{subHeaderText}</Styled.h5>
+            <div style={{ marginLeft: "1.5em" }}>
+                <h5>{headerText}</h5>
+                <Styled.h6>{subHeaderText}</Styled.h6>
             </div>
-        </Styled.FlexHeader>
+        </Styled.FlexRow>
     );
 }
-
-// // TODO: Probably already exists elsewhere, so import this instead?
-// function returnTimeFromNowString(date) {
-//     // NOTE: Does NOT take leap years, seconds, variable month lengths, etc.
-//     // into account
-//     // Also, note that this rounds DOWN, so 1 month and 13 days from now
-//     // will be returned as "1 months from now"
-//     const timeDifference = new Date(date - Date.now());
-
-//     if (timeDifference.getTime() < 0) {
-//         return "This already started!";
-//     }
-//     const oneMinMs = 60 * 1000;
-//     const oneHourMs = 60 * oneMinMs;
-//     if (timeDifference.getTime() < oneHourMs) {
-//         return `${Math.floor(timeDifference.getTime() / oneMinMs)} minutes from now`;
-//     }
-//     const oneDayMs = oneHourMs * 24;
-//     if (timeDifference.getTime() < oneDayMs) {
-//         return `${Math.floor(timeDifference.getTime() / oneHourMs)} hours from now`;
-//     }
-//     const oneWeekMs = oneDayMs * 7;
-//     if (timeDifference.getTime() < oneWeekMs) {
-//         return `${Math.floor(timeDifference.getTime() / oneDayMs)} days from now`;
-//     }
-//     const oneMonthMs = oneWeekMs * 4;
-//     if (timeDifference.getTime() < oneMonthMs) {
-//         return `${Math.floor(timeDifference.getTime() / oneWeekMs)} weeks from now`;
-//     }
-//     const oneYearMs = oneMonthMs * 12;
-//     if (timeDifference.getTime() < oneYearMs) {
-//         return `${Math.floor(timeDifference.getTime() / oneMonthMs)} months from now`;
-//     }
-
-//     return `${Math.floor(timeDifference.getTime() / oneYearMs)} years from now`;
-// }
 
 function EventDetails(props) {
     const event = props.event || props.location.state.event;
 
     if (!event) {
         // If no event found, render nothing
-        return(
+        return (
             <div>
                 <h1>No details found for this event</h1>
                 <Link to='/events'>Back</Link>
@@ -95,36 +107,52 @@ function EventDetails(props) {
     }
 
     const eventDate = new Date(event.date);
-    const dateDisplayOptions = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
-    const timeDisplayOptions = {timeStyle: 'short'}
+    const dateDisplayOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const timeDisplayOptions = { timeStyle: 'short' }
 
     return (
         // TODO: Style ALL of this
-        <div>
-            <Link to='/events'>
-                <Icon color="grey" name="left-chevron" /> Back
-            </Link>
-            <Styled.FlexHeader>
-                <Styled.EventInfoHeader>
-                    <IconHeading
-                        headerText={event.name}
-                        subHeaderText={eventDate.toLocaleDateString(undefined, dateDisplayOptions)}/>
-                    <IconHeading
-                        iconName="refresh"
-                        headerText={eventDate.toLocaleTimeString(undefined, timeDisplayOptions) + ' to ???'}
-                        // subHeaderText={returnTimeFromNowString(eventDate)}/>
-                        subHeaderText = {moment(eventDate, "YYYYMMDD").fromNow()}/>
-                    <IconHeading
-                        iconName="delete"
-                        headerText={event.location}
-                        subHeaderText="??? Street"/>
-                </Styled.EventInfoHeader>
-            </Styled.FlexHeader>
-            <div>
-                <h3>Details</h3>
-                <p>{event.description}</p>
-            </div>
-        </div>
+        <Styled.Container>
+            <Styled.EventContainer>
+                <Styled.FlexRow>
+                    <Styled.FlexColumn>
+                        <Link to='/events' style={{marginBottom:"1em"}}>
+                            <Icon color="grey" name="left-chevron" /> Back
+                        </Link>
+                        <Styled.FlexRow>
+                            <Styled.FlexColumn>
+                                <Styled.FlexRow>
+                                    <Styled.FlexColumn>
+                                        {/* <div>Date here</div> */}
+                                        <h3>{event.name}</h3>
+                                        <Styled.h5>{eventDate.toLocaleDateString(undefined, dateDisplayOptions)}</Styled.h5>
+                                    </Styled.FlexColumn>
+                                </Styled.FlexRow>
+                                <IconHeading
+                                    iconName={faMapMarkerAlt}
+                                    headerText={eventDate.toLocaleTimeString(undefined, timeDisplayOptions) + ' to ???'}
+                                    // subHeaderText={returnTimeFromNowString(eventDate)}/>
+                                    subHeaderText={moment(eventDate, "YYYYMMDD").fromNow()} />
+                                <IconHeading
+                                    iconName={faClock}
+                                    headerText={event.location}
+                                    subHeaderText="??? Street" />
+                                <Styled.FlexRow>
+                                    <Styled.SaveButton>Save</Styled.SaveButton>
+                                    <Styled.SignUpButton>Sign Up</Styled.SignUpButton>
+                                </Styled.FlexRow>
+                            </Styled.FlexColumn>
+                            <Styled.imgContainer><img src={image} style={{ height: "310px" }}></img></Styled.imgContainer>
+                        </Styled.FlexRow>
+                    </Styled.FlexColumn>
+                </Styled.FlexRow>
+                <hr />
+                <Styled.details>
+                    <h3>Details</h3>
+                    <p>{event.description}</p>
+                </Styled.details>
+            </Styled.EventContainer>
+        </Styled.Container>
     );
 
 }
