@@ -4,15 +4,16 @@
  */
 
 import React from 'react';
+
 import { Button } from 'reactstrap';
-import { Icon } from 'components/Shared';
+import { Form, Checkbox } from '../Forms';
 import moment from 'moment';
 import styled from 'styled-components';
 import { useState } from 'react';
 
 // TODO: Replace colors w/ theme colors (i.e. not hardcoded values)
 // TODO: Only show undo if there are changes made
-// TODO: Find better format for submitting selected times
+// TODO: Find better format ISO array for submitting selected times
 
 const Styled = {
     TimeSlotMenuContainer: styled.div `
@@ -34,6 +35,7 @@ const Styled = {
         }
 
         /*TODO: Avoid hardcoding this? */
+        /*Switch to single-column on small screens*/
         @media (max-width: 768px) {
             flex-direction: column;
 
@@ -56,7 +58,7 @@ const Styled = {
         align-items: center;
         justify-content: space-between;
         padding: 0.5em;
-        min-width: 12em;
+        min-width: 13em;
 
         & label {
             margin: 0;
@@ -65,15 +67,19 @@ const Styled = {
 
     ButtonContainer: styled.div `
         display: flex;
+    `,
+
+    Checkbox: styled(Checkbox)`
+        /*TODO: Add custom styling for this checkbox later, if needed*/
     `
 
 };
 
 /**
  * Given a JS Date object, copies it and returns a Moment.js copy of it rounded
- * UP to the nearest 30 minute interval (e.g. 4:17 becomes 4:00)
+ * BACK to the nearest 30 minute interval (e.g. 4:17 becomes 4:00)
  */
-function roundTimeUpToHalfHour(dateTime) {
+function roundTimeBackToHalfHour(dateTime) {
     const momentTime = moment(dateTime);
     const minutes = momentTime.minutes();
     // Assuming minutes < 60, rounds down to either 0 or 30
@@ -88,14 +94,14 @@ function roundTimeUpToHalfHour(dateTime) {
  * them (and the 30 min interval before/after to contain the start/end times)
  */
 function createTimeSlotTimes(startTime, endTime) {
-    const roundedStartTime = roundTimeUpToHalfHour(startTime);
+    const roundedStartTime = roundTimeBackToHalfHour(startTime);
     const slotTimes = [];
 
     for (let currentTime = roundedStartTime; currentTime.isBefore(endTime); currentTime.add(30, 'minutes')) {
         slotTimes.push(currentTime.clone());
     }
     // Missing last interval, so add it manually
-    // TODO: Avoid this if possible?
+    // TODO: Avoid this extra step if possible?
     slotTimes.push(slotTimes[slotTimes.length - 1].clone().add(30, 'minutes'));
 
     return slotTimes;
@@ -105,7 +111,7 @@ function createTimeSlotTimes(startTime, endTime) {
  * Takes an array of available times and generates the HTML elements to select
  * each time slot interval
  */
-function createTimeSlotElements(timeSlotTimes, selectedTimes, handleChange) {
+function createTimeSlotElements(timeSlotTimes, selectedTimes) {
     const timeSlotElements = [];
     for (let i = 0; i < timeSlotTimes.length - 1; i++) {
         const startTime = timeSlotTimes[i];
@@ -119,7 +125,6 @@ function createTimeSlotElements(timeSlotTimes, selectedTimes, handleChange) {
                 startTime={startTime}
                 endTime={endTime}
                 isChecked={isChecked}
-                handleChange={handleChange}
             />
         );
     }
@@ -145,8 +150,8 @@ function groupTimeSlots(timeSlotElements, groupSize) {
 }
 
 /**
- * Given the selectedTimes object, returns an array of ISO strings with the
- * currently selected times
+ * Returns an array of ISO strings for the currently selected times (as given
+ * in object-form)
  */
 function getSelectedTimes(selectedTimes) {
     const timesArray = []
@@ -159,10 +164,8 @@ function getSelectedTimes(selectedTimes) {
 }
 
 // TODO: Consider making this its own component?
-function TimeSlot({startTime, endTime, isChecked, handleChange}) {
-    // TODO: Actually handle input to/from checkboxes
+function TimeSlot({startTime, endTime, isChecked}) {
     // TODO: Use styled checkboxes
-    // TODO: Pre-check selected times
     startTime = moment(startTime);
     endTime = moment(endTime);
     const timeSlotText = `${startTime.format('LT')} - ${endTime.format('LT')}`;
@@ -170,7 +173,12 @@ function TimeSlot({startTime, endTime, isChecked, handleChange}) {
 
     return (
         <Styled.TimeSlot>
-            <input type="checkbox" name={timeSlotName} checked={isChecked} onChange={handleChange}/>
+            <Styled.Checkbox
+                small
+                key={timeSlotName}
+                name={timeSlotName}
+                value={isChecked}
+            />
             <label htmlFor={timeSlotName}>{timeSlotText}</label>
         </Styled.TimeSlot>
     );
@@ -183,56 +191,58 @@ function TimeSlot({startTime, endTime, isChecked, handleChange}) {
 // ISO strings saying what times have been selected
 function TimeSlotMenu({startDateTime, endDateTime, onSubmit, selectedTimes=[]}) {
     // Map each time and set it to be checked by default
-    selectedTimes = selectedTimes.reduce(
+    const selectedTimesObj = selectedTimes.reduce(
         (object, time) => object[moment(time).toISOString()] = true, {}
     );
-    const oldSelectedTimes = {...selectedTimes};
+    const oldSelectedTimes = {...selectedTimesObj};
 
-    // Set up state for checkboxes
-    const [checkedTimes, setCheckedTimes] = useState(selectedTimes);
-    const [hasChangedTime, setChangedTime] = useState(false);
-    const handleCheckbox = (event) => {
-        const checkboxName = event.target.name;
-        const isChecked = event.target.checked;
-        setCheckedTimes({ ...checkedTimes, [checkboxName] : isChecked });
-        setChangedTime(true);
-    };
-
-    console.log(hasChangedTime);
+    // Track if the user has made any changes
+    const [hasSelectionChanged, setHasSelectionChanged] = useState(false);
 
     // Generate times for timeSlot intervals
     const timeSlotTimes = createTimeSlotTimes(startDateTime, endDateTime);
-    const timeSlotElements = createTimeSlotElements(timeSlotTimes, checkedTimes, handleCheckbox);
+    const timeSlotElements = createTimeSlotElements(timeSlotTimes, selectedTimesObj);
 
     // Split the timeSlots into groups of 5
     const timeSlotGroupElements = groupTimeSlots(timeSlotElements, 5);
 
-    // TODO: Use properly styled buttons
     return (
-        <Styled.TimeSlotMenuContainer>
-            <Styled.TimeSlotsContainer>
-                {timeSlotGroupElements}
-            </Styled.TimeSlotsContainer>
-            <Styled.ButtonContainer>
-                <Button
-                    onClick={() => {
-                        onSubmit(getSelectedTimes(checkedTimes));
-                    }}
-                    disabled={!hasChangedTime}>
-                    Done
-                </Button>
-                <Button
-                    onClick={() => {
-                        setCheckedTimes(oldSelectedTimes);
-                        setChangedTime(false);
-                    }}
-                    disabled={!hasChangedTime}>
-                    Undo
-                </Button>
-            </Styled.ButtonContainer>
-        </Styled.TimeSlotMenuContainer>
+       <Form
+            initialValues={oldSelectedTimes}
+
+            // NOTE: Validate used only to update state, not for actual validation
+            validate={() => setHasSelectionChanged(true)}
+            validateOnChange={true}
+            onReset={(values, {resetForm}) => {
+                setHasSelectionChanged(false);
+                resetForm();    // Formik's built-in reset method
+            }}
+
+            onSubmit={(values, {setSubmitting}) => {
+                onSubmit(getSelectedTimes(values));
+                // Tell Formik we're done submitting
+                setSubmitting(false);
+            }}>
+            <Styled.TimeSlotMenuContainer>
+                <Styled.TimeSlotsContainer>
+                    {timeSlotGroupElements}
+                </Styled.TimeSlotsContainer>
+
+                <Styled.ButtonContainer>
+                    <Button
+                        disabled={!hasSelectionChanged}
+                        type="submit">
+                        Done
+                    </Button>
+                    <Button
+                        disabled={!hasSelectionChanged}
+                        type="reset">
+                        Undo
+                    </Button>
+                </Styled.ButtonContainer>
+            </Styled.TimeSlotMenuContainer>
+        </Form>
     );
 }
-
 
 export default TimeSlotMenu;
