@@ -59,7 +59,7 @@ class App extends Component {
       } else {
         console.log('Get user: no user');
         this.setState({
-          loggedIn: false,
+          isAuthenticated: false,
           user: null,
           hasLoaded: true
         })
@@ -92,7 +92,7 @@ class App extends Component {
                   loggedIn={isAuthenticated}
                   role={user ? user.role : null}
                 />
-
+                
                 <Styled.Content>
                   {user ? <Authenticated user={user} /> : <Splash onAuth={this.loginAuth} />}
                 </Styled.Content>
